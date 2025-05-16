@@ -1,0 +1,7 @@
+include::../attributes-sections.adoc[]
+
+== ERPione CLI
+The {app-name} CLI is a command line interface that allows you to interact with the {app-name} application from the terminal. It provides a set of commands for managing and configuring the application, as well as for performing various tasks.
+
+include::installation.adoc[leveloffset=+1]
+include::configuration.adoc[leveloffset=+1]

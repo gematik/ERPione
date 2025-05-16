@@ -1,0 +1,13 @@
+include::../attributes-sections.adoc[]
+
+
+== Configuration
+
+=== API-Key [[api_key_env]]
+The API key is required for each {app-name} request. To avoid having to specify it for each operation, it is possible to store the API key permanently as link:https://de.wikipedia.org/wiki/Umgebungsvariable[environment variable].
+
+To do this, the API key must be stored under the `ERPIONE_API_KEY` environment variable in the operating system. This procedure differs from operating system to operating system. There are numerous instructions on the Internet, e.g., for link:https://phoenixnap.com/kb/windows-set-environment-variable[Windows] and link:https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/[Linux].
+
+=== Default Environment [[default_env]]
+The environment (TU, RU, RU-DEV) can be specified separately for each request using the `--env` switch.
+To avoid having to specify this switch for each individual call, a default environment can be defined using the environment variable `ERPIONE_ENV`. The default environment can then be overridden with `--env'.

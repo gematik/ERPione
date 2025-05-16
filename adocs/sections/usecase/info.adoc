@@ -1,0 +1,41 @@
+include::attributes-commons.adoc[]
+
+== Service information
+To get information about the service, you can use the following call:
+
+[tabs,style=overlap,options="single"]
+====
+erpione::
++
+[source,shell,subs="attributes"]
+----
+{app-name-cli} info
+----
+
+curl::
++
+[source,shell,subs="attributes",indent=0,role="primary"]
+----
+{curl-name-cli} -H "apikey: $ERPIONE_API_KEY" {service-url}/info | jq
+----
+====
+
+In addition, the active *Actors* can be accessed with the following call:
+
+[tabs,style=overlap,options="single"]
+====
+erpione::
++
+[source,shell,subs="attributes",indent=0,role="secondary"]
+----
+{app-name-cli} actors
+----
+
+curl::
++
+[source,shell,subs="attributes"]
+----
+{curl-name-cli} -H "apikey: $ERPIONE_API_KEY" https://erpps-test.dev.gematik.solutions/actors | jq
+----
+====
+

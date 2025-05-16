@@ -1,0 +1,32 @@
+:doctype: book
+
+// Settings:
+:experimental:
+:reproducible:
+:icons: font
+:allow-uri-read:
+:hide-uri-scheme:
+:sectanchors:
+:linkattrs:
+:source-highlighter: coderay
+
+:imagesdir: ./images
+:pumldir: plantuml
+:codedir: code
+
+:toc: auto
+:toclevels: 3
+:toc-title: Contents
+:chapter-signifier:
+
+:license-url: https://www.apache.org/licenses/LICENSE-2.0.txt
+:license-title: Apache License, Version 2.0
+
+include::attributes-commons.adoc[]
+include::attributes-urls.adoc[]
+
+:title: {app-name}
+:description: {app-name} TODO
+
+:copyright: {docyear} by {orgname}, Berlin
+

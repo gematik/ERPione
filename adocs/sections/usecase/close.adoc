@@ -1,0 +1,6 @@
+include::attributes-commons.adoc[]
+
+== Close prescriptions
+The `close` command is used to finally close an e-prescription. As with the `dispense` command, a previous `accept` is mandatory. Before `close` a `dispense` is possible but not mandatory.
+
+The `close` command has the same interface as the `dispense` command. The only difference here is that the e-prescription is not closed with the `dispense` and therefore remains in the `in-progress` state.

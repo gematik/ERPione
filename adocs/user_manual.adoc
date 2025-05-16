@@ -1,0 +1,12 @@
+include::attributes-settings.adoc[]
+
+= {app-name}
+{author}
+[VERSION], {docdate}
+:favicon: ./images/erpione.ico
+:toc: left
+:docinfo: shared
+
+image::erpione-logo.png[width=30%, align="center"]
+
+include::sections/index.adoc[leveloffset=+1]

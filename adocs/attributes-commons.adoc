@@ -1,0 +1,13 @@
+
+:author: gematik GmbH
+:orgname: {author}
+
+:app-name: pass:c,q[_ERPione_]
+:app-name-cli: erpione
+:app-name-cmd: `erpione`
+
+:app-proxy-name: pass:c,q[_ERPione-Proxy_]
+:app-proxy-name-cli: erpione-proxy
+:app-proxy-name-cmd: `erpione-proxy`
+
+:curl-name-cli: curl

@@ -1,0 +1,82 @@
+include::../attributes-sections.adoc[]
+
+
+== Installation
+The {app-name} can be used in three variants. In the simplest case, {app-name} can be used directly as a <<native_usage,native>> and executable application for the respective operating system.
+
+The container variant uses link:https://www.docker.com/[Docker] for execution and also offers additional features such as a link:https://de.wikipedia.org/wiki/Manpage[manpage], the link:https://ohmyz.sh/[oh-my-zsh] and the integration of link:https://hub.docker.com/r/gematik1/erp-cli-fhir[erp-cli-fhir].
+
+The last variant for execution directly via the source files is possible, but is only recommended for developers and enthusiasts.
+
+[TIP]
+If you have already installed link:https://www.docker.com/[Docker], the <<docker_usage,container variant>> should be your preferred choice.
+
+=== Docker [[docker_usage]]
+The {app-name} can be loaded directly as a Docker image from link:https://hub.docker.com/r/gematik1/erpione[DockerHub] with link:https://docs.docker.com/engine/reference/commandline/pull/[docker pull]:
+
+[source,shell]
+----
+docker pull gematik1/erpione
+----
+
+The image can now be started with the following command using link:https://docs.docker.com/engine/reference/commandline/run/[docker run]:
+
+[source,shell,subs="attributes"]
+----
+docker run -it --name {app-name} \
+      --env ERPIONE_API_KEY=$ERPIONE_API_KEY \
+      -v $FULL_HOST_PATH:/home/gematik/shared \
+      gematik1/erpione
+----
+
+- With `-it` (abbreviated for `--interactive` and `--tty`), the container is started in an interactive TTY session and the user lands directly in the container.
+- The container name `{app-name}` is freely selectable
+- With `--env ERPIONE_API_KEY=$ERPIONE_API_KEY` the API key is stored in the container as an environment variable. Here, `$ERPIONE_API_KEY` must be replaced with the actual API key if the environment variable is **not** stored on the host computer
+- With `-v $FULL_HOST_PATH:/home/gematik` a link:https://docs.docker.com/storage/volumes/[Volume] is included in the container (quasi a shared folder between the container and the host computer) to enable the exchange of files between the container and the host computer. If this is not required, this argument can also be omitted.
+
+The `-it` switch means that the container is **not** shut down when it is exited.
+As long as the container is running, you can always dial into the container again using link:https://docs.docker.com/engine/reference/commandline/exec/[docker exec].
+
+[source,shell,subs="attributes"]
+----
+docker exec -ti {app-name} /bin/zsh
+----
+
+- With `-it` (abbreviated for `--interactive` and `--tty`), the container is started in an interactive TTY session and the user lands directly in the container.
+- The container name `{app-name}` that was previously selected for `docker run
+- The last argument `/bin/zsh` specifies which shell is to be used.
+
+=== Nativ [[native_usage]]
+In principle, no special commissioning is necessary. {app-name} can be used directly as an executable application without any installation. However, for the user's convenience, it is recommended to initially set up the <<api_key_env,API-Key in the environment variables>>.
+
+The executable applications must be generated separately for each operating system. Currently, {app-name} is provided native executable for the following operating systems:
+
+- Windows
+- Linux
+- macOS
+
+=== From source [[py_source_usage]]
+This variant is only recommended for developers and Python enthusiasts and requires the Python toolchain for execution
+
+- link:https://www.python.org/downloads/[Python 3.11]
+- link:https://pypi.org/project/pip/[pip]
+- ideally link:https://docs.python.org/3/library/venv.html#module-venv[venv] or link:https://virtualenv.pypa.io/en/latest/[virtualenv]
+
+A _virtual environment_ can be created and activated with the following call from the main directory of {app-name}:
+
+[source,shell,subs="attributes"]
+----
+python -m venv {app-name}_venv
+
+source {app-name}_venv/bin/activate
+----
+
+The dependencies can then be installed within the _virtual environment_ using pip:
+
+[source,shell,subs="attributes"]
+----
+pip install -r requirements.txt
+----
+
+== cURL
+cURL is a command-line tool for transferring data using various network protocols. It is widely used for testing APIs and web services. In the context of {app-name}, cURL can be used to interact with the RESTful API endpoints provided by the application.

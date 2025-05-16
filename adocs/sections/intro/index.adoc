@@ -1,0 +1,9 @@
+include::../attributes-sections.adoc[]
+
+== Scope
+As a national competence center for digital health, {orgname} provides a lot of services and applications for testing the telematics infrastructure (TI) services. {app-name} is one of them. It is a software solution that enables the convenient creation of e-prescriptions in a test environment. It is designed to be used by developers and testers who want to test the integration of e-prescriptions into their applications.
+
+=== Eponym
+The name {app-name} is a combination of ERP - short for e-prescription ({gem-erp-link}) - and the Greek goddess Epione. As the goddess of pain relief and the mother of Hygieia, the patron saint of pharmacists, she is an ideal namesake.
+
+include::architecture.adoc[leveloffset=+1]

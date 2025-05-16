@@ -1,0 +1,58 @@
+include::attributes-commons.adoc[]
+
+== Help
+The `-h` (or `--help`) argument is the first port of call to get initial help on the CLI arguments.
+
+For example, you can use the following help to get an overview of the available subcommands:
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} --help
+----
+
+The appropriate help for a particular subcommand is then displayed as follows:
+
+[tabs,options="single"]
+====
+structure::
++
+[source,shell,subs="attributes"]
+----
+{app-name-cli} SUBCOMMAND --help
+----
+
+example::
++
+[source,shell,subs="attributes"]
+----
+{app-name-cli} prescribe --help
+usage: erpione prescribe [-h] [-e {tu,ru,rudev}] [-s SERVER] [--api-key API_KEY | --api-key-file API_FILE] [--actor ACTOR] [--dmc] bundles_path
+
+positional arguments:
+  bundles_path          Path to KBV-Bundles to be prescribed
+
+options:
+  -h, --help            show this help message and exit
+  -e {tu,ru,rudev}, --env {tu,ru,rudev}
+                        Specification the Environment for this call. This argument will overwrite the default environment configured via ERPIONE_ENV
+  -s SERVER, --server SERVER
+                        The URL of the PrimSys-REST server (default: https://erpps-test.dev.gematik.solutions/)
+  --api-key API_KEY     API-Key for accessing the service
+  --api-key-file API_FILE
+                        Path to file where the API-Key is stored
+  --actor ACTOR         ID or name of the actor
+  --dmc                 Download Data-Matrix-Codes
+----
+====
+
+Most subcommands have a common base of switches for the {app-name}:
+
+[cols="1,1,5", options="header"]
+.common arguments
+|=============
+| short | long | Description
+| -e | --env | Selects the appropriate TI environment. This switch overrides the <<default_env,default_environment>>. If the environment is not specified by either `-e` or <<default_env,standard_environment>>, then the default on the {app-proxy-name-cli} is used.
+| -s | --server | The default corresponds to the internal hosting within gematik and generally does not need to be changed.
+|  | --api-key | Can be used to override the <<api_key_env,environment variable>> or set one if no <<api_key_env,environment variable>> is set.
+|  | --api-key-file | Can be used to overwrite the <<api_key_env,environment variable>> with an API key from a file, or set one if no <<api_key_env,environment variable>> is set.
+|=============

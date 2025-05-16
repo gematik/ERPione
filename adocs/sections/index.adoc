@@ -1,0 +1,6 @@
+include::./attributes-sections.adoc[]
+
+
+include::intro/index.adoc[leveloffset=0]
+include::cli/index.adoc[leveloffset=0]
+include::usecase/index.adoc[leveloffset=0]

@@ -1,0 +1,8 @@
+
+:erpione-dockerhub-url: https://hub.docker.com/r/gematik1/erpione
+:erpione-dockerhub-link: {erpione-dockerhub-url}[ERPione @DockerHub]
+
+:gem-erp-url: https://www.gematik.de/anwendungen/e-rezept
+:gem-erp-link: {gem-erp-url}[E-Rezept | Gematik]
+:gem-ti-url: https://www.gematik.de/telematikinfrastruktur
+:gem-ti-link: {gem-ti-url}[Telematikinfrastruktur]

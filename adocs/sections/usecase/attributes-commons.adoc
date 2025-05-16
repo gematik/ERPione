@@ -1,0 +1,8 @@
+include::../attributes-sections.adoc[]
+
+:service-url: https://erpps-test.dev.gematik.solutions/ru
+
+:WORKDIR: ~
+:EXAMPLES_PATH: {WORKDIR}/examples
+:SCENARIO_JSON: {EXAMPLES_PATH}/gkv_scenario.json
+:FETCH_OUT_DIR: {WORKDIR}/
