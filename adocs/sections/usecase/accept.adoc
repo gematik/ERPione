@@ -1,0 +1,40 @@
+include::attributes-commons.adoc[]
+
+== Accept prescriptions
+E-prescriptions issued via {app-name} can be accepted as a pharmacy with the following command:
+
+[tabs,style=overlap,options="single"]
+====
+erpione::
++
+[source,shell,subs="attributes"]
+----
+{app-name-cli} accept --taskid [TID]
+----
+
+curl::
++
+[source,shell,subs="attributes"]
+----
+{curl-name-cli} -X POST \
+  -H "apikey: $ERPIONE_API_KEY" \
+  {service-url}/pharm/[PHARMACY_ID]/accept?taskId=[TID]&ac=[AC] | jq
+----
+====
+
+The `--accesscode` parameter is optional in this case because {app-name} already knows it.
+The situation is different for e-prescriptions that were not issued via {app-name} or for older e-prescriptions that are no longer in the internal memory of {app-name}. In this case, the AccessCode must be specified explicitly, similar to the curl approach:
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} accept -t [TID] --accesscode [AC]
+----
+
+[IMPORTANT]
+====
+Accepted e-prescriptions are set to `in process` status in the FD and are _"reserved"_ for that pharmacy. More precisely, _"reserved"_ for all pharmacies that know the generated **Secret**.
+
+[red]#Forgotten secrets can be a problem because such e-prescriptions cannot be processed further and are automatically removed from the FD after 90 days.#
+
+To prevent this, the e-prescriptions should be further processed (e.g., dispensed or deleted) after acceptance if possible
+====

@@ -1,0 +1,25 @@
+include::attributes-commons.adoc[]
+
+== Abort prescriptions
+
+[tabs,style=overlap,options="single"]
+====
+erpione::
++
+[source,shell,subs="attributes"]
+----
+{app-name-cli} abort -t [TID]
+----
+
+curl::
++
+[source,shell,subs="attributes"]
+----
+{curl-name-cli} -X DELETE \
+  -H "apikey: $ERPIONE_API_KEY" \
+  {service-url}/pharm/[PHARMACY_ID]/abort?taskId=[TID]&ac=[AC]?secret=[SECRET] | jq
+----
+====
+
+[NOTE]
+The AccessCode `[AC]` and Secret `[SECRET]` are only required for _externally_ generated e-prescriptions, as with `accept`.

@@ -1,0 +1,14 @@
+include::attributes-commons.adoc[]
+
+== Use cases
+The {app-name} CLI is a command line interface that allows you to interact with the {app-name} application from the terminal. It provides a set of commands for managing and configuring the application, as well as for performing various tasks.
+
+include::help.adoc[leveloffset=+1]
+include::prescribe.adoc[leveloffset=+1]
+include::accept.adoc[leveloffset=+1]
+include::dispense.adoc[leveloffset=+1]
+include::close.adoc[leveloffset=+1]
+include::abort.adoc[leveloffset=+1]
+include::chargeitem_create.adoc[leveloffset=+1]
+include::chargeitem_change.adoc[leveloffset=+1]
+include::info.adoc[leveloffset=+1]

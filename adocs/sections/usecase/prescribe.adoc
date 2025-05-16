@@ -1,0 +1,41 @@
+include::attributes-commons.adoc[]
+
+== Issue prescriptions
+The following command can be used to issue e-prescriptions directly from a KBV bundle template:
+
+[tabs,style=overlap,options="single"]
+====
+erpione::
++
+[source,shell,subs="attributes"]
+----
+{app-name-cli} prescribe {EXAMPLES_PATH}/gkv_bundle_01.xml
+----
+
+curl::
++
+[source,shell,subs="attributes"]
+----
+{curl-name-cli} -H "apikey: $ERPIONE_API_KEY" \
+  -H "Content-Type: application/xml" \
+  {service-url}/doc/6a7f66bc2bb0f4cd76deaa260abbb484/xml/prescribe \
+  -d "@{EXAMPLES_PATH}/gkv_bundle_01.xml" | jq
+----
+====
+
+In some cases, it is necessary to issue many prescriptions at once. This would be very tedious to do with curl, or would have to be done with a script. The {app-name} provides a built-in mechanism for this:
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} prescribe {EXAMPLES_PATH}/
+----
+
+You just have to specify the directory instead of a specific file. The {app-name} will iterate through the given directory and create a prescription for each template it finds.
+
+=== Data Matrix Codes
+If a Data Matrix Code (DMC) is required for the e-prescription output, the `--dmc` switch can be used. This means that the DMC is also downloaded for each e-prescription and stored as a PNG image file in the output directory with the naming scheme `dmc_<PRESCRIPTION_ID>.png`.
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} prescribe --dmc {EXAMPLES_PATH}/gkv_bundle_01.xml
+----

@@ -1,0 +1,15 @@
+include::../attributes-sections.adoc[]
+
+== Architecture
+The architecture of {app-name} follows a modular client-server approach, separating responsibilities between backend, frontend, and proxy components to ensure scalability, maintainability, and clear abstraction of technical details.
+
+image::erpione_setup.png[width=100%, align="center"]
+
+=== Backend
+The backend handles all tasks such as communicating with the TI, processing link:https://www.hl7.org/fhir/[FHIR] or creating cryptographic signatures.
+
+=== Frontend
+The frontend itself is relatively lean (link:https://de.wikipedia.org/wiki/Thin_Client[Thin Client]). It therefore contains little to no domain knowledge, e.g. about FHIR or the e-prescription itself, but merely serves as an intermediary between the user and the backend service.
+
+=== Proxy
+The proxy is almost transparent to the user, but performs two essential tasks: routing to the appropriate environments and access control to the actual service via link:https://en.wikipedia.org/wiki/API_key[API keys].

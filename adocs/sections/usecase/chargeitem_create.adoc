@@ -1,0 +1,38 @@
+include::attributes-commons.adoc[]
+
+== Create charge items
+Das Erstellen bzw. das Ändern der PKV-Abrechnungsinformationen wird über das Sub-Kommando `chargeitem` abgewickelt.
+Der Inhalt der PKV-Abrechnungsinformationen wird dabei in einem JSON-File definiert und an das Sub-Kommando übergeben. Sowohl für `create` als auch `change` ist die Struktur des JSON-Files identisch und entspricht der Struktur die bereits im Szenario-Player verwendet wird:
+
+The `chargeitem` subcommand is used to create or modify the charge item information.
+The content of the charge item information is defined in a JSON file and passed to the subcommand. The structure of the JSON file is identical for both create and modify, and is the same as the structure already used in the Scenario Player:
+
+[source,json]
+----
+{
+  "currency": "EUR",
+  "vatRate": 12.9,
+  "priceComponents": [
+    {
+      "category": "ZUZAHLUNG",
+      "type": "informational",
+      "insurantCost": 12.3,
+      "totalCost": 75.5,
+      "pzn": "12345678"
+    },
+    {
+      "category": "ZUZAHLUNG",
+      "type": "informational"
+    }
+  ]
+}
+----
+
+To create a ChargeItem, use the following command:
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} chargeitem create --taskid [TASK_ID] [path/to/payload.json]
+
+{app-name-cli} chargeitem create -t 200.000.002.175.581.70 ./resources/my_examples/chargeitem_payload.json
+----

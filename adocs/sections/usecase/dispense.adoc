@@ -1,0 +1,54 @@
+include::attributes-commons.adoc[]
+
+== Dispense prescriptions
+To dispense an e-prescription, the `accept` command must first be executed so that the FD can set the e-prescription to the ìn-progress` status and generate a secret.
+The e-prescription can then be dispensed using the following command:
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} dispense -t [TID]
+----
+
+[NOTE]
+As with `accept`, the secret is only required for _externally_ created or accepted e-prescriptions.
+
+It is also possible to specify one or more substitute medicines at the time of dispensing. The `--body-file` option can be used to submit a JSON file containing the replacement drug.
+
+[source,shell,subs="attributes"]
+----
+{app-name-cli} dispense -t [TID] --body-file {EXAMPLES_PATH}/dispense_body.json
+----
+
+The content of `dispense_body.json` could be something like the following, if more than one replacement drug is dispensed for this prescription
+
+[source,json]
+----
+[
+  {
+    "type": "PZN",
+    "category": "00",
+    "standardSize": "NB",
+    "supplyForm": "AMP",
+    "amount": 1,
+    "pzn": "09385450",
+    "name": "Vitadol Gold Beutel 1000 mg",
+    "batch": {
+      "lotNumber": "123123",
+      "expiryDate": "26/02/2024"
+    }
+  },
+  {
+    "type": "PZN",
+    "category": "00",
+    "standardSize": "NB",
+    "supplyForm": "AMP",
+    "amount": 1,
+    "pzn": "17975846",
+    "name": "Cbd 10 Cannbio Gold Edition 10 ml",
+    "batch": {
+      "lotNumber": "123123",
+      "expiryDate": "26/02/2024"
+    }
+  }
+]
+----
