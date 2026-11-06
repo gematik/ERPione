@@ -9,9 +9,9 @@
 :sectanchors:
 :linkattrs:
 :source-highlighter: coderay
-
+:sectnums:
 :imagesdir: ./images
-:pumldir: plantuml
+:pumldir: ./puml
 :codedir: code
 
 :toc: auto
@@ -25,8 +25,8 @@
 include::attributes-commons.adoc[]
 include::attributes-urls.adoc[]
 
-:title: {app-name}
-:description: {app-name} TODO
+:title: {app-name} Documentation
+:description: The {app-name} is a modern open source e-Health client system simulator
 
 :copyright: {docyear} by {orgname}, Berlin
 

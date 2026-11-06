@@ -1,0 +1,195 @@
+include::attributes-sections.adoc[]
+
+[[section-crosscutting-concepts]]
+== Cross-cutting Concepts
+
+This section describes the concepts that span several building blocks of Erpione and recur in every runtime scenario. They are introduced once here so that the <<section-building-block-view,Building Block View>> and the <<section-runtime-view,Runtime View>> can refer to them instead of repeating the details: how clients exchange data with Erpione without having to deal with FHIR (Hermes), how actions are performed on behalf of a test actor (actor model), how results are kept locally (persistence), how failures are reported (error handling) and which connectivity Erpione needs towards the Telematikinfrastruktur.
+
+
+[[section-concept-hermes]]
+=== Hermes – FHIR Abstraction
+
+Hermes is Erpione's FHIR abstraction: a domain-level data model together with the translation layer that maps it to and from FHIR. The name refers to the Greek messenger god who mediates between two worlds – here between the business view of a prescription and the FHIR representation required by the E-Rezept Fachdienst. Hermes consists of two parts:
+
+* The **Hermes Data Model** is the simplified representation of the E-Rezept domain data exposed by Erpione's REST API as JSON. It describes prescriptions, dispenses, receipts and related business objects without any FHIR-specific semantics.
+* The **HermesService** is the translator that maps the Hermes Data Model to the FHIR resources expected by the E-Rezept Fachdienst, and FHIR responses back into the Hermes Data Model.
+
+==== Hermes Data Model
+
+The Hermes Data Model is implemented as plain Kotlin/Java classes which are shared across the REST API and serialised as JSON. The classes are designed to be simple and intuitive: they carry the business data a tester cares about – patient, prescriber, medication, dispense information – and leave out the structural and terminological ceremony of FHIR (bundles, references, profiles, codings). At the same time they support all data necessary for realistic testing scenarios, so that nothing relevant for the E-Rezept Fachdienst is lost in translation.
+
+The main advantage of this decoupling is stability. The FHIR profiles of the E-Rezept are more likely to change over time than the business view of a prescription. A profile upgrade is therefore handled entirely inside the HermesService; the Hermes Data Model can stay stable even when the underlying FHIR profile version changes, and in many cases it does not need to change at all. The Hermes Data Model is the primary and stable contract of Erpione's REST API.
+
+[[section-concept-hermes-translation]]
+==== Translation
+
+Clients talk to Erpione in the Hermes Data Model, not in FHIR. Before an operation is executed, the HermesService translates the incoming payload into the FHIR resource the Fachdienst expects (for example a KBV prescription bundle or the parameters of a dispense). After the operation, the FHIR response of the Fachdienst is translated back into the Hermes Data Model before it is returned to the client. In both directions the FHIR resources that reach the Fachdienst are built by Erpione; the client never communicates with the Fachdienst directly.
+
+FHIR stays optional rather than hidden. For selected endpoints (`/pharmaceutical`, `/evdga`, `/dispense`, `/close`) a client may alternatively send a raw FHIR resource with `Content-Type: application/fhir+xml`. Such a resource is taken as a template and used as-is, so that vendors can test their own FHIR resources against the Fachdienst without re-modelling them in the Hermes Data Model. Raw FHIR output is available where it is relevant for testing, e.g. the signed receipt bundle via `GET /api/erp/receipts/{pid}`.
+
+==== Faker Capability
+
+A second advantage of Hermes is its faker capability. When a data field is not relevant for a scenario, it can simply be omitted. Hermes fills the gap with a syntactically fitting, profile-conformant value, so that the resulting FHIR resource is still valid for the active profiles. Fields that are provided by the client are never overwritten. As a consequence an empty request body yields a complete, valid resource – for example a complete random prescription – which makes it possible to generate synthetic FHIR data sets that are accepted and processed by the E-Rezept Fachdienst.
+
+TIP: The REST API provides dedicated `/faker` endpoints which you can use to play around with Hermes and inspect the generated data.
+
+
+[[section-concept-actors]]
+=== Actor Model
+
+Erpione's architecture is heavily inspired by the https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals[Screenplay Pattern]: every business operation is performed _by_ an actor. An `ErpioneActor` encapsulates the state and behaviour of a test actor – its identity (HBA or SMC-B), its role and everything needed to talk to the Telematikinfrastruktur. The `ErpioneActorService` manages the stage of actors and gives controllers a simple way to select and work with actors during a workflow. This keeps actor handling separate from request processing and domain logic.
+
+==== Actor Roles
+
+These are the main actor roles in the context of Erpione:
+
+- **Arzt**: Represents a physician who uses the PVS of its LEI.
+- **Apotheker**: Represents a pharmacist who uses the AVS of its LEI.
+- **Kostenträger**: Represents a health insurance that approves DiGA prescriptions.
+- **EU-Apotheker**: Represents a pharmacist from an EU country who can receive and dispense prescriptions via the NCPeH.
+
+[plantuml, "{pumldir}/business-context", svg]
+.Business Context View
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/business-context.puml[]
+----
+
+The use cases of `Arzt` are:
+
+[plantuml, "{pumldir}/business-context-pvs", svg]
+.Business Context PVS
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/business-context-pvs.puml[]
+----
+
+The use cases of `Apotheker` are:
+
+[plantuml, "{pumldir}/business-context-avs", svg]
+.Business Context AVS
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/business-context-avs.puml[]
+----
+
+The use cases of `Kostenträger` are:
+
+[plantuml, "{pumldir}/business-context-ktr", svg]
+.Business Context KTR
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/business-context-ktr.puml[]
+----
+
+The use cases of `EU Apotheker` are:
+
+[plantuml, "{pumldir}/business-context-ncpeh", svg]
+.Business Context NCPeH
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/business-context-ncpeh.puml[]
+----
+
+[[section-concept-actor-resolution]]
+==== Actor Resolution
+
+Every request to the REST API names the actor who shall perform the action via the `x-actor` header. The controller looks this actor up on the actor stage and checks that the actor's role is suitable for the requested operation: creating a prescription requires a healthcare professional with an HBA (a physician), whereas pharmacy operations only require an institution with an SMC-B. An unknown or unsuitable actor is rejected before anything is sent to the Fachdienst (see <<section-concept-error-handling,Error Handling>>).
+
+[[section-concept-actor-execution]]
+==== Execution as an Actor
+
+The business operation itself is modelled as a use case that is performed _by_ the resolved actor. Executing a use case as an actor means that the actor signs documents with its HBA or SMC-B through a software Konnektor, authenticates against the IdP and sends one or more FHIR operations to the E-Rezept Fachdienst on its own behalf. Controllers only decide _which_ use case to run for _whom_; the actor encapsulates everything needed to actually talk to the Telematikinfrastruktur.
+
+
+[[section-concept-persistence]]
+=== Local Persistence
+
+The result of each operation is stored locally per prescription ID: the current task state together with access code, secret, prescription data and signature information after a prescribe or claim, and the receipt after a close. These stored copies feed the lookup endpoints (`GET /api/erp/{pid}`, `GET /api/erp/prescriptions/{kvnr}`, `GET /api/erp/receipts`) and the Web UI. They are a convenience cache only — the authoritative state of a prescription always lives in the Fachdienst — and expired prescriptions are purged periodically.
+
+
+[[section-concept-error-handling]]
+=== Error Handling
+
+When an error occurs, Erpione represents it with `ErrorData`. The error payload contains an `ErrorType` that indicates whether the error originates in Erpione itself or in the Fachdienst. A human-readable message explains the problem, and optional issues can be included to narrow down the root cause.
+
+So for example, if a prescription creation fails due to an invalid role of the actor, the `ErrorType` would indicate that the error is produced by the Fachdienst, and the issues would explain the root cause. In the following case for example we tried to create a prescription with an actor that has the wrong ProfessionOID, which is rejected by the Fachdienst:
+
+[source,json]
+----
+{
+    "message": "Actor Telesphorus expected a response of type 'ErxTask' but received 'OperationOutcome' instead",
+    "type": "FACHDIENST",
+    "issues": [
+        {
+            "severity": "Error",
+            "details": "The QES-Certificate does not have expected ProfessionOID."
+        }
+    ]
+}
+----
+
+Or if try to claim a prescription which is unknown to the Fachdienst, the Fachdienst would reject the request with an `OperationOutcome` and Erpione would return the following error payload to the client system:
+
+[source,json]
+----
+{
+  "message": "Actor Hygieia expected a response of type 'ErxAcceptBundle' but received 'OperationOutcome' instead",
+  "type": "FACHDIENST",
+  "issues": [
+    {
+      "severity": "Error",
+      "details": "Task not found for prescription id"
+    }
+  ]
+}
+----
+
+While on the other hand, if Erpione itself fails to process a request or runs into an internal error, the `ErrorType` would indicate that the error is produced by Erpione, and the issues would explain the root cause. In the following case for example when we try to call a REST endpoint that is not implemented, Erpione would return the following error payload to the client system:
+
+[source,json]
+----
+{
+  "message": "No static resource api/erp/claim/160.000.114.452.028.14.",
+  "type": "ERPIONE",
+  "issues": [
+    {
+      "severity": "ERROR",
+      "details": "No controller found for: POST api/erp/claim/160.000.114.452.028.14"
+    }
+  ]
+}
+----
+
+Or if we try to perform an action with an actor that is not present in the <<section-concept-actors,stage of actors>> or not allowed for this operation, Erpione would return the following error payload to the client system:
+
+[source,json]
+----
+{
+  "message": "No such actor with id 'Erpione'",
+  "type": "ERPIONE",
+  "issues": [
+    {
+      "severity": "ERROR",
+      "details": "ActorNotFoundError: No such actor with id 'Erpione'"
+    }
+  ]
+}
+----
+
+The following diagram illustrates the two error categories. In the first case the Fachdienst rejects the request with an `OperationOutcome`; the actor raises an `ErpResponseExpectationError`, which the central `ErpioneErrorHandler` (`@ControllerAdvice`) translates into `ErrorData` of type `FACHDIENST`, preserving the Fachdienst status code and issues. In the second case Erpione itself fails before contacting the Fachdienst (here: unknown actor), and the error handler returns `ErrorData` of type `ERPIONE`.
+
+[plantuml, "{pumldir}/runtime-error-handling", svg]
+.Error handling: Fachdienst rejection vs. Erpione internal error
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/runtime-error-handling.puml[]
+----
+
+
+[[section-concept-ti-connectivity]]
+=== TI Connectivity
+
+Erpione is designed to communicate with the E-Rezept Fachdienst and therefore needs TI connectivity. The `api-erp` documentation provides one detailed way to set this up in https://github.com/gematik/api-erp/blob/master/docs/ti_configuration.adoc[TI-Konfiguration], but other connectivity solutions may also be possible depending on the deployment environment.
+
+Independent of the chosen route, the Fachdienst identifies the calling system via the `User-Agent` header. Patient actors (simulating the FdV) additionally communicate via the Internet route and require an `X-api-key`. These credentials are not shipped with Erpione; operators have to provide their own values as described in <<section-fachdienst-credentials>>.

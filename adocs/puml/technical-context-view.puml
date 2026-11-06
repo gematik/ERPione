@@ -1,0 +1,70 @@
+@startuml
+
+interface "Resource" as ERP_API
+interface "Auth" as IDP_API
+interface "Auth" as SEC_IDP_API
+interface "REST API" as ERPIONE_API
+interface "UI" as ERPIONE_UI
+interface "PS" as PS_API
+interface "FdV" as FDV_API
+
+skinparam cloud {
+    BackgroundColor #f9f9f9
+    BorderColor #ffba6670
+    ComponentStyle rectangle
+}
+
+skinparam component {
+    BackgroundColor<<Simulator>> #ee83602f
+    BorderColor<<Simulator>> #ee8360
+}
+
+skinparam component {
+    BackgroundColor<<Client>> #00766e2f
+    BorderColor<<Client>> #00766e
+}
+
+node "PS Environment" {
+    [primaer-system]<<Client>> as "PS"
+    [primaer-system] -up- [PS_API]
+    cloud {
+        (vendor-szzp)<<SZZP>> as "Konnektor"
+        [primaer-system] --> [vendor-szzp]
+        [vendor-szzp] ..> [ERP_API]
+        [vendor-szzp] ..> [IDP_API]
+    }
+}
+
+node "LTU" {
+    [erpione-service]<<Simulator>> as "Erpione"
+    [erpione-service] <-up- [ERPIONE_API]
+    [ERPIONE_API] <-right- [ERPIONE_UI]
+    cloud {
+        (gem-szzp) as "Proxy"<<SZZP>>
+        [erpione-service] --> [gem-szzp]
+        [gem-szzp] ..> [ERP_API]
+        [gem-szzp] ..> [IDP_API]
+    }
+}
+
+node "FdV Environment" {
+    [fdv-system]<<Client>> as "FdV"
+    [fdv-system] -up- [FDV_API]
+    cloud {
+        (isp) as "Internet"
+        [isp] ..> [ERP_API]
+        [isp] ..> [IDP_API]
+        [isp] ..> [SEC_IDP_API]
+    }
+    [fdv-system] -down-> [isp]
+}
+
+node "TI" {
+  SEC_IDP_API -- [sek. IdP]
+  IDP_API -- [IdP]
+  ERP_API -- [E-Rezept Fachdienst]
+  [E-Rezept Fachdienst] -down-> [ePA Aktensysteme]
+  [E-Rezept Fachdienst] -down-> [Verzeichnisdienst]
+  [E-Rezept Fachdienst] -down-> [T-Register]
+}
+@enduml

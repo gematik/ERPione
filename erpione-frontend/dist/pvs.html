@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione PVS</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+
+    <!-- highlightjs for highlighting xml/json data  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-light.min.css" integrity="sha512-o5v54Kh5PH0dgnf9ei0L+vMRsbm5fvIvnR/XkrZZjN4mqdaeH7PW66tumBoQVIaKNVrLCZiBEfHzRY4JJSMK/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/es/core.min.js" integrity="sha512-GuVoeU19Vs7el8GKo3lq2ogzwCIRBuQDnSL0rtHD4KVq3EymKgG4Uj/SEbbggJ+o+ocAcwdbn8hPSgdVPKdPlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js" integrity="sha512-f2/ljYb/tG4fTHu6672tyNdoyhTIpt4N1bGrBE8ZjwIgrjDCd+rljLpWCZ2Vym9PBWQy2Tl9O22Pp2rMOMvH4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/xml.min.js" integrity="sha512-G6iETlA7Rg1Z7KZFmG68IxKR81lXlDYESQ3wxy/aeKHaowjIHBGG03C79OveDgTsBN6h/2GNtQFNi8QDOAgmHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>hljs.highlightAll();</script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="actors.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="buttons.js"></script>
+    <script src="utility.js"></script>
+    <script src="pvs_frontend.js"></script>
+    <script src="pvs.js"></script>
+    <script src="tutorial.js"></script>
+
+</head>
+<body>
+
+<form>
+    <div class="container text-start">
+        <fieldset class="row border border-dark-subtle rounded">
+            <div class="d-flex justify-content-between align-items-center mb-2" id="operation-mode">
+                <h3 id="pvs-header">PVS</h3>
+                <div class="form-check form-switch">
+                    <input id="hermes-mode" name="state-d" type="radio" onclick="updateFhirMode('hermes')" class="form-check-input" checked="checked" />
+                    <label for="hermes-mode">Hermes</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input id="faker-mode" name="state-d" type="radio" onclick="updateFhirMode('faker')" class="form-check-input" />
+                    <label for="faker-mode">Faker</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input id="fhir-mode" name="state-d" type="radio" onclick="updateFhirMode('fhir')" class="form-check-input" />
+                    <label for="fhir-mode">FHIR</label>
+                </div>
+            </div>
+            <div class="input-group mb-3">
+                <label for="selected-actor" class="input-group-text">
+                    <img src="img/machaon.png" id="actor-thumbnail" class="img-thumbnail m-0" style="max-width: 2em" alt="Machaon">
+                </label>
+                <div class="form-floating" style="flex-grow: 1;">
+                    <select class="form-select" id="selected-actor" onchange="updateActorThumbnail()">
+                        <option selected value="Machaon">Machaon</option>
+                        <option value="Podaleirios">Podaleirios</option>
+                        <option value="Telesphorus">Telesphorus</option>
+                    </select>
+                    <label for="selected-actor">Identität</label>
+                </div>
+                <div class="form-floating" style="flex-grow: 1;">
+                    <select class="form-select" id="anr-select">
+                        <option selected value="LANR">LANR</option>
+                        <option value="ZANR">ZANR</option>
+                    </select>
+                    <label for="anr-select">Arzt-Nummer</label>
+                </div>
+                <div class="form-floating" style="flex-grow: 3;">
+                    <input type="text" id="anr" name="anr" class="form-control" placeholder="M310119802">
+                    <label for="anr">ANR</label>
+                </div>
+                <div class="form-floating" style="flex-grow: 3;">
+                    <input type="text" id="bsnr" name="bsnr" class="form-control" placeholder="105508890">
+                    <label for="bsnr">BSNR</label>
+                </div>
+                <button class="btn btn-outline-primary" type="button" id="nr-randomizer" name="nr-randomizer" onclick="randomAnrBsnrNumbers()">🎲</button>
+            </div>
+            <div class="input-group mb-3">
+                <label for="asvnr" class="input-group-text">🪪️️</label>
+                <div class="form-floating">
+                    <input type="text" id="asvnr" name="asvnr" class="form-control" placeholder="">
+                    <label for="asvnr">ASV-Nummer</label>
+                </div>
+                <button class="btn btn-outline-primary" type="button" id="asvnr-randomizer" name="asvnr-randomizer" onclick="randomAsvNumber()">🎲</button>
+            </div>
+            <div class="input-group mb-3">
+                <div class="form-floating">
+                    <select class="form-select" id="selected-ptype" onchange="updatePrescriptionType()">
+                        <option selected value="pharmaceutical">Arzneimittel</option>
+                        <option value="diga">DiGA</option>
+                    </select>
+                    <label for="selected-ptype">Produktart</label>
+                </div>
+            </div>
+
+            <fieldset id="hermes-toggles" class="mb-3 toggle-group" role="group" aria-label="toggle button group">
+                <input class="form-check-input" type="checkbox" value="" id="direct-assignment">
+                <label class="form-check-label" for="direct-assignment">
+                    Direktzuweisung
+                </label>
+
+                <input class="form-check-input" type="checkbox" value="" id="t-rezept">
+                <label class="form-check-label" for="t-rezept">
+                    T-Rezept
+                </label>
+            </fieldset>
+        </fieldset>
+
+        <div id="fhir-input-mask" style="display: none;">
+            <fieldset class="row border border-dark-subtle rounded">
+                <legend>Verordnungsdatensatz</legend>
+                <small class="text-muted mt-0 mb-3"><span id="kbv-bundle-profile-name">KBV_PR_ERP_Bundle</span> (application/fhir+xml)</small>
+                <div class="d-flex flex-row gap-3 flex-wrap mb-2">
+                    <a href="https://github.com/gematik/eRezept-Examples/tree/2025-10-01/Standalone-Examples/kbv.ita.erp" target="_blank" class="badge rounded-pill bg-primary-subtle text-decoration-none d-flex align-items-center" style="font-size:0.8em;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-github" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+                        </svg>
+                        <small class="text-muted ms-2">ERP-Examples</small>
+                    </a>
+                    <a href="https://github.com/gematik/eRezept-Examples/tree/2025-10-01/Standalone-Examples/kbv.itv.evdga" target="_blank" class="badge rounded-pill bg-primary-subtle text-decoration-none d-flex align-items-center" style="font-size:0.8em;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-github" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+                        </svg>
+                        <small class="text-muted ms-2">EVDGA-Examples</small>
+                    </a>
+                    <a href="https://github.com/gematik/eRezept-Examples/tree/2025-10-01/End-to-End-Examples" target="_blank" class="badge rounded-pill bg-primary-subtle text-decoration-none d-flex align-items-center" style="font-size:0.8em;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-github" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+                        </svg>
+                        <small class="text-muted ms-2">End-to-End-Examples</small>
+                    </a>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="url" id="example-url" class="form-control form-control-sm" placeholder="Beispiel-URL" value="https://github.com/gematik/eRezept-Examples/blob/2025-10-01/Standalone-Examples/kbv.ita.erp/Beispiel_1_PZN.xml">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fetchAndPasteExample()"><label for="example-url">Laden</label></button>
+                </div>
+                <pre><code id="fhir-input" class="border border-primary rounded editable-code hljs language-xml" contenteditable="true"></code></pre>
+                <div class="input-group mb-3">
+                    <label for="kvnr" class="input-group-text">👤️</label>
+                    <div class="form-floating">
+                        <input type="text" id="custom-kvnr" name="kvnr" class="form-control" placeholder="M310119802">
+                        <label for="custom-kvnr">KVNR (optional)</label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div id="input-mask">
+            <div class="row border border-dark-subtle rounded">
+                <fieldset>
+                    <legend>Patient & Krankenkasse</legend>
+                    <div class="input-group mb-3">
+                        <label for="selected-itype" class="input-group-text">🪪️️</label>
+                        <div class="form-floating">
+                            <select class="form-select" id="selected-itype">
+                                <option selected value="GKV">GKV</option>
+                                <option value="PKV">PKV</option>
+                                <option value="SKT">SKT</option>
+                                <option value="UK">UK</option>
+                                <option value="BG">BG</option>
+                            </select>
+                            <label for="selected-itype">Versicherungsart</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" id="selected-istate">
+                                <option selected value="1">Mitglieder</option>
+                                <option value="3">Familienangehoerige</option>
+                                <option value="5">Rentner</option>
+                            </select>
+                            <label for="selected-istate">Status</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" id="selected-pgroup">
+                                <option selected value="00">Nicht gesetzt</option>
+                                <option value="04">SOZ</option>
+                                <option value="06">BVG</option>
+                                <option value="07">SVA1</option>
+                                <option value="08">SVA2</option>
+                                <option value="09">ASY</option>
+                            </select>
+                            <label for="selected-pgroup">Personengruppe</label>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label for="kvnr" class="input-group-text">🪪️️</label>
+                        <div class="form-floating" style="flex-grow: 1;">
+                            <input type="text" id="kvnr" name="kvnr" class="form-control" placeholder="M310119802">
+                            <label for="kvnr">KVNR</label>
+                        </div>
+                        <div class="form-floating" style="flex-grow: 2;">
+                            <input type="text" id="iknr" name="iknr" class="form-control" placeholder="105508890">
+                            <label for="iknr">IKNR</label>
+                        </div>
+                        <div class="form-floating" style="flex-grow: 2;">
+                            <input type="text" id="insuranceName" class="form-control" placeholder="Krankenkasse für den Gartenbau">
+                            <label for="insuranceName">Kostenträger</label>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label for="name-prefix" class="input-group-text">👤️</label>
+                        <div class="form-floating" style="flex-grow: 1;">
+                            <select class="form-select" id="name-prefix">
+                                <option selected value="">Kein Titel</option>
+                                <option value="Dr.">Dr.</option>
+                                <option value="Dr. med.">Dr. med.</option>
+                                <option value="Dr. med. dent.">Dr. med. dent.</option>
+                                <option value="Dr. rer. nat.">Dr. rer. nat.</option>
+                                <option value="Dr. Dr.">Dr. Dr.</option>
+                                <option value="Prof.">Prof.</option>
+                                <option value="Prof. Dr.">Prof. Dr.</option>
+                                <option value="Prof. Dr. med.">Prof. Dr. med.</option>
+                                <option value="Prof. Dr. Dr.">Prof. Dr. Dr.</option>
+                                <option value="PD Dr.">PD Dr.</option>
+                                <option value="PD Dr. med.">PD Dr. med.</option>
+                                <option value="Dipl.-Med.">Dipl.-Med.</option>
+                            </select>
+                            <label for="name-prefix">Titel</label>
+                        </div>
+                        <div class="form-floating" style="flex-grow: 2.5;">
+                            <input type="text" id="first-name" class="form-control" placeholder="Ludger">
+                            <label for="first-name">Vorname</label>
+                        </div>
+                        <div class="form-floating" style="flex-grow: 2.5;">
+                            <input type="text" id="last-name" class="form-control" placeholder="Königsstein">
+                            <label for="last-name">Nachname</label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="row border border-dark-subtle rounded" id="medication-request-container">
+                <fieldset>
+                    <legend>Verordnung</legend>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <fieldset id="aut-idem-noctu-toggles" class="mb-3 toggle-group" role="group" aria-label="toggle button group">
+                                <input class="form-check-input" type="checkbox" value="" id="substitution-allowed" checked>
+                                <label class="form-check-label" for="substitution-allowed">
+                                    AutIdem möglich
+                                </label>
+
+                                <input class="form-check-input" type="checkbox" value="" id="emergency-fee">
+                                <label class="form-check-label" for="emergency-fee">
+                                    Notdienstgebühr entfällt
+                                </label>
+
+                                <input class="form-check-input" type="checkbox" value="" id="multiple-prescription" onclick="toggleMvoFields()">
+                                <label class="form-check-label" for="multiple-prescription">
+                                    Mehrfachverordnung
+                                </label>
+                            </fieldset>
+                        </div>
+                        <div class="d-flex gap-3 align-items-left mb-3">
+                            <div class="input-group mb-3 flex-fill">
+                                <label for="selected-accident-type" class="input-group-text">🚑</label>
+                                <div class="form-floating">
+                                    <select class="form-select" id="selected-accident-type" onchange="toggleAccidentInputs()">
+                                        <option selected value="0">Kein Unfall</option>
+                                        <option value="1">Unfall</option>
+                                        <option value="2">Betriebsunfall</option>
+                                        <option value="4">Berufskrankheit</option>
+                                    </select>
+                                    <label for="selected-accident-type">Unfallart</label>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3 flex-fill d-none" id="accident-workplace-group">
+                                <label for="accident-workplace" class="input-group-text">🏬</label>
+                                <div class="form-floating">
+                                    <input type="text"
+                                           id="accident-workplace"
+                                           class="form-control"
+                                           placeholder="">
+
+                                    <label for="accident-workplace">
+                                        Unfallort
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3 flex-fill d-none" id="accident-date-group">
+                                <label for="accident-date" class="input-group-text">📅</label>
+                                <div class="form-floating">
+                                    <input type="date"
+                                           id="accident-date"
+                                           class="form-control"
+                                           placeholder="">
+
+                                    <label for="accident-date">
+                                        Unfalltag
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label for="emp-identifier" class="input-group-text" id="basic-addon-emp-identifier">🆔</label>
+                            <div class="form-floating">
+                                <input type="text" id="emp-identifier" class="form-control">
+                                <label for="emp-identifier">EMP Identifier</label>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <label for="freetext" class="input-group-text" id="basic-addon-med-freetext">🗒️</label>
+                            <div class="form-floating">
+                                <input type="text" id="freetext" class="form-control">
+                                <label for="freetext">Notiz</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="row border border-dark-subtle rounded collapsible-section is-collapsed" id="multiple-prescription-container" aria-hidden="true">
+                <fieldset>
+                    <legend>Mehrfachverordnung</legend>
+                    <div class="input-group mb-3">
+                        <label for="mvo-start-date" class="input-group-text">📅️</label>
+                        <div class="form-floating">
+                            <input type="date"
+                                   id="mvo-start-date"
+                                   class="form-control"
+                                   placeholder="">
+                            <label for="mvo-start-date">Startdatum</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text"
+                                   id="mvo-period"
+                                   class="form-control"
+                                   value="30">
+                            <label for="mvo-period">Abstand in Tagen</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" id="mvo-amount">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option selected value="4">4</option>
+                            </select>
+                            <label for="mvo-amount">Anzahl der Verordnungen</label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="row border border-dark-subtle rounded" id="medication-container">
+                <fieldset>
+                    <legend>Medikation</legend>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <label for="selected-med-type" class="input-group-text">⚕️</label>
+                            <div class="form-floating">
+                                <select class="form-select" id="selected-med-type">
+                                    <option value="PZN">PZN</option>
+                                    <option value="Wirkstoff">Wirkstoff</option>
+                                    <option value="Freitext">Freitext</option>
+                                    <option value="Rezeptur">Rezeptur</option>
+                                </select>
+                                <label for="selected-med-type">Verordnungsart</label>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3" id="med-pzn-name-group">
+                            <label for="pzn" class="input-group-text" id="basic-addon-med-data">💊</label>
+                            <div class="form-floating">
+                                <input type="text" id="pzn" name="pzn" class="form-control" placeholder="08585997">
+                                <label for="pzn">PZN</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="text" id="medication" class="form-control"
+                                       placeholder="Prospan® Hustensaft 100ml N1">
+                                <label for="medication">Medikamentenname</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row text-end align-items-end">
+            <button class="col btn btn-outline-success mt-3" id="send-request" type="button" onclick="submitPrescribeForm()">E-Rezept ausstellen</button>
+        </div>
+    </div>
+</form>
+
+<hr class="mt-3 mb-3">
+<div id="response-container"></div>
+
+<script>
+    const fhirInput = document.getElementById('fhir-input');
+
+    fhirInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            document.execCommand('insertText', false, '  ');
+        }
+    });
+
+    fhirInput.addEventListener('paste', function(e) {
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        e.preventDefault();
+
+        // document.execCommand('insertText', false, pastedText);
+        e.target.textContent = pastedText
+
+        // Highlight the code
+        // this.querySelector('code').classList.add('hljs');
+        e.target.removeAttribute("data-highlighted")
+        if (window.hljs) hljs.highlightElement(e.target);
+    });
+
+
+    // Highlight drop area on dragover
+    fhirInput.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fhirInput.classList.add('border-secondary');
+        fhirInput.classList.remove('border-primary');
+    });
+
+    // Remove highlight on dragleave
+    fhirInput.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fhirInput.classList.add('border-primary');
+        fhirInput.classList.remove('border-secondary');
+    });
+
+    // Handle file drop
+    fhirInput.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fhirInput.classList.remove('border-secondary');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            fhirInput.classList.add('border-success');
+            const file = e.dataTransfer.files[0];
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                e.target.textContent = evt.target.result;
+                e.target.removeAttribute("data-highlighted")
+                if (window.hljs) hljs.highlightElement(fhirInput);
+            };
+            reader.readAsText(file);
+        }
+    });
+
+    const tutorials = [];
+    tutorials.push({
+        selector: '#operation-mode',
+        title: 'Das Primärsystem für Verordnungen',
+        text: 'Im PVS hast du volle Kontrolle über die Verordnungen die ich für dich ausstelle. Aber keine Sorge, wenn du Felder auslässt, werden sie mit zufälligen Werten gefüllt.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'label[for="hermes-mode"]',
+        title: 'Der Standardmodus',
+        text: 'Der einfachste Weg E-Rezepte auszustellen. Hermes der Götterbote hilft mir die Verordnungen mit korrekten Werten zu füllen und überbringt sie dann an den Fachdienst! Schneller geht es nicht.',
+        position: 'left'
+    });
+    tutorials.push({
+        selector: 'label[for="faker-mode"]',
+        title: 'Der Modus ohne Fachdienst',
+        text: 'Wenn du aus deinen Eingaben ein valides FHIR-Bundle machen möchtest, ohne es an den Fachdienst zu senden, verwende meinen Faker!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'label[for="fhir-mode"]',
+        title: 'Wenn du genau weißt was du brauchst',
+        text: 'Wenn du bereits ein FHIR-Bundle hast, kannst du es mir hier übergeben, und ich sende es direkt an den Fachdienst, ohne das Hermes etwas daran ändert. Was dann passiert geht nur dich und den Fachdienst etwas an 😁',
+        position: 'left'
+    });
+    tutorials.push({
+        selector: '#selected-actor',
+        title: 'Wer darf verschreiben?',
+        text: 'Welcher meiner Akteure soll die Verordnung signieren? Hier kannst du aus allen Akteuren auswählen die diese Fähigkeit besitzen.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#kvnr',
+        title: 'Die KVNR für die Verordnung',
+        text: 'Vergiss nicht auch hier eine KVNR anzugeben, sonst denkt sich Hermes eine aus!',
+        position: 'right'
+    });
+    tutorials.push({
+        selector: '#send-request',
+        title: 'Und los!',
+        text: 'Wenn du fertig bist, drücke einfach auf E-Rezept ausstellen und ich kümmere mich um den Rest!',
+        position: 'top',
+        isLast: true
+    });
+    Tutorial.setSteps(tutorials);
+</script>
+</body>
+</html>

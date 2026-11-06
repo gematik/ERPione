@@ -1,0 +1,15 @@
+import http-client.env.json
+
+
+### FAKER-KBV-RACTITIONER-01
+GET {{host}}/faker/kbv/practitioner
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "name": "Max Mustermann",
+  "anr": {
+    "type": "LANR",
+    "value": "123456789"
+  }
+}

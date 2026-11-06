@@ -1,0 +1,13 @@
+include::attributes-sections.adoc[]
+
+[[section-solution-strategy]]
+== Solution Strategy
+
+Erpione is primarily implemented in Java using the Spring Boot framework, which provides a robust foundation for building modular, maintainable, and production-grade services. The data model is defined in Kotlin, chosen for its seamless interoperability with Java, enhanced flexibility, and strong null-safety features, which help prevent common programming errors and improve code quality.
+
+The system architecture follows the Backend-for-Frontend (BFF) pattern. Authentication is managed via Keycloak, which is integrated into the BFF layer to provide secure, standards-based identity management.
+
+Deployment is handled using Docker Compose, targeting on-premise environments. This enables straightforward setup, reproducibility, and isolation of all required services, making it easy for vendors and testers to run Erpione in their own infrastructure.
+
+These technology and architectural decisions directly support Erpione's key quality goals: high operability and ease of use, reduced overhead for end-to-end testing, and maintainability. By abstracting the complexity of the E-Rezept ecosystem and providing a flexible, secure, and easy-to-deploy simulator, Erpione enables vendors to focus on their own development and testing tasks without being burdened by the details of complementary systems.
+

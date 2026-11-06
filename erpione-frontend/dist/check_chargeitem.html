@@ -1,0 +1,28 @@
+<div class="modal fade" id="check-chargeitem-modal" tabindex="-1" aria-labelledby="check-chargeitem-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="check-chargeitem-modal-label">Kostenbeleg prüfen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="check-chargeitem-file" class="form-label">Kostenbeleg als PDF hochladen</label>
+                    <input type="file" class="form-control" id="check-chargeitem-file" accept="application/pdf,.pdf">
+                    <div class="form-text">Die PDF wird lokal im Browser auf eine eingebettete PS7-Datei (PKCS#7) geprüft.</div>
+                </div>
+
+                <div id="check-chargeitem-error" class="alert alert-danger" role="alert" style="display: none;"></div>
+
+                <div id="check-chargeitem-result" class="alert alert-success" role="alert" style="display: none;">
+                    <p class="mb-2" id="check-chargeitem-result-heading"></p>
+                    <ul class="list-group" id="check-chargeitem-result-list"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                <button type="button" class="btn btn-primary" id="check-chargeitem-check-btn" disabled>Prüfen</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+@startuml
+interface "HTTP" as HTTP
+node "Host System" {
+  node "Docker Engine" {
+    node "Resource Server" {
+      [erpione] as "Erpione"
+    }
+  }
+
+  [szzp] as "SZZP"
+}
+
+[erpione] -left-> [HTTP]
+[erpione] -right-> [szzp]
+[szzp] -right-> [TI]
+@enduml

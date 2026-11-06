@@ -1,0 +1,18 @@
+<style>
+    actor {
+      .Actor {
+        BackgroundColor #ee83602f
+        BorderColor #ee8360
+      }
+
+      .User {
+        BackgroundColor #88fa602f
+        BorderColor #88fa60
+      }
+    }
+
+    usecase {
+      BackGroundColor #FFF8E8
+      LineColor #C18F00
+    }
+</style>

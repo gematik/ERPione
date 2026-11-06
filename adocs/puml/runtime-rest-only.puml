@@ -1,0 +1,48 @@
+@startuml
+autonumber
+skinparam sequenceMessageAlign center
+
+participant "Client System\n(e.g. test automation)" as client
+box "Erpione Service" #ee83600f
+  participant "RestController" as ctrl
+  participant "ErpioneActorService" as stage
+  participant "HermesService" as hermes
+  participant "Usecase" as uc
+  participant "ErpioneActor\n(Apotheker)" as actor
+  participant "Persistence" as db
+end box
+participant "E-Rezept\nFachdienst" as fd
+
+== Claim ($accept) ==
+client -> ctrl : POST /api/erp/{pid}/claim?ac=...\nx-actor: <pharmacy>
+ctrl -> stage : getInstitutionOrThrow(actorId)
+stage --> ctrl : HealthcareInstitution
+ctrl -> uc : ClaimPrescription.with(pid, ac)\n.performAs(actor)
+uc -> actor : request(Task/$accept)
+actor -> fd : POST /Task/{id}/$accept?ac=...
+fd --> actor : AcceptBundle (Task, signed KBV bundle)
+uc -> hermes : toJson(ErpETask, task)\ndecode signed KBV bundle
+uc -> db : save(ErpETask)
+uc --> ctrl : ErpETask
+ctrl --> client : 200 ErpETask (JSON, incl. secret)
+
+== Dispense (optional) ==
+client -> ctrl : POST /api/erp/{pid}/dispense\nx-actor, Hermes JSON or FHIR XML
+ctrl -> hermes : toFhirResource / decode
+ctrl -> uc : DispensePharmaceutical.performAs(actor)
+uc -> actor : request(Task/$dispense)
+actor -> fd : POST /Task/{id}/$dispense?secret=...
+fd --> actor : MedicationDispense bundle
+ctrl --> client : 200 EmptyData
+
+== Close ($close) ==
+client -> ctrl : POST /api/erp/{pid}/close\nx-actor, Hermes JSON or FHIR XML
+ctrl -> hermes : toFhirResource / decode
+ctrl -> uc : ClosePharmaceutical.performAs(actor)
+uc -> actor : request(Task/$close)
+actor -> fd : POST /Task/{id}/$close?secret=...
+fd --> actor : Receipt (signed)
+uc -> hermes : toJson(ErpEReceiptOut, receipt)
+uc -> db : save(ErpEReceiptOut)
+ctrl --> client : 200 ErpEReceiptOut (JSON)
+@enduml

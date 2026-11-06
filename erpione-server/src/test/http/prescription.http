@@ -1,0 +1,50 @@
+import http-client.env.json
+
+### PRESCRIPTION-SEARCH-01
+# get the first page of prescriptions
+GET {{host}}/erp/prescriptions
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PRESCRIPTION-SEARCH-02
+# Get a specific by its PrescriptionId
+GET {{host}}/erp/prescriptions/160.000.114.452.031.05
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PRESCRIPTION-SEARCH-04
+# Find prescriptions by flowType
+GET {{host}}/erp/prescriptions?flowType=162
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PRESCRIPTION-SEARCH-04
+# Find prescriptions by KVNR
+GET {{host}}/erp/prescriptions?kvnr=X110407071
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PRESCRIPTION-SEARCH-05
+# Find prescriptions by IKNR
+GET {{host}}/erp/prescriptions?iknr=102429648
+Content-Type: application/json
+apikey: {{apikey}}
+
+
+### PRESCRIPTION-PAGINATION-01
+# Get the first 10 entries
+GET {{host}}/erp/prescriptions?pageSize=10
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PRESCRIPTION-PAGINATION-02
+# Get the first 10 entries from the third page (entries 21-30)
+GET {{host}}/erp/prescriptions?pageSize=10&offset=3
+Content-Type: application/json
+apikey: {{apikey}}
+
+
+### RECEIPTS-01
+GET {{host}}/erp/prescriptions/receipts
+Content-Type: application/json
+apikey: {{apikey}}

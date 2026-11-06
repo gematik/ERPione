@@ -1,0 +1,22 @@
+<div class="modal fade" id="com-reply-modal" tabindex="-1" aria-labelledby="com-reply-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="com-reply-modal-label">Communication Reply</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="com-reply-textarea" class="form-label">Reply Payload as <a href="https://gematik.github.io/interactive-api-erp/erp-fd-communications/index.html" target="_blank">specified by the schema here for V3</a> or <a href="https://github.com/eRP-FD/erp-processing-context/blob/master/resources/production/schema/shared/json/CommunicationReplyPayloadV1.json" target="_blank">here for V1</a></label>
+          <textarea class="form-control" id="com-reply-textarea" rows="6"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="com-reply-send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+  <hr class="mt-3 mb-3">
+  <div id="response-container-overlay"></div>
+</div>

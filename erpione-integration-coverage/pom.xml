@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.gematik.erpione</groupId>
+        <artifactId>erpione-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>erpione-integration-coverage</artifactId>
+    <description>Erpione's integrated test coverage</description>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.gematik.erpione</groupId>
+            <artifactId>erpione-rest-data</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.gematik.erpione</groupId>
+            <artifactId>erpione-server</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.gematik.erpione</groupId>
+            <artifactId>erpione-rest-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.gematik.erpione</groupId>
+            <artifactId>erpione-cli</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,9 @@
+{
+  "patient": {
+    "type": "PKV",
+    "kvnr": "K220635158"
+  },
+  "coverage": {
+    "type": "PKV"
+  }
+}

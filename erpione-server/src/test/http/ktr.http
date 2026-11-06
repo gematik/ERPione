@@ -1,0 +1,32 @@
+import http-client.env.json
+
+@actor = Thessaly
+#@actor = Hygieia
+
+@prescriptionId = 162.000.000.007.216.31
+@accessCode = a0be601a404b378d6f8e90e13722c5d713543e400b95c27da60af54dbd9034bc
+
+
+### KTR-CLAIM-01
+# perform the $accept operation as KTR
+POST {{host}}/erp/{{actor}}/claim/{{prescriptionId}}?ac={{accessCode}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### KTR-RETURN-01
+# perform the $reject operation as KTR
+POST {{host}}/erp/{{actor}}/return/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### KTR-APPROVE-01
+# approve the prescription by performing the $close operation
+POST {{host}}/erp/{{actor}}/approve/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### KTR-DECLINE-01
+# decline the prescription by performing the $close operation
+POST {{host}}/erp/{{actor}}/decline/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}

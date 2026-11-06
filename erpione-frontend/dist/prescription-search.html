@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione Prescription Search</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="buttons.js"></script>
+    <script src="avs.js"></script>
+    <script src="utility.js"></script>
+    <script src="prescription.js"></script>
+    <script src="prescription-search.js"></script>
+    <script src="tutorial.js"></script>
+</head>
+<body>
+
+<form>
+    <div class="container">
+        <div class="row border border-dark-subtle rounded" id="rx-search-container">
+            <fieldset>
+                <legend>Rezepte abrufen</legend>
+                <div class="input-group mb-3">
+                    <label for="kvnr-input" class="input-group-text">🔍</label>
+                    <div class="form-floating">
+                        <input type="text" name="kvnr" class="form-control" id="kvnr-input" placeholder="KVNR">
+                        <label for="kvnr-input">KVNR</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" name="iknr" class="form-control" id="tid-input" placeholder="Telematik ID">
+                        <label for="tid-input">Telematik ID</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" name="iknr" class="form-control" id="iknr-input" placeholder="IKNR">
+                        <label for="iknr-input">IKNR</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" id="selected-flow-type">
+                            <option selected value=""></option>
+                            <option value="160">160</option>
+                            <option value="162">162</option>
+                            <option value="166">166</option>
+                            <option value="169">169</option>
+                            <option value="200">200</option>
+                            <option value="209">209</option>
+                        </select>
+                        <label for="selected-flow-type">Flow Type</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select rounded-end" id="selected-prescription-status">
+                            <option selected value=""></option>
+                            <option value="READY">ready</option>
+                            <option value="INPROGRESS">in-progress</option>
+                            <option value="COMPLETED">completed</option>
+                        </select>
+                        <label for="selected-prescription-status">Status</label>
+                    </div>
+                    <div class="form-floating d-flex align-items-center justify-content-center flex-grow-0 w-auto mx-4">
+                        <div class="input-group w-auto m-auto">
+                            <button type="button" id="search-by-button" style="min-width: 6em" onclick="submitPrescriptionSearchForm(0)"
+                                    class="btn btn-outline-success">Search</button>
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+
+            <div id="pagination-controls" class="row g-3 align-items-center mx-0 mb-3">
+                <div class="d-none d-xl-block col-xl-3" aria-hidden="true"></div>
+                <div id="pagination-container" class="col-12 col-xl-6 d-flex justify-content-center overflow-auto"></div>
+                <div class="col-12 col-xl-3 d-flex align-items-center justify-content-end gap-2">
+                    <label for="page-size" class="text-nowrap">Rezepte pro Seite</label>
+                    <select id="page-size" class="form-select w-auto" onchange="changePrescriptionPageSize()">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-dark-subtle rounded" id="import-container">
+            <fieldset>
+                <legend>Erpione-fremde Rezepte annehmen</legend>
+                <div class="input-group mb-3">
+                    <label for="external-pid" class="input-group-text">⤵️</label>
+                    <div class="form-floating">
+                        <input type="text" name="external-pid" class="form-control" id="external-pid" placeholder="Task/PrescriptionID">
+                        <label for="external-pid">PrescriptionID</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" name="external-ac" class="form-control" id="external-ac" placeholder="Access-Code">
+                        <label for="external-ac">Access-Code</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select rounded-end" id="actor-selection">
+                            <option selected value=""></option>
+                            <option value="Hygieia">Hygieia (Apotheke)</option>
+                            <option value="Panacea">Panacea (Apotheke)</option>
+                            <option value="Iaso">Iaso (Apotheke)</option>
+                            <option value="Akeso">Akeso (Apotheke)</option>
+                            <option value="Thessaly">Thessaly (Kostenträger)</option>
+                        </select>
+                        <label for="actor-selection">Annehmende Stelle</label>
+                    </div>
+                    <div class="form-floating d-flex align-items-center justify-content-center flex-grow-0 w-auto mx-4">
+                        <div class="input-group w-auto m-auto">
+                            <button type="button" id="import-external-rx" style="min-width: 6em" onclick="importExternalPrescription()"
+                                    class="btn btn-outline-dark">Import</button>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</form>
+
+<hr class="mb-3 mt-3">
+
+
+<div id="response-container" class="container"></div>
+
+
+<script>
+    initializePrescriptionPageSize();
+    submitPrescriptionSearchForm(0);
+
+    const tutorials = [];
+    tutorials.push({
+        selector: '#rx-search-container',
+        title: 'Wer suchet findet',
+        text: 'Hier kannst du in den E-Rezepten suchen die sich in meinem Reich befinden. Aber bedenke, ich kenne nicht alle Rezepte die existieren, nur die die von mir kommen oder von denen du mir erzählst!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#pagination-controls',
+        title: 'Falls es mehr wird',
+        text: 'Sollten es mal ein paar mehr Rezepte werden, kannst du hier oben die Seiten durchblättern und rechts die Anzahl der Rezepte pro Seite auswählen.',
+        position: 'bottom',
+    });
+    tutorials.push({
+        selector: '#import-container',
+        title: 'Übergib mir deine Rezepte',
+        text: 'Einlösbare Rezepte die nicht von mir stammen, kannst du mir hier übergeben. Ich werde sie dann zur Einlösung an den Fachdienst senden, und in mein Reich aufnehmen!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'button.accordion-button',
+        title: 'Ein E-Rezept',
+        text: 'Alle E-Rezepte die deiner Suche entsprechen, werden genau so mit ihrem derzeitigen Status hier angezeigt. Klicke auf ein Rezept um weitere Details zu sehen.',
+        position: 'top',
+        isLast: true
+    });
+    Tutorial.setSteps(tutorials);
+</script>
+</body>
+</html>

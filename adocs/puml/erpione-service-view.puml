@@ -1,0 +1,84 @@
+@startuml
+
+!$packageOpacity = "1f"
+!$brickOpacity = "40"
+
+!$colorFhir = "#ff4100"
+!$colorFhirBricks = $colorFhir + $packageOpacity
+!$colorFhirBrick = $colorFhir + $brickOpacity
+
+!$colorRestful = "#8850ff"
+!$colorRestfulBricks = $colorRestful + $packageOpacity
+!$colorRestfulBrick = $colorRestful + $brickOpacity
+
+!$colorPerimeter = "#aa8860"
+!$colorPerimeterBricks = $colorPerimeter + $packageOpacity
+!$colorPerimeterBrick = $colorPerimeter + $brickOpacity
+
+!$colorSpring = "#9eeb47"
+!$colorSpringBoot = $colorSpring + $packageOpacity
+!$colorSpringBootStarter = $colorSpring + $brickOpacity
+
+package "Bricks" {
+    package "fhir-bricks" $colorFhirBricks  {
+        [fhir-codec-brick] $colorFhirBrick
+    }
+    package "restful-bricks" $colorRestfulBricks {
+        [fd-fhir-client-brick] $colorRestfulBrick
+    }
+    package "perimeter-bricks" $colorPerimeterBricks {
+        [smartcards-api-brick] $colorPerimeterBrick
+        [konnektor-client-brick] $colorPerimeterBrick
+        [konnektor-client-brick] .left-> [smartcards-api-brick]
+    }
+
+    [fd-fhir-client-brick] .left-> [fhir-codec-brick]
+}
+
+[idp-client] as "IdP Client" #00766e08
+
+package "E-Rezept E2E Testsuite" #00766e08 {
+    [erp-fhir] $colorFhirBrick
+    [erp-client] $colorRestfulBrick
+    [erp-smartcards] $colorPerimeterBrick
+
+    [erp-fhir] -down..|> [fhir-codec-brick]
+    [erp-client] -down.|> [fd-fhir-client-brick]
+    [erp-client] .left-> [erp-fhir]
+    [erp-client] .right-> [erp-smartcards]
+    [erp-client] .down.> [idp-client]
+    [erp-smartcards] -down.|> [smartcards-api-brick]
+}
+
+
+package "Spring" $colorSpringBoot {
+    [spring-boot-starters] as "Spring Boot Starters" $colorSpringBootStarter
+}
+
+package "Erpione" #ee83600f {
+    interface "REST API" as ERPIONE_API $colorSpringBootStarter
+    [erpione-service] as "Erpione Service"
+    [erpione-ui] as "Web UI"
+    [erpione-rest-data] as "Erpione Data Model"
+
+    [erpione-service] -down.> [erp-fhir]
+    [erpione-service] -down.> [erp-client]
+    [erpione-service] -down.> [erp-smartcards]
+
+    [erpione-service] .left-|> [ERPIONE_API] $colorSpring
+    [erpione-ui] .right.> [ERPIONE_API] : <<use>>
+    [erpione-service] .left.> [erpione-rest-data]
+    [erpione-ui] .up.> [erpione-rest-data]
+
+'    doesn't render that well
+'    [erpione-service] .right.> [konnektor-client-brick]
+
+    [erpione-service] .right.> [spring-boot-starters]
+}
+
+note right of [erpione-rest-data]
+    The shared Data Model that contains the DTOs
+    defined purely in Kotlin.
+end note
+
+@enduml

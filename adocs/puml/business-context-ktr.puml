@@ -1,0 +1,19 @@
+@startuml
+
+hide stereotype
+left to right direction
+
+:User: as user <<User>>
+:Kostenträger: as ktr <<Actor>>
+user .down.> ktr : perform as
+
+(DiGA E-Rezept abrufen) as (uc_claim)
+(DiGA E-Rezept zurückgeben) as (uc_return)
+(DiGA E-Rezept bewilligen) as (uc_approve)
+(DiGA E-Rezept ablehnen) as (uc_decline)
+
+ktr --down-> (uc_claim) : performs
+ktr --down-> (uc_return) : performs
+ktr --down-> (uc_approve) : performs
+ktr --down-> (uc_decline) : performs
+@enduml

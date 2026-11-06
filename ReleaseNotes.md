@@ -1,4 +1,4 @@
-# Release Notes ERPione
+# Release Notes Erpione
 
-## Release 0.9.0
+## Release 1.0.0
 Initial public release

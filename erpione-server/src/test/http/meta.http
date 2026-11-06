@@ -1,0 +1,67 @@
+import http-client.env.json
+
+### DELEGATIONS-01
+# read information about the ERPione service
+POST {{host}}/delegations
+Content-Type: application/json
+Cookie: {{cookie}}
+X-XSRF-TOKEN: {{xsrfToken}}
+
+{
+  "scope": ["openid"],
+  "aud": "erpione-headless",
+  "ttlSeconds": 900
+}
+
+### META-01
+# read information about the ERPione service
+GET {{host}}/info
+Content-Type: application/json
+#Cookie: {{cookie}}
+#X-XSRF-TOKEN: {{xsrfToken}}
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwOWFmMmRiMi03NWU1LTRkMWMtYmYxZi1kNDc4Y2EyOTQ0MzAiLCJhdWQiOiJlcnBpb25lLWhlYWRsZXNzIiwic2NwIjpbIm9wZW5pZCJdLCJzY29wZSI6Im9wZW5pZCIsImRlbGVnYXRlZF9ieSI6ImJmZiIsImlzcyI6ImVycGlvbmUtYmZmIiwibmFtZSI6IkFsZXhhbmRlciBLYWlzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhbGV4YW5kZXIua2Fpc2VyQGdlbWF0aWsuZGUiLCJleHAiOjE3ODcwNTYxMzIsImlhdCI6MTc4NzA1NTIzMywianRpIjoiMjllNDkxYTUtMTgyZS00ZDY4LTg1NjItYTAzNTA5MGU0NmFiIiwiZW1haWwiOiJhbGV4YW5kZXIua2Fpc2VyQGdlbWF0aWsuZGUifQ.8bRF-I1FRryI9chUzF4qm2x3UYNWx9kD6-bM148pjCM
+
+### META-02
+# read information about the ERPione service
+GET {{host}}/erp/meta
+X-Actor: hygieia
+Content-Type: application/json
+apikey: {{apikey}}
+
+### META-03
+# perform a health check to the ERP-Fachdienst
+GET {{host}}/erp/health
+X-Actor: hygieia
+Content-Type: application/json
+apikey: {{apikey}}
+
+### META-ACTORS-01
+# read information about the ERPione service
+GET {{host}}/actors
+Content-Type: application/json
+apikey: {{apikey}}
+
+### META-ACTORS-02
+# read the configuration of a specific actor
+GET {{host}}/actors/hygieia
+Content-Type: application/json
+apikey: {{apikey}}
+
+### META-ACTORS-03
+# read the configuration of all actors of a specific role
+GET {{host}}/actors?role=ncpeh
+Content-Type: application/json
+apikey: {{apikey}}
+
+### META-ERP-01
+# read the capability statement from erp-fachdienst
+GET {{host}}/erp/vaduz/meta
+Content-Type: application/json
+apikey: {{apikey}}
+
+### DEBUG-HEADERS
+# read information about the ERPione service
+GET {{host}}/debug/headers
+Content-Type: application/json
+Cookie: {{cookie}}
+X-XSRF-TOKEN: {{xsrfToken}}

@@ -1,0 +1,5 @@
+{
+  "type": "GKV",
+  "kvnr": "X110406067",
+  "invalidField": "Must be ignored by jackson"
+}

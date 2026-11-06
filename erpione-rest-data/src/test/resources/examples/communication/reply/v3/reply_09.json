@@ -1,0 +1,22 @@
+{
+  "recipient": "L982864321",
+  "reference": {
+    "prescriptionId": "160.051.239.685.270.45",
+    "accessCode": "dbedd1bbc1983e6fb139dfbdd2134b21abbb15e01a2121a489a2156b9b08fb17"
+  },
+  "message": {
+    "version": 3,
+    "text": "Some Text to state your request",
+    "transactionID": "ABCD-EFGH-IJKL-MNOP",
+    "communicationType": "deliveryStatus",
+    "deliveryStatus": "inTransport",
+    "inTransportPosition": {
+      "long": 13.387595793605172,
+      "lat": 52.522529939635795
+    },
+    "inTransportETA": {
+      "from": 1735736400,
+      "to": 1735741800
+    }
+  }
+}

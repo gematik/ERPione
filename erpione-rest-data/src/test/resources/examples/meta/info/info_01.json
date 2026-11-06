@@ -1,0 +1,32 @@
+{
+  "build": {
+    "hash": "c8fb3a05069641e073b5f8d03d4b2067b3b8a877",
+    "version": "0.5.5",
+    "buildDate": "29-09-2023T11:27"
+  },
+  "fhir": {
+    "view": "1.2.0",
+    "profiles": {
+      "kbv.basis": "1.3.0",
+      "kbv.ita.for": "1.1.0",
+      "de.basisprofil.r4": "1.3.2",
+      "de.gematik.erezept-patientenrechnung": "1.0.0",
+      "de.abda.erezeptabgabedatenpkv": "1.2.0",
+      "de.gematik.erezept-workflow": "1.2.0",
+      "dav.kbv.sfhir.cs.vs": "1.0.3",
+      "kbv.ita.erp": "1.1.0",
+      "de.abda.erezeptabgabedatenbasis": "1.3.1"
+    }
+  },
+  "ti": {
+    "services": {
+      "idp": {
+        "url": "https://idp-ref.zentral.idp.splitdns.ti-dienste.de/.well-known/openid-configuration"
+      },
+      "erp": {
+        "url": "https://erp-ref.zentral.erp.splitdns.ti-dienste.de",
+        "certificate": "MIIDAzCCAqmgAwIBAgICG4IwCgYIKoZIzj0EAwIwgYQxCzAJBgNVBAYTAkRFMR8wHQYDVQQKDBZnZW1hdGlrIEdtYkggTk9ULVZBTElEMTIwMAYDVQQLDClLb21wb25lbnRlbi1DQSBkZXIgVGVsZW1hdGlraW5mcmFzdHJ1a3R1cjEgMB4GA1UEAwwXR0VNLktPTVAtQ0EyOCBURVNULU9OTFkwHhcNMjEwNTEwMDgyOTU5WhcNMjYwNTA5MDgyOTU4WjBgMQswCQYDVQQGEwJERTEiMCAGA1UECgwZSUJNIFRFU1QtT05MWSAtIE5PVC1WQUxJRDEXMBUGA1UEBRMOMDg3NDctUlVFTkMwMDIxFDASBgNVBAMMC2VyZXplcHQtdmF1MFowFAYHKoZIzj0CAQYJKyQDAwIIAQEHA0IABD5xWMtXS8nUUlQl8iQE/Qz/IXaMCsFOCOSlOLV2AOyIYJ5ExAP73a0wQvTT+0L2uzqrUIcpmiVQ8qpdE+gMt2ejggErMIIBJzAdBgNVHQ4EFgQUMG1tgML5/BG9sTVaj2+olZZML2kwHwYDVR0jBBgwFoAUAGo4kPOZriGPUtruwYxugK1hIskwTwYIKwYBBQUHAQEEQzBBMD8GCCsGAQUFBzABhjNodHRwOi8vb2NzcDItdGVzdHJlZi5rb21wLWNhLnRlbGVtYXRpay10ZXN0L29jc3AvZWMwDgYDVR0PAQH/BAQDAgMIMCEGA1UdIAQaMBgwCgYIKoIUAEwEgSMwCgYIKoIUAEwEgUowDAYDVR0TAQH/BAIwADBTBgUrJAgDAwRKMEgwRjBEMEIwQDAyDDBFLVJlemVwdCB2ZXJ0cmF1ZW5zd8O8cmRpZ2UgQXVzZsO8aHJ1bmdzdW1nZWJ1bmcwCgYIKoIUAEwEggIwCgYIKoZIzj0EAwIDSAAwRQIhAKKuMAYO2lC+OWLPorM5m4Q0bTIBFhXNHQhn3dXc6SrUAiBWvxJ8mVgcEwbL5zXYikOOfQK20tk2uwPMp+4g+hRvmw=="
+      }
+    }
+  }
+}

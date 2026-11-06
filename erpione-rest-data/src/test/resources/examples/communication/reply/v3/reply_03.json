@@ -1,0 +1,14 @@
+{
+  "recipient": "L982864321",
+  "reference": {
+    "prescriptionId": "160.051.239.685.270.45",
+    "accessCode": "dbedd1bbc1983e6fb139dfbdd2134b21abbb15e01a2121a489a2156b9b08fb17"
+  },
+  "message": {
+    "version": 3,
+    "transactionID": "ABCD-EFGH-IJKL-MNOP",
+    "communicationType": "link",
+    "url": "https://example.com",
+    "text": "Hier finden sie Ihren Warenkorb."
+  }
+}

@@ -1,0 +1,43 @@
+@startuml
+autonumber
+skinparam sequenceMessageAlign center
+
+actor "Tester" as user
+participant "Browser\n(Web UI)" as browser
+participant "Reverse Proxy\n(nginx)" as proxy
+participant "BFF" as bff
+participant "Keycloak" as kc
+participant "Erpione Service\n(REST API)" as erpione
+participant "E-Rezept\nFachdienst" as fd
+
+user -> browser : open Erpione UI
+browser -> proxy : GET /ui
+proxy -> browser : static Web UI
+
+== Authentication (only when auth is enabled) ==
+browser -> proxy : GET /api/actors
+proxy -> bff : forward
+bff --> browser : 401 / redirect to /oauth2/authorization
+browser -> proxy : GET /oauth2/authorization/...
+proxy -> bff : forward
+bff -> kc : OIDC Authorization Code Flow
+kc --> bff : ID / access / refresh token
+bff --> browser : session cookie
+
+== Prescribe as "Arzt" ==
+user -> browser : select actor, fill form, "Prescribe"
+browser -> proxy : POST /api/erp/pharmaceutical\nx-actor, Hermes JSON
+proxy -> bff : forward
+bff -> erpione : POST /api/erp/pharmaceutical\nAuthorization: Bearer <JWT>
+erpione -> erpione : resolve actor,\nHermes JSON -> KBV FHIR bundle
+erpione -> fd : Task/$create
+fd --> erpione : draft Task
+erpione -> erpione : adjust bundle,\nQES signature via SoftKon (HBA)
+erpione -> fd : Task/$activate
+fd --> erpione : activated Task
+erpione -> erpione : FHIR -> Hermes (ErpETask),\npersist
+erpione --> bff : 200 ErpETask (JSON)
+bff --> proxy : 200
+proxy --> browser : 200
+browser --> user : show prescription ID,\naccess code, DMC
+@enduml

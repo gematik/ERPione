@@ -1,0 +1,29 @@
+@startuml
+
+hide stereotype
+
+:User: as user <<User>>
+:Actor: as Actor <<Actor>>
+
+usecase "Use Case" as UC
+
+package "Abilities" as AB {
+  rectangle "Ability" as Ability
+  rectangle "ERP Client" as ERPClient
+  rectangle "Konnektor" as KONClient
+  rectangle "Smartcards" as SMARTCARDS
+}
+
+rectangle "Application under test" as AUT
+
+user -r-> Actor : perform as
+Actor -r-> UC : performs
+UC -r-> AUT : interact with
+UC <-- Ability : enable
+
+Actor *-> Ability : has
+Ability <|-- ERPClient
+Ability <|-- KONClient
+Ability <|-- SMARTCARDS
+
+@enduml

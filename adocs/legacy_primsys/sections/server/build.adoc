@@ -1,0 +1,10 @@
+include::../attributes-sections.adoc[]
+
+== Build your own Erpione
+
+Build Application with proper manifest for running as standalone JAR
+
+[source,shell]
+----
+$ mvn package spring-boot:repackage
+----

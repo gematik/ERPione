@@ -1,0 +1,6 @@
+include::../attributes-sections.adoc[]
+
+== Erpione Server
+TODO: write a short description of the server component
+
+include::build.adoc[leveloffset=+1]

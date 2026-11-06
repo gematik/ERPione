@@ -1,0 +1,158 @@
+/*
+ * Copyright (Change Date see Readme) gematik GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ */
+
+package de.gematik.erpione.server.usecase;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import de.gematik.bbriccs.fhir.codec.EmptyResource;
+import de.gematik.bbriccs.fhir.codec.utils.FhirTestResourceUtil;
+import de.gematik.bbriccs.fhir.de.value.KVNR;
+import de.gematik.bbriccs.rest.fd.FhirBResponse;
+import de.gematik.erpione.data.r4.EMedication;
+import de.gematik.erpione.data.r4.eu.EuPrescriptionDispensationIn;
+import de.gematik.erpione.data.r4.eu.EuPrescriptionDispensationListIn;
+import de.gematik.erpione.server.actor.factory.ErpEnvironmentConfig;
+import de.gematik.erpione.server.actor.factory.ErpioneConfiguration;
+import de.gematik.erpione.server.actor.factory.JacksonConfiguration;
+import de.gematik.erpione.server.hermes.impl.HermesServiceImpl;
+import de.gematik.erpione.server.jpa.ErpionePersistenceImpl;
+import de.gematik.erpione.server.jpa.factory.ErpioneJpaConfig;
+import de.gematik.erpione.server.util.TaskCreator;
+import de.gematik.erpione.server.util.TestActorsFactory;
+import de.gematik.test.erezept.client.usecases.eu.EuCloseInputPostCommand;
+import de.gematik.test.erezept.fhir.r4.eu.EuCloseOperationInput;
+import de.gematik.test.erezept.fhir.r4.eu.EuMedicationDispense;
+import de.gematik.test.erezept.fhir.values.EuAccessCode;
+import de.gematik.test.erezept.fhir.values.PrescriptionId;
+import jakarta.annotation.Nullable;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import lombok.val;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@Transactional
+@SpringBootTest(
+    classes = {
+      ErpioneConfiguration.class,
+      ErpEnvironmentConfig.class,
+      TestActorsFactory.class,
+      TaskCreator.class,
+      HermesServiceImpl.class,
+      ErpionePersistenceImpl.class,
+      ErpioneJpaConfig.class,
+      JacksonConfiguration.class,
+      JacksonAutoConfiguration.class
+    },
+    properties = {"spring.profiles.active=rudev,offline,noauth"})
+@EnableConfigurationProperties(DataSourceProperties.class)
+class CloseEuPharmaceuticalsTest {
+
+  @Autowired private TestActorsFactory testActorsFactory;
+
+  @ParameterizedTest
+  @MethodSource
+  void shouldCloseWithRandomPharmaceutical(
+      @Nullable EMedication medication,
+      @Nullable Boolean givenWasSubstituted,
+      boolean expectedSubstitution) {
+    val pair = testActorsFactory.getTestEuPharmacy("Vaduz");
+    val erpClient = pair.getFirst();
+    val actor = pair.getSecond();
+
+    val emptyResponse =
+        FhirBResponse.forPayload(EmptyResource.class, new EmptyResource())
+            .withStatusCode(200)
+            .withHeaders(Map.of())
+            .andValidationResult(FhirTestResourceUtil.createEmptyValidationResult());
+    when(erpClient.request(any(EuCloseInputPostCommand.class))).thenReturn(emptyResponse);
+
+    val pid = PrescriptionId.random().getValue();
+    val dispensations =
+        Stream.of(pid)
+            .map(it -> new EuPrescriptionDispensationIn(it, medication, null, givenWasSubstituted))
+            .collect(
+                Collectors.collectingAndThen(
+                    Collectors.toList(), EuPrescriptionDispensationListIn::of));
+    val uc =
+        CloseEuPharmaceuticals.using(
+            KVNR.randomStringValue(), EuAccessCode.random().getValue(), dispensations);
+
+    val response = assertDoesNotThrow(() -> uc.performAs(actor));
+    assertFalse(response.getDispensations().isEmpty());
+
+    val disp = response.getDispensations().getFirst();
+    assertEquals(pid, disp.getPrescriptionId());
+
+    // now check what the use-case actual would have sent
+    val command = ArgumentCaptor.forClass(EuCloseInputPostCommand.class);
+    verify(erpClient).request(command.capture());
+
+    val sentCommand = command.getValue();
+    val sentResource = sentCommand.getRequestBody();
+    assertInstanceOf(EuCloseOperationInput.class, sentResource);
+    val sentOperationInput = (EuCloseOperationInput) sentResource;
+
+    // TODO: why is there no convenient getter for this?
+    val wasSubstituted =
+        sentOperationInput
+            .getFirstRxDispension()
+            .flatMap(
+                it ->
+                    it.getPart().stream()
+                        .filter(part -> part.getName().equals("medicationDispense"))
+                        .findFirst())
+            .map(ParametersParameterComponent::getResource)
+            .map(EuMedicationDispense.class::cast)
+            .map(it -> it.getSubstitution().getWasSubstituted())
+            .orElseThrow();
+    assertEquals(expectedSubstitution, wasSubstituted);
+  }
+
+  static Stream<Arguments> shouldCloseWithRandomPharmaceutical() {
+    return Stream.of(
+        // no medication + no wasSubstituted given -> was substituted == true
+        Arguments.of(null, null, true),
+        // no medication + wasSubstituted == false -> was substituted == false
+        Arguments.of(null, false, false),
+        // no medication + wasSubstituted == true -> was substituted == true
+        Arguments.of(null, true, true),
+        // medication + no wasSubstituted given -> was substituted == false
+        Arguments.of(new EMedication(), null, false),
+        // medication + wasSubstituted == true given -> was substituted == true
+        Arguments.of(new EMedication(), true, true),
+        // medication + wasSubstituted == false given -> was substituted == false
+        Arguments.of(new EMedication(), false, false));
+  }
+}

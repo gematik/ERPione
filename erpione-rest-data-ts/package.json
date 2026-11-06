@@ -1,0 +1,11 @@
+{
+  "name": "@gematik/erpione-rest-data",
+  "description": "TypeScript definitions for shared Erpione DTOs",
+  "main": "target/generated-ts/erpione-rest-data.ts",
+  "types": "erpione-rest-data.ts",
+  "files": [ "target/generated-ts/erpione-rest-data.ts"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,18 @@
+@startuml
+
+hide stereotype
+left to right direction
+
+:User: as user <<User>>
+:EU Apotheker: as ncpeh <<Actor>>
+user .down.> ncpeh : perform as
+
+(Demographische Daten abrufen) as (uc_demographics)
+(Einlösbare E-Rezepte abrufen) as (uc_eu_prescriptions)
+(Abgabe von E-Rezepten im EU Ausland) as (uc_eu_dispense)
+
+
+ncpeh -down-> (uc_demographics) : performs
+ncpeh -down-> (uc_eu_prescriptions) : performs
+ncpeh -down-> (uc_eu_dispense) : performs
+@enduml

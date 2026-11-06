@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione Actors</title>
+
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <!-- highlightjs for highlighting xml/json data  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-light.min.css" integrity="sha512-o5v54Kh5PH0dgnf9ei0L+vMRsbm5fvIvnR/XkrZZjN4mqdaeH7PW66tumBoQVIaKNVrLCZiBEfHzRY4JJSMK/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/es/core.min.js" integrity="sha512-GuVoeU19Vs7el8GKo3lq2ogzwCIRBuQDnSL0rtHD4KVq3EymKgG4Uj/SEbbggJ+o+ocAcwdbn8hPSgdVPKdPlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js" integrity="sha512-f2/ljYb/tG4fTHu6672tyNdoyhTIpt4N1bGrBE8ZjwIgrjDCd+rljLpWCZ2Vym9PBWQy2Tl9O22Pp2rMOMvH4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="actors.js"></script>
+    <script src="utility.js"></script>
+    <script src="buttons.js"></script>
+    <script src="tutorial.js"></script>
+
+</head>
+<body>
+<div id="actors" class="container"></div>
+<script>
+    const tutorials = [];
+    tutorials.push({
+        selector: '#nav-item-actors',
+        title: 'Mein Gefolge',
+        text: 'Hier findest du alle meine loyalen Akteure. In blau meine ÄrztInnen, in grün meine ApothekerInnen und in rot Apotheken aus dem Ausland.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'button.accordion-button',
+        title: 'Ein Arzt',
+        text: 'Hier steht der Name unter dem ich mir den Akteur merke, sowie wie er nach außen auftritt. Klicke auf Ihn, um weitere Details zu sehen!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'button.btn.btn-outline-primary.flex-shrink-0.ms-2.my-2',
+        title: 'Name kopieren',
+        text: 'Solltest du auf anderen Wegen Kontakt mit mir aufnehmen, musst du mir sagen welchen Akteur ich beauftragen darf. Dieser Name ist perfekt dafür.',
+        position: 'right',
+        isLast: true
+    });
+
+    fetch('/api/actors')
+        .then(response => checkForLogin(response))
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('actors');
+            createAccordion(container, data, createActorItem);
+            Tutorial.setSteps(tutorials);
+        })
+        .catch(handleUnexpectedFetchError);
+</script>
+</body>
+</html>

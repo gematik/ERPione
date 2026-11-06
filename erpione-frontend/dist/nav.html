@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg navbar mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Erpione <span id="env-highlight">${env}</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <button class="btn btn-link nav-link text-primary-emphasis" id="nav-item-tutorial" onclick="startTutorial()">Einführung</button>
+        </li>
+        <li class="nav-item" id="nav-item-actors">
+          <a class="nav-link" href="actors.html">Akteure</a>
+        </li>
+        <li class="nav-item"  id="nav-item-pvs">
+          <a class="nav-link" href="pvs.html">PVS</a>
+        </li>
+        <li class="nav-item"  id="nav-item-prescriptions">
+          <a class="nav-link" href="prescription-search.html">E-Rezepte</a>
+        </li>
+        <li class="nav-item" id="nav-item-comms">
+          <a class="nav-link" href="pharmacy-communications.html">Nachrichten</a>
+        </li>
+        <li class="nav-item" id="nav-item-eu-pharmacy">
+          <a class="nav-link" href="eu-pharmacy.html">EU Apotheke</a>
+        </li>
+        <li class="nav-item" id="nav-item-openapi">
+          <a class="nav-link" href="/swagger-ui/index.html" target="_blank">OpenAPI</a>
+        </li>
+        <li class="d-flex align-items-center justify-content-center nav-item" title="Klick mich für mehr Server-Details!">
+            <a class="nav-link badge rounded-pill bg-primary-subtle text-primary-emphasis px-2 py-2" href="info.html" id="fd-status">🔵 FD Status unbekannt</a>
+        </li>
+      </ul>
+      <div id="profile-container" class="dropdown" style="display: flex; align-items: center;">
+        <button class="btn p-0 border-0 bg-transparent" id="profile-menu-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img id="profile-pic" class="rounded-circle" src="img/default-profile.png" alt="User" style="max-height: 2em; cursor: pointer;"/>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile-menu-toggle">
+          <li><span id="profile-username-item" class="dropdown-item-text small font-monospace"></span></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button id="profile-account-link" class="dropdown-item" type="button" onclick="openKeycloakAccountManagement()">User account</button></li>
+          <li><button id="headless-token-btn" class="dropdown-item" type="button" onclick="openTokenDialog()">Headless Token</button></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button id="logout-btn" class="dropdown-item" type="button" onclick="triggerLogout()">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="alert-container"></div>
+
+<!-- Spinner (hidden by default) -->
+<div id="fetch-spinner-backdrop" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.5); z-index:2000; align-items:center; justify-content:center;">
+  <div id="fetch-spinner" class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<div id="tutorial-overlay" class="position-fixed d-none pe-none top-0 start-0 w-100 h-100 tutorial-overlay" style="z-index: 2000;" aria-live="polite" aria-hidden="true"></div>

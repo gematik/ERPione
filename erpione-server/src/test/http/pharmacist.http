@@ -1,0 +1,175 @@
+import http-client.env.json
+
+@actor = Hygieia
+
+@prescriptionId = 160.000.114.452.028.14
+@accessCode = 94987df81433defd5731b31d84981bbbda5984cd7724bcce52538bf72e9326b1
+@secret = 84a7b832393c069251c118923af0b0a5f64541673c9c1c55e6c1ff02960d8f32
+
+### PHARM-CLAIM-01
+# get information for a specific pharmacist
+POST {{host}}/erp/{{prescriptionId}}/claim?ac={{accessCode}}
+Content-Type: application/json
+X-Actor: Erpione
+Cookie: {{cookie}}
+X-XSRF-TOKEN: {{xsrfToken}}
+
+### PHARM-RETURN-01
+# get information for a specific pharmacist
+POST {{host}}/erp/{{actor}}/return/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PHARM-ABORT-01
+# try to abort/delete a prescription which was not yet claimed
+# Note: the FD won't allow because pharmacy always requires a secret for this operation
+DELETE {{host}}/erp/{{actor}}/abort/{{prescriptionId}}?ac={{accessCode}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PHARM-ABORT-02
+# try to abort/delete a prescription which was claimed and the secret is known
+DELETE {{host}}/erp/{{actor}}/abort/{{prescriptionId}}?ac={{accessCode}}&secret={{secret}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PHARM-DISPENSE-01
+POST {{host}}/erp/{{actor}}/dispense/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "dispensation": [
+    {
+      "medication": {
+        "type": "PZN",
+        "category": "Arzneimittel",
+        "vaccine": true,
+        "standardSize": "N1",
+        "supplyForm": "TAB",
+        "packagingSize": "15",
+        "packagingUnit": "Stück",
+        "pzn": "000000000",
+        "name": "TEST"
+      },
+      "dispense": {
+        "whenHandedOver": "21.07.2025",
+        "whenPrepared": "221.07.2025",
+        "batch": {
+          "lotNumber": "123123",
+          "expiryDate": "21.07.2026"
+        },
+        "dosageInstructions": [
+          "1-0-0-0"
+        ],
+        "notes": [
+          "Vor dem Essen einnehmen"
+        ]
+      }
+    }
+  ]
+}
+
+### PHARM-DISPENSE-02
+POST {{host}}/erp/{{actor}}/dispense/{{prescriptionId}}
+Content-Type: application/fhir+xml
+apikey: {{apikey}}
+
+< /Users/alexanderkaiser/Desktop/workdir/repos/erpione-application/erpione-server/target/dispense_operation_input.xml
+
+### PHARM-CLOSE-01
+POST {{host}}/erp/{{actor}}/close/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "dispensation": [
+    {
+      "medication": {
+        "type": "PZN",
+        "category": "Arzneimittel",
+        "vaccine": true,
+        "standardSize": "N1",
+        "supplyForm": "TAB",
+        "packagingSize": "15",
+        "packagingUnit": "Stück",
+        "pzn": "000000000",
+        "name": "TEST"
+      },
+      "dispense": {
+        "whenHandedOver": "21.07.2025",
+        "whenPrepared": "221.07.2025",
+        "batch": {
+          "lotNumber": "123123",
+          "expiryDate": "21.07.2026"
+        },
+        "dosageInstructions": [
+          "1-0-0-0"
+        ],
+        "notes": [
+          "Vor dem Essen einnehmen"
+        ]
+      }
+    }
+  ]
+}
+
+### PHARM-CLOSE-02
+POST {{host}}/erp/{{actor}}/close/{{prescriptionId}}
+Content-Type: application/json
+apikey: {{apikey}}
+
+### PHARM-REPLY-01
+POST {{host}}/erp/communications/200.000.003.720.207.76/reply
+Content-Type: application/json
+x-actor: Hygieia
+
+{
+  "type": "REPLY",
+  "message": {
+    "version": 3,
+    "text": "Some Text to state your request",
+    "transactionID": "ABCD-EFGH-IJKL-MNOP",
+    "communicationType": "paymentInfo",
+    "totalAmount": 12530,
+    "paymentMethods": [
+      {
+        "method": "cash"
+      },
+      {
+        "method": "bankaccount",
+        "url": "https://my.payment.provider.de/pay/<payment_transaction_id>"
+      },
+      {
+        "method": "paypal",
+        "url": "https://paypal.me/<some_account>"
+      }
+    ]
+  }
+}
+
+### PHARM-REPLY-02
+POST {{host}}/erp/communications/160.000.007.534.016.76/reply
+Content-Type: application/json
+x-actor: Hygieia
+#Cookie: {{cookie}}
+#X-XSRF-TOKEN: {{xsrfToken}}
+
+{
+  "type": "REPLY",
+  "message": {
+    "version": 3,
+    "text": "Ihre Medikamente wurden soeben geliefert. Gute Besserung, Ihre Apotheke.",
+    "transactionID": "ABCD-EFGH-IJKL-MNOP",
+    "communicationType": "deliveryStatus",
+    "deliveryStatus": "delivered",
+    "inTransportPosition": {
+      "long": 9913.413244,
+      "lat": 52.521992
+    },
+    "inTransportETA": {
+      "from": 1791386100,
+      "to": 1791389700
+    }
+  }
+}

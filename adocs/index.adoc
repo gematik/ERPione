@@ -1,0 +1,52 @@
+include::attributes-settings.adoc[]
+
+= {app-name}
+{author}
+[VERSION], {docdate}
+:favicon: ./images/erpione.ico
+:toc: left
+:docinfo: shared
+
+
+:numbered:
+
+[IMPORTANT]
+====
+This document describes the current {app-name} architecture. The documentation of the predecessor *PrimSys* is no longer available as rendered HTML. But you can still find the original AsciiDoc source files in the `adocs/legacy_primsys/` folder of this repository.
+====
+
+<<<
+// 1. Introduction and Goals
+include::sections/01_introduction_and_goals.adoc[]
+
+<<<
+// 2. Architecture Constraints
+include::sections/02_architecture_constraints.adoc[]
+
+<<<
+// 3. Context and Scope
+include::sections/03_context_and_scope.adoc[]
+
+<<<
+// 4. Solution Strategy
+include::sections/04_solution_strategy.adoc[]
+
+<<<
+// 5. Building Block View
+include::sections/05_building_block_view.adoc[]
+
+<<<
+// 6. Runtime View
+include::sections/06_runtime_view.adoc[]
+
+<<<
+// 7. Deployment View
+include::sections/07_deployment_view.adoc[]
+
+<<<
+// 8. Cross-cutting Concepts
+include::sections/08_crosscutting_concepts.adoc[]
+
+<<<
+// 9. Build, Release & Operations
+include::sections/09_build_release_operations.adoc[]

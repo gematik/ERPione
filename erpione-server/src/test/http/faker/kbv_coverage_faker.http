@@ -1,0 +1,13 @@
+import http-client.env.json
+
+
+### FAKER-KBV-COVERAGE-01
+GET {{host}}/faker/kbv/coverage
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "PKV",
+  "wop": "Trier",
+  "insurantState": "Mitglieder"
+}

@@ -1,0 +1,112 @@
+services:
+  proxy:
+    build:
+      context: ./erpione-reverse-proxy
+      dockerfile: Dockerfile
+    container_name: erpione-reverse-proxy-${ENVIRONMENT}
+    hostname: proxy
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      resource-server:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    ports:
+      - "${PUBLIC_PORT}:8080"
+
+  resource-server:
+    build:
+      context: ./erpione-server
+      dockerfile: Dockerfile
+    container_name: erpione-resource-server-${ENVIRONMENT}
+
+    restart: unless-stopped
+    environment:
+      ERP_FHIR_PROFILE: ${ERP_FHIR_PROFILE}
+      ACTIVE_SPRING_PROFILES: ${ACTIVE_SPRING_PROFILES}
+    volumes:
+      - erpione-data:/home/erpione/data/
+    networks:
+      frontend:
+        aliases:
+          - bff
+      backend:
+    healthcheck:
+      test: "wget -T5 -qO- 127.0.0.1:8080/actuator/health | grep UP || exit 1"
+      interval: 2m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    dns_opt:
+      # force separate TCP connections for A and AAAA queries instead of waiting for IPv6 timeout.
+      - "single-request-reopen"
+      - "timeout:2"
+      - "attempts:3"
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+
+  ui:
+    build:
+      context: ./erpione-frontend
+      dockerfile: Dockerfile
+    container_name: erpione-ui-${ENVIRONMENT}
+    hostname: erpione-ui
+    restart: unless-stopped
+    networks:
+      - backend
+    depends_on:
+      resource-server:
+        condition: service_started
+    environment:
+      ERPIONE_ENV: ${ENVIRONMENT}
+
+  keycloak:
+    image: nginx:1.27-alpine
+    container_name: erpione-keycloak-${ENVIRONMENT}
+    hostname: keycloak
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cat <<'EOF' >/etc/nginx/conf.d/default.conf
+        server {
+          listen 8080;
+          server_name _;
+
+          location = /kc/health/ready {
+            add_header Content-Type text/plain;
+            return 200 'OK';
+          }
+
+          location / {
+            return 404;
+          }
+        }
+        EOF
+        exec nginx -g 'daemon off;'
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -T5 -qO- http://127.0.0.1:8080/kc/health/ready | grep -q OK"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+# ── Networks ───────────────────────────────────────────────────────────────────
+networks:
+  frontend:   # nginx ↔ resource-server/ui
+  backend:    # resource-server, iu (isolated from internet)
+
+volumes:
+  erpione-data:
+    name: erpione-data-${ENVIRONMENT}
+    external: true
+  erpione-secrets:
+    name: erpione-secrets-${ENVIRONMENT}
+    external: true

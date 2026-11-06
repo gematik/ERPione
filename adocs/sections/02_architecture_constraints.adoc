@@ -1,0 +1,11 @@
+include::./attributes-sections.adoc[]
+
+[[section-architecture-constraints]]
+== Architecture Constraints
+Erpione shall be:
+
+- plattform-independent and should run in containerized environments
+- designed to provide a REST API for integration with other test systems and tools
+- usable without real hardware components. Examples of these components include Konnektors and eHealth-Kartenlesegeräte, which are typically required for E-Rezept workflows. By simulating these components, Erpione allows vendors to test their applications without needing access to physical hardware, which can be costly and difficult to obtain for testing purposes.
+- modular and extensible to allow for future extensions and adaptations to different use cases
+- built on gematik's shared test foundations rather than re-implementing the E-Rezept domain. Erpione reuses the {erp-e2e-link}, which in turn is based on the {bricks-link} framework (B²riC²s). As a consequence Erpione inherits the Screenplay Pattern (actors, abilities, use cases) and the FHIR handling conventions defined there; see the {bricks-manual-link} for the underlying concepts and <<section-building-block-view>> for how the layers fit together.

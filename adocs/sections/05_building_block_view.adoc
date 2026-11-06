@@ -1,0 +1,64 @@
+include::attributes-sections.adoc[]
+
+[[section-building-block-view]]
+== Building Block View
+
+This section provides an overview of Erpione's static architecture by describing its main building blocks, their responsibilities, and how they interact. Erpione itself is based on a layered and modular architecture which is heavily inspired by the link:++https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals++[Screenplay Pattern]. The building blocks are designed to be cohesive, loosely coupled, and easily testable.
+
+[plantuml, "{pumldir}/erpione-system-view", svg]
+.Erpione System View
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/erpione-system-view-screenplay.puml[]
+----
+
+Erpione does not implement the E-Rezept domain itself but builds on two gematik libraries, each adding one layer of abstraction:
+
+* **Bricks (B²riC²s)** is the generic foundation. The {bricks-link} framework provides reusable building bricks for maintainable test suites: the Screenplay core with actors, abilities and use cases shown in the diagram above, FHIR building bricks for profile-safe resource handling, and software abstractions for smartcards (HBA, SMC-B) and the Konnektor. Its concepts are documented in the {bricks-manual-link}.
+* **E-Rezept E2E Testsuite** is the domain layer built on Bricks. The {erp-e2e-link} contributes everything specific to the E-Rezept: the FHIR profiles of KBV, gematik and DAV, the client for the E-Rezept Fachdienst and the use cases such as prescribe, accept, dispense and close. It is the heart of the system and the place where the core functionality dealing with the Fachdienst is built and maintained.
+* **Erpione** exposes these capabilities as a service. It adds the REST API and the Web UI, the <<section-concept-hermes,Hermes>> abstraction and the <<section-concept-actors,actor stage>> with preconfigured identities, so that the testsuite's actors can be driven interactively or by external test systems.
+
+[plantuml, "{pumldir}/erpione-service-view", format=svg, align="center"]
+.Erpione Service View
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/erpione-service-view.puml[]
+----
+
+Important Interfaces::
+
+The following interfaces are central to the interaction between Erpione’s building blocks and with external systems:
+
+* **REST API**: The main interface for client systems and the web frontend, exposing endpoints for prescription management, actor actions, and test data generation. Follows RESTful conventions and uses JSON (not FHIR) as the primary data format.
+* **Data Model (Kotlin/Java Classes)**: Shared data structures used across the REST API, ensuring consistent serialization and deserialization of business objects. These classes form the *Hermes Data Model*, which abstracts away the complexities of the underlying FHIR while still supporting all necessary data for testing scenarios. The translation between the Hermes Data Model and FHIR is handled internally by the HermesService. Hermes and its capabilities are described in detail in <<section-concept-hermes,Hermes>>.
+* **FHIR Interface**: Used internally and externally for E-Rezept data exchange, based on the HL7 FHIR standard. Ensures compatibility with the E-Rezept backend and client systems.
+* **Authentication & Authorization (OAuth2/OpenID Connect)**: Integrates with Keycloak to secure API endpoints and the frontend, supporting OAuth2 and OIDC flows for user and system authentication.
+* **Persistence Layer**: Provides access to stored test data and simulation state via Spring Data JPA.
+
+These interfaces are designed to be modular and extensible, supporting both automated and manual testing scenarios.
+
+
+=== Whitebox Overall System
+The following section details the internal structure of Erpione by breaking down the overall system into its main building blocks and illustrating their interactions.
+
+[plantuml, "{pumldir}/erpione-whitebox-view", format=svg, align="center"]
+.Erpione Whitebox View
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/erpione-whitebox-view.puml[]
+----
+
+Motivation::
+
+The architecture of Erpione is heavily inspired by the Screenplay Pattern, which fosters maintainability, extensibility, and a strict separation of concerns. By structuring the system around clear roles and responsibilities — such as test data generation, API handling, and integration with the E-Rezept Fachdienst — Erpione enables users to focus on their specific development and testing needs without being burdened by the complexity of the entire E-Rezept ecosystem. The Screenplay Pattern’s emphasis on modularity and composability supports rapid adaptation to changes in specifications, facilitates the addition of new simulation features, and ensures that each component can be tested and evolved independently. Ultimately, this architectural approach helps Erpione fulfill its goal of providing a robust, user-friendly simulation environment for end-to-end testing and development.
+
+
+Contained Building Blocks::
+[cols="1,2" options="header"]
+|===
+| **Name** | **Responsibility**
+| RestController | Exposes REST endpoints for client systems and the frontend; routes requests to the appropriate simulation or integration logic.
+| HermesService | Translates between the Hermes Data Model and the FHIR-based data model; see <<section-concept-hermes,Hermes>>.
+| ErpioneActorService | Manages the actor stage and helps controllers select actors; see <<section-concept-actors,Actor Model>>. This concept is heavily inspired by the https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals[Screenplay Pattern].
+| ErpioneActor | Models an actor in the Screenplay Pattern, encapsulating the state and behaviour of a test actor; see <<section-concept-actors,Actor Model>>.
+|===

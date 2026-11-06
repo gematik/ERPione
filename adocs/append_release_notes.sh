@@ -1,7 +1,7 @@
 #!/bin/sh
 
 readonly RELEASE_NOTES_FILE="ReleaseNotes.md"
-readonly TARGET_FILE="adocs/user_manual.adoc"
+readonly TARGET_FILE="adocs/index.adoc"
 
 # append a page break
 echo "\n\n<<<" >> $TARGET_FILE
