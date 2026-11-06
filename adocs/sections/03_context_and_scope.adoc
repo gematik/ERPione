@@ -1,0 +1,50 @@
+include::attributes-sections.adoc[]
+
+[[section-context-and-scope]]
+== Context and Scope
+
+
+=== Business Context
+
+Erpione acts as a "Primärsystem Simulator" for the E-Rezept ecosystem. Its primary function is to assist vendors in developing and testing client systems for the E-Rezept, ePA, and associated services by simulating the key interactions with the E-Rezept backend.
+
+The business context includes:
+
+* Simulation of LEI (Leistungserbringende Institution):
+** PVS (Praxisverwaltungssystem)
+** AVS (Apothekenverwaltungssystem)
+** KTR (Kostenträger)
+** NCPeH (National Contact Point for eHealth)
+* Providing test data for end-to-end testing of E-Rezept workflows.
+* Providing test data randomization capabilities to support exploratory testing and robustness testing.
+
+The business context does not include:
+
+- Simulation of FdV (Frontend des Versicherten).
+- Integration of real hardware components e.g. Konnektor.
+
+Erpione uses an actor-based approach to model interactions. This concept is heavily inspired by the Screenplay Pattern with its Actor Model, which emphasizes using actors to represent different roles and responsibilities in a system. In this context, actors can be considered entities that perform actions and interact with the E-Rezept Fachdienst, thus facilitating the modeling of complex interactions in a clear, modular way. All Erpione actors are preconfigured with their own identity, derived from SMC-B, HBA and some additional configurations. A more detailed description of Erpione actors and their runtime handling is provided in <<section-concept-actors,Actor Model>>.
+
+
+
+=== Technical Context
+
+[plantuml, "{pumldir}/technical-context-view", svg]
+.Technical Context View
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/technical-context-view.puml[]
+----
+
+Erpione exposes its simulation capabilities via well-defined technical interfaces:
+
+- **REST APIs**: For interaction with the simulated client systems.
+- **Web-based User Interface**: For manual and exploratory testing.
+
+**Mapping Input/Output to Channels:**
+
+- Domain-specific behaviours (e.g., prescription creation, claim, status updates) are mapped to REST endpoints.
+- The Erpione REST endpoints are primarily designed to communicate using the <<section-concept-hermes,Hermes Data Model>>, a simplified JSON representation of the E-Rezept domain data which abstracts away the complexities of the underlying FHIR-based E-Rezept specifications.
+- For certain behaviours (e.g., creating prescriptions), Erpione may also support the use of FHIR resources as input. These resources are then directly used for the communication with the E-Rezept Fachdienst.
+
+

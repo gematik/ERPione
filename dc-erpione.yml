@@ -1,0 +1,202 @@
+services:
+  proxy:
+    build:
+      context: ./erpione-reverse-proxy
+      dockerfile: Dockerfile
+    container_name: erpione-reverse-proxy-${ENVIRONMENT}
+    hostname: proxy
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      resource-server:
+        condition: service_started
+      bff:
+        condition: service_started
+    ports:
+      - "${PUBLIC_PORT}:8080"
+
+  resource-server:
+    image: europe-west3-docker.pkg.dev/gematik-all-infra-prod/e-rezept/erpione-server:latest
+    container_name: erpione-resource-server-${ENVIRONMENT}
+    restart: unless-stopped
+    depends_on:
+      keycloak:
+        condition: service_started
+    environment:
+      ERP_FHIR_PROFILE: ${ERP_FHIR_PROFILE}
+      ACTIVE_SPRING_PROFILES: ${ACTIVE_SPRING_PROFILES}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${OAUTH2_ISSUER_URI}
+      PROXY_HOST: ${PROXY_HOST}
+      PROXY_PORT: ${PROXY_PORT}
+      NON_PROXY_HOST: ${NON_PROXY_HOST}
+    volumes:
+      - erpione-data:/home/erpione/data/
+    networks:
+      - backend
+    healthcheck:
+      test: "wget -T5 -qO- 127.0.0.1:8080/actuator/health | grep UP || exit 1"
+      interval: 2m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    dns_opt:
+      # force separate TCP connections for A and AAAA queries instead of waiting for IPv6 timeout.
+      - "single-request-reopen"
+      - "timeout:2"
+      - "attempts:3"
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+
+  # this container is only used for database administration and is not required for the application to run
+  # activate this container only when you need to access the H2 database console, e.g. for debugging or testing purposes
+  h2-admin:
+    build:
+      context: ./erpione-server
+      dockerfile: H2_Admin.Dockerfile
+    container_name: erpione-h2-admin-${ENVIRONMENT}
+    # TODO: jsl does not support docker compose profiles yet
+#    profiles:
+#      - db_admin
+    volumes:
+      - erpione-data:/home/erpione/data/
+    networks:
+      - backend
+
+  ui:
+    build:
+      context: ./erpione-frontend
+      dockerfile: Dockerfile
+    container_name: erpione-ui-${ENVIRONMENT}
+    hostname: erpione-ui
+    restart: unless-stopped
+    networks:
+      - backend
+    depends_on:
+      resource-server:
+        condition: service_started
+    environment:
+      ERPIONE_ENV: ${ENVIRONMENT}
+
+  keycloak:
+    build:
+      context: ./erpione-keycloak
+      dockerfile: Dockerfile
+    container_name: erpione-keycloak-${ENVIRONMENT}
+    hostname: keycloak
+    restart: unless-stopped
+    command:
+      - start
+      - --optimized
+      - --hostname=https://${ISSUER_HOSTNAME}/kc
+    volumes:
+      - erpione-keycloak-data:/opt/keycloak/data
+    networks:
+      - backend
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+      KC_HTTP_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_PROXY_HEADERS: "xforwarded"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: [ 'CMD-SHELL', "{ printf 'HEAD /kc/health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  # ── Spring Boot OAuth2 BFF ─────────────────────────────────────────────────
+  bff:
+    image: europe-west3-docker.pkg.dev/gematik-all-infra-prod/e-rezept/erpione-bff:latest
+    container_name: erpione-bff-${ENVIRONMENT}
+    environment:
+      SPRING_PROFILES_ACTIVE:      docker
+      SPRING_CONFIG_IMPORT:        optional:configtree:/run/secrets/
+      OAUTH2_CLIENT_ID:            ${OAUTH2_CLIENT_ID:-bff-client}
+      OAUTH2_CLIENT_SECRET:        ${OAUTH2_CLIENT_SECRET:-change-me}
+      OAUTH2_ISSUER_URI:           ${OAUTH2_ISSUER_URI:-http://keycloak:8080/realms/erpione}
+      REDIS_HOST:                  redis
+      REDIS_PORT:                  6379
+      RESOURCE_SERVER_URI:         http://resource-server:8080
+      SPA_BASE_URI:                ${SPA_BASE_URI:-http://localhost}
+      ALLOWED_ORIGINS:             ${ALLOWED_ORIGINS:-http://localhost}
+      SERVER_FORWARD_HEADERS_STRATEGY: NATIVE
+      JAVA_TOOL_OPTIONS: >-
+        -Dhttp.proxyHost=${PROXY_HOST}
+        -Dhttp.proxyPort=${PROXY_PORT}
+        -Dhttps.proxyHost=${PROXY_HOST}
+        -Dhttps.proxyPort=${PROXY_PORT}
+        -Dhttp.nonProxyHosts=localhost|127.*|keycloak|redis|resource-server
+      http_proxy:  http://${PROXY_HOST}:${PROXY_PORT}
+      https_proxy: http://${PROXY_HOST}:${PROXY_PORT}
+      PROXY_HOST: ${PROXY_HOST}
+      PROXY_PORT: ${PROXY_PORT}
+      NO_PROXY: localhost|127.*|keycloak|redis|resource-server
+    depends_on:
+      redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - erpione-secrets:/run/secrets:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "-Yoff", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── Redis session store ────────────────────────────────────────────────────
+  redis:
+    image: redis:7.4-alpine
+    container_name: erpione-redis-${ENVIRONMENT}
+    command:
+      - /bin/sh
+      - -c
+      - exec redis-server --requirepass "$(cat /run/secrets/redis_password)" --save 60 1 --loglevel warning
+    volumes:
+      - erpione-secrets:/run/secrets:ro
+      - erpione-redis-data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$(cat /run/secrets/redis_password)\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+# ── Networks ───────────────────────────────────────────────────────────────────
+networks:
+  frontend:   # nginx ↔ bff
+  backend:    # bff ↔ redis, resource-server, keycloak (isolated from internet)
+
+volumes:
+  erpione-data:
+    name: erpione-data-${ENVIRONMENT}
+    external: true
+  erpione-keycloak-data:
+    name: erpione-keycloak-${ENVIRONMENT}
+    external: true
+  erpione-redis-data:
+    name: erpione-redis-${ENVIRONMENT}
+    external: true
+  erpione-secrets:
+    name: erpione-secrets-${ENVIRONMENT}
+    external: true

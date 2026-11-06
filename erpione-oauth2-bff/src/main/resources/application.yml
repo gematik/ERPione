@@ -1,0 +1,167 @@
+server:
+  port: 8080
+  # Trust X-Forwarded-* headers from nginx (important!)
+  forward-headers-strategy: NATIVE
+  shutdown: graceful
+  reactive:
+    session:
+      timeout: 8h
+
+spring:
+  application:
+    name: oauth2-bff
+
+  config:
+    import: optional:configtree:/run/secrets/
+
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+  # ── OAuth2 / OIDC client ──────────────────────────────────────────────────
+  security:
+    oauth2:
+      client:
+        registration:
+          oidc:
+            client-id:     ${OAUTH2_CLIENT_ID:bff-client}
+            client-secret: ${OAUTH2_CLIENT_SECRET:change-me}
+            authorization-grant-type: authorization_code
+            redirect-uri:  "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - profile
+              - email
+              - offline_access  # for refresh tokens (if supported)
+        provider:
+          oidc:
+            issuer-uri: ${OAUTH2_ISSUER_URI:http://localhost:9000} # public, used for the browser redirect and issuer check
+            token-uri: ${OAUTH2_INTERNAL_BASE:http://keycloak:8080/kc/realms/erpione}/protocol/openid-connect/token
+            jwk-set-uri: ${OAUTH2_INTERNAL_BASE:http://keycloak:8080/kc/realms/erpione}/protocol/openid-connect/certs
+            user-info-uri: ${OAUTH2_INTERNAL_BASE:http://keycloak:8080/kc/realms/erpione}/protocol/openid-connect/userinfo
+
+  # ── Redis session store ───────────────────────────────────────────────────
+  data:
+    redis:
+      host:     ${REDIS_HOST:redis}
+      port:     ${REDIS_PORT:6379}
+      password: ${redis_password:${REDIS_PASSWORD:}}
+      ssl:
+        enabled: ${REDIS_SSL:false}
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle:   8
+          min-idle:   2
+
+  # ── Spring Cloud Gateway ──────────────────────────────────────────────────
+  cloud:
+    gateway:
+      server:
+        webflux:
+          # Required on Spring Cloud Gateway 4.3.x:
+          # without trusted-proxies, gateway registers RemoveXForwardedHeadersFilter
+          # and strips X-Forwarded-* before proxying.
+          # Include Docker service DNS names (e.g. "proxy") and private-network IP ranges.
+          # IMPORTANT: if GATEWAY_TRUSTED_PROXIES is present but empty, Spring treats it as empty
+          # value (not as "use default"), which activates RemoveXForwardedHeadersFilter.
+          trusted-proxies: ${GATEWAY_TRUSTED_PROXIES:proxy|localhost|bff|127\..*|10\..*|192\.168\..*|172\.(1[6-9]|2[0-9]|3[0-1])\..*}
+
+          # Global CORS – adjust allowed-origins to match your SPA origin
+          globalcors:
+            corsConfigurations:
+              "[/**]":
+                allowedOrigins:
+                  - ${ALLOWED_ORIGINS:http://localhost:4200}
+                allowedMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+                allowedHeaders: ["*"]
+                allowCredentials: true
+                maxAge: 3600
+
+          # Propagate X-Forwarded headers coming from nginx.
+          #
+          # IMPORTANT: forward-headers-strategy: NATIVE (above) causes Reactor Netty's
+          # ForwardedHeaderTransformer to consume and *remove* X-Forwarded-Host and
+          # X-Forwarded-Proto from the exchange after reconstructing the server-side URI.
+          # Without re-injecting them here, the downstream resource server receives no
+          # X-Forwarded-* headers and springdoc falls back to the internal connection
+          # details (http://bff) when generating the OpenAPI server URL.
+          #
+          # Fix: enable host + proto so XForwardedHeadersFilter re-injects the values
+          # from the already-reconstructed URI (host from the Host header, proto from
+          # the URI scheme).  append: false → replace, never concatenate hops.
+          x-forwarded:
+            enabled: true
+            for-enabled: true
+            proto-enabled: true
+            host-enabled: true
+            port-enabled: true
+            prefix-enabled: false
+            proto-append: false
+            host-append: false
+            port-append: false
+            prefix-append: false
+
+          # Default filters applied to ALL routes
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+            - name: RequestSize
+              args:
+                maxSize: 10MB
+
+          # Timeouts
+          httpclient:
+            connect-timeout: 5000   # 5 s
+            response-timeout: 30s
+
+# ── BFF custom properties ─────────────────────────────────────────────────────
+bff:
+  forwarded-headers:
+    # Fail fast on misconfiguration to prevent silently broken swagger server URLs
+    fail-on-empty-trusted-proxies: ${BFF_FAIL_ON_EMPTY_TRUSTED_PROXIES:true}
+    fail-on-remove-filter: ${BFF_FAIL_ON_REMOVE_X_FORWARDED_FILTER:true}
+  resource-server:
+    uri: ${RESOURCE_SERVER_URI:http://resource-server:8081}
+  strip-prefix-parts: 1
+  post-logout-redirect-uri: ${SPA_BASE_URI:http://localhost:4200}
+  delegation:
+    issuer: ${BFF_DELEGATION_ISSUER:erpione-bff}
+    default-audience: ${BFF_DELEGATION_DEFAULT_AUDIENCE:erpione-headless}
+    default-ttl-seconds: ${BFF_DELEGATION_DEFAULT_TTL_SECONDS:900}
+    # If the upstream OAuth2 access token expires within this window, attempt refresh before
+    # delegation-token minting.
+    refresh-before-expiry-seconds: ${BFF_DELEGATION_REFRESH_BEFORE_EXPIRY_SECONDS:60}
+    max-ttl-seconds: ${BFF_DELEGATION_MAX_TTL_SECONDS:7200}
+    # MUST be at least 32 characters in production.
+    secret: ${BFF_DELEGATION_SECRET:change-this-delegation-secret-with-at-least-32-characters}
+
+# ── Outbound proxy (used by reactive WebClient + OAuth2 login token exchange) ──
+# PROXY_HOST / PROXY_PORT / NO_PROXY are read from environment by WebClientProxyConfig.
+# NO_PROXY supports comma, pipe or whitespace separated values with '*' wildcard
+# (examples: "localhost,127.*,keycloak,redis,resource-server" or "localhost|127.*|keycloak").
+
+# ── Actuator ──────────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true   # /actuator/health/liveness + /actuator/health/readiness
+  health:
+    redis:
+      enabled: true
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+logging:
+  level:
+    root:                                       INFO
+    de.gematik.erpione.bff:                     DEBUG
+    org.springframework.security:               INFO
+    org.springframework.cloud.gateway:          INFO
+    org.springframework.web:                    INFO
+    reactor.netty.http.client:                  DEBUG
+    # Enable to debug OAuth2 flows:
+    org.springframework.security.oauth2:        INFO

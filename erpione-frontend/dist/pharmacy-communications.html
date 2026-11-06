@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione Prescription Search</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="actors.js"></script>
+    <script src="pharmacy-communications.js"></script>
+    <script src="utility.js"></script>
+    <script src="buttons.js"></script>
+    <script src="tutorial.js"></script>
+</head>
+<body>
+
+<div class="container pt-3 border border-dark-subtle rounded">
+    <fieldset>
+        <form class="container-fluid" id="avs-container">
+            <div class="input-group mb-3">
+                <label for="selected-actor" class="input-group-text">
+                    <img src="img/hygieia.png" id="actor-thumbnail" class="img-thumbnail m-0" style="max-width: 2em" alt="Machaon">
+                </label>
+                <div class="form-floating">
+                    <select class="form-select" id="selected-actor" onchange="updateActorThumbnail()">
+                        <option selected value="Hygieia">Hygieia</option>
+                        <option value="Panacea">Panacea</option>
+                        <option value="Iaso">Iaso</option>
+                        <option value="Akeso">Akeso</option>
+                        <option value="Thessaly">Thessaly</option>
+                    </select>
+                    <label for="selected-actor">Identität</label>
+                </div>
+            </div>
+            <div class="input-group mb-3 justify-content-md-end">
+                <button type="button" id="search-by-button" style="min-width: 6em" onclick="submitCommunicationsSearch()"
+                        class="btn btn-outline-success">Search</button>
+            </div>
+        </form>
+    </fieldset>
+</div>
+
+<hr class="mb-3 mt-3">
+<div id="response-container" class="container"></div>
+
+<script>
+    const tutorials = [];
+    tutorials.push({
+        selector: 'div.container.pt-3.border.border-dark-subtle.rounded',
+        title: 'Nachrichten suchen',
+        text: 'Auf dieser Seite kannst du alle Nachrichten abfragen, die von oder an einen meiner Akteure gesendet wurden!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#selected-actor',
+        title: 'Akteur auswählen',
+        text: 'Wähle hier den Akteur aus, für den du die Nachrichten abrufen möchtest.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#search-by-button',
+        title: 'Und los!',
+        text: 'Ein Klick und alle Nachrichten werden angezeigt.',
+        position: 'left',
+        isLast: true
+    });
+    Tutorial.setSteps(tutorials);
+</script>
+
+</body>
+</html>

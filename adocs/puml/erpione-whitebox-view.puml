@@ -1,0 +1,47 @@
+@startuml
+
+package "Erpione Service" {
+
+
+annotation "RestController" as controllers<<spring-boot>>
+
+interface ErpioneActorService<<service>> {
+    + void refreshIdpTokens()
+    + List<ErpioneInstitutionData> getActorsInformation()
+    + Optional<HealthcareProvider> getHealthcareProvider(String name)
+    + Optional<HealthcareInstitution> getInstitution(String name)
+}
+
+interface HermesService {
+    + toJson(jsonType, fhirResource)
+    + toFhirString(fhirType, data)
+    + toFhirResource(fhirType, data)
+    + toFhirBuilder(data, fhirType, builderType)
+    + decode(fhirClass, content)
+}
+
+interface ErpioneActor {
+    + String getId()
+    + String getName()
+    + String getMnemonic()
+    + ErpioneInstitutionData getInfo()
+    + HermesService getHermes()
+    + ErpionePersistence getRepository()
+    -- erp-client facade --
+    + void initialize()
+    + ErpResponse<R> request(ErpRequest<R> request)
+    + F decode(Class<F> fhirClass, String content)
+}
+
+interface ErpioneActorUsecase {
+    D performAs(A actor)
+}
+
+controllers .down-> ErpioneActorUsecase : <<run>>
+controllers -right-> ErpioneActorService : select from
+controllers -left-> HermesService : translate with
+
+ErpioneActorService o-down-> ErpioneActor
+ErpioneActorUsecase -right-> ErpioneActor : perform as
+}
+@enduml

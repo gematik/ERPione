@@ -1,0 +1,52 @@
+/*
+ * Copyright (Change Date see Readme) gematik GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * *******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ */
+
+package de.gematik.erpione.data.r4
+
+import com.fasterxml.jackson.annotation.JsonFormat
+import de.gematik.erpione.data.ErpioneInputData
+import de.gematik.erpione.data.ErpioneOutputData
+import io.swagger.v3.oas.annotations.media.Schema
+import java.util.*
+
+interface MedicationEBatch {
+    @get:Schema(
+        title = "Lot Number (Chargennummer)",
+        type = "string",
+        example = "LOT83480",
+    )
+    val lotNumber: String?
+
+    @get:Schema(title = "Verfallsdatum", type = "date", example = "23.06.2026")
+    @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+    val expiryDate: Date?
+}
+
+data class MedicationEBatchIn(
+    override var lotNumber: String? = null,
+    override var expiryDate: Date? = null,
+) : MedicationEBatch,
+    ErpioneInputData
+
+data class MedicationEBatchOut(
+    override var lotNumber: String,
+    override var expiryDate: Date,
+) : MedicationEBatch,
+    ErpioneOutputData

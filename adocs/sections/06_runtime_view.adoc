@@ -1,0 +1,107 @@
+include::attributes-sections.adoc[]
+
+[[section-runtime-view]]
+== Runtime View
+
+Erpione's runtime view illustrates how its main components interact during typical and critical scenarios. This section provides representative examples of end-to-end workflows, such as creation and dispensation of prescriptions. The focus is on the dynamic behaviour and communication between Erpione's building blocks, supporting stakeholders in understanding operational and integration aspects without requiring deep knowledge of the static architecture.
+
+=== Scope and Purpose
+
+The runtime view focuses on the dynamic behaviour of Erpione during representative workflows.
+
+* What happens inside Erpione during a user-triggered action
+* How the REST API, frontend, authentication, and internal services collaborate
+* How Erpione communicates with the E-Rezept Fachdienst and related external systems
+* How runtime behaviour differs between full-stack and simplified deployments
+
+The participants of the scenarios are the external systems introduced in <<section-context-and-scope,Context and Scope>> — above all the E-Rezept Fachdienst and the complementary systems that take over a prescription during its lifecycle — and the building blocks described in <<section-building-block-view,Building Block View>>.
+
+The prescription lifecycle itself (draft, ready, in-progress, completed, cancelled) is owned and enforced by the E-Rezept Fachdienst and is specified in the https://github.com/gematik/api-erp/tree/master/docs[api-erp documentation]. Erpione does not re-implement this state machine; it triggers the individual transitions on behalf of an actor. The <<section-runtime-typical-flows,Typical Runtime Flows>> below show which REST endpoint of Erpione maps to which Fachdienst operation along this lifecycle.
+
+
+[[section-runtime-concepts]]
+=== Recurring Runtime Concepts
+
+The workflows described below are all composed of the same few cross-cutting concepts: <<section-concept-actor-resolution,actor resolution>>, <<section-concept-hermes-translation,Hermes translation>>, <<section-concept-actor-execution,execution as an actor>> and <<section-concept-persistence,local persistence>>. They are described once in <<section-crosscutting-concepts,Cross-cutting Concepts>>; the individual flows refer to them instead of repeating the details.
+
+
+[[section-runtime-typical-flows]]
+=== Typical Runtime Flows
+
+All domain workflows in Erpione follow the same basic shape, regardless of whether they are triggered by the Web UI or by an automated client. A request arrives at the REST API together with an `x-actor` header; the controller <<section-concept-actor-resolution,resolves the actor>> from the actor stage and <<section-concept-hermes-translation,translates the payload>> from the Hermes Data Model (or takes a raw FHIR resource) into the FHIR resource required for the operation. The operation is then <<section-concept-actor-execution,executed as the selected actor>>, which signs, authenticates and sends one or more FHIR operations to the E-Rezept Fachdienst. The response is translated back into the Hermes Data Model, <<section-concept-persistence,stored locally>> and returned to the caller as JSON.
+
+This means that Erpione itself does not implement the prescription lifecycle; the authoritative state of a prescription is always held by the Fachdienst. Erpione's responsibility at runtime is to orchestrate the correct sequence of FHIR operations for a given actor role, hide the complexity of signing, authentication and FHIR profiling, and keep a local copy of the results so that clients and the Web UI can inspect them later.
+
+The following subsections show this pattern for the most relevant scenarios: creating a prescription as a physician, taking over and dispensing a prescription as a pharmacy, and the two ways of reaching the REST API — interactively through the Web UI in a full-stack deployment and programmatically in a simplified REST-only deployment.
+
+==== Prescription creation
+
+A physician actor creates a pharmaceutical prescription with `POST /api/erp/pharmaceutical`. The request carries the `x-actor` header and an optional body; the `direct` query parameter switches to a direct assignment ("Direktzuweisung").
+
+. The controller <<section-concept-actor-resolution,resolves the actor>> from the actor stage. Only actors with an HBA (physicians) are accepted here.
+. The body is <<section-concept-hermes-translation,translated>> into a KBV prescription bundle:
+* `Content-Type: application/json` — the Hermes prescription payload is converted into FHIR. Omitted fields are faked so the resulting bundle still conforms to the active KBV profiles; an empty body therefore produces a complete random prescription.
+* `Content-Type: application/fhir+xml` — the body is taken as a FHIR template. An optional `kvnr` query parameter replaces the patient's KVNR in the template.
+. The controller selects the prescribe operation for the bundle and <<section-concept-actor-execution,executes it as the resolved actor>>. The flow type (160, 169, 200, 209 or 166 for T-Rezept) is derived from the insurance kind in the bundle, the `direct` flag and the medication category.
+. Executed as the actor, the operation performs two Fachdienst calls:
+.. `Task/$create` with the flow type — the Fachdienst returns a draft `Task` containing the prescription ID and access code.
+.. The KBV bundle is adjusted (prescription ID, current dates, MVO dates) and signed as QES with the actor's HBA through the software Konnektor. `Task/$activate` uploads the signed bundle; the Fachdienst validates it and returns the activated `Task` (status `ready`).
+. The activated task is translated back into the Hermes Data Model, enriched with the prescription data and the signature information, <<section-concept-persistence,stored locally>> and returned as JSON. The response contains everything a pharmacy needs to claim the prescription (prescription ID and access code); a Data-Matrix-Code can be fetched afterwards with `GET /api/erp/dmc/{pid}`.
+
+DiGA prescriptions (`POST /api/erp/evdga`, flow type 162) and the KTR use cases (`/approve`, `/decline`) as well as the EU pharmacy workflows under `/api/eu` follow exactly the same pattern with different operations towards the Fachdienst and are therefore not described separately.
+
+==== Prescription claim, dispensation and close
+
+A pharmacy actor takes over a prescription in up to three steps. All endpoints are located under `/api/erp/{pid}` and <<section-concept-actor-resolution,resolve the actor>> as an institution, i.e. an SMC-B is sufficient.
+
+. **Claim** — `POST /api/erp/{pid}/claim?ac=<accessCode>` calls `Task/$accept` at the Fachdienst. The returned accept bundle contains the `Task` (now `in-progress` with a `secret`) and the signed KBV bundle. Erpione decodes the KBV bundle, translates both into the Hermes Data Model, <<section-concept-persistence,stores them>> (overriding any already known data for this prescription) and returns the task including the secret.
+. **Dispense** (optional) — `POST /api/erp/{pid}/dispense` calls `Task/$dispense`. The body is either Hermes JSON or FHIR XML describing the dispensed medication and is <<section-concept-hermes-translation,translated>> into the dispense parameters; if omitted, matching dispense data is generated. The Fachdienst keeps the task `in-progress` and Erpione returns an empty acknowledgement.
+. **Close** — `POST /api/erp/{pid}/close` calls `Task/$close` with the close parameters (same input options as dispense). The Fachdienst completes the task and returns the signed receipt, which is translated into the Hermes Data Model, <<section-concept-persistence,stored>> and returned. The raw FHIR receipt bundle can be re-fetched later with `GET /api/erp/receipts/{pid}`.
+
+If a pharmacy cannot fulfil the prescription it can hand it back with `POST /api/erp/{pid}/return` (`Task/$reject`), and any involved institution can delete it with `DELETE /api/erp/{pid}/abort` (`Task/$abort`).
+
+==== Manual exploratory workflow via Web UI
+
+In the <<section-deployment-view,full-stack deployment>> a tester works with Erpione through the browser. The Web UI is a static single-page application served by its own Nginx container and reached through the reverse proxy under `/ui`. It never talks to the Erpione service directly; all calls go to `/api/**` on the reverse proxy, which forwards them to the OAuth2 BFF.
+
+Whether the user has to authenticate depends on the deployment configuration:
+
+* **Authentication enabled** (default): the Erpione service runs as a stateless OAuth2 resource server and requires a valid JWT for every `/api/**` request. The BFF therefore redirects an unauthenticated browser to Keycloak (`/oauth2/authorization/...`, `/login`), performs the OIDC authorization code flow, keeps the tokens in a server-side session and hands only a session cookie to the browser. For every subsequent `/api` call the BFF attaches the access token as `Authorization: Bearer` header before relaying the request to the Erpione service (token relay) and refreshes the token transparently when needed.
+* **Authentication disabled**: when the Spring profile `noauth` is active, the Erpione service permits all requests. This mode is intended for local or isolated test environments where Keycloak is not needed.
+
+Once a request reaches the Erpione service, the processing is identical to the API workflow described above. The Web UI only provides a convenient way to select an actor (`GET /api/actors`), fill in Hermes payloads, trigger the prescribe/claim/dispense/close actions and inspect the persisted results (`GET /api/erp/{pid}`, `GET /api/erp/prescriptions/{kvnr}`, `GET /api/erp/receipts`). <<section-concept-actor-resolution,Actor resolution>>, <<section-concept-hermes-translation,Hermes translation>> and <<section-concept-persistence,persistence>> are handled locally inside Erpione; only the FHIR operations themselves leave the deployment towards the Fachdienst via the SZZP.
+
+==== Automated API workflow
+
+An external test system drives Erpione purely via REST. In the <<section-deployment-view,simplified deployment>> the Erpione service exposes its REST API directly, typically with the `noauth` profile; in the full-stack deployment the client has to obtain a JWT from Keycloak and send it as bearer token (or go through the BFF like the Web UI does).
+
+The request/response lifecycle for a single call is:
+
+. The client sends an HTTP request to `/api/erp/...` with the `x-actor` header and, where applicable, the prescription ID in the path and `ac` / `secret` as query parameters.
+. The controller <<section-concept-actor-resolution,resolves the actor>>, <<section-concept-hermes-translation,translates the body>> and <<section-concept-actor-execution,executes the operation as the actor>> as described in the two prescription flows above.
+. The response is always JSON in the Hermes Data Model (the task, the receipt or an empty acknowledgement) or an `ErrorData` payload in case of failure (see <<section-concept-error-handling,Error Handling>>). The only exception is `GET /api/erp/receipts/{pid}`, which returns the raw FHIR receipt bundle as `application/fhir+xml`.
+
+The API is JSON-first: the Hermes Data Model is the primary and stable contract, while raw FHIR is accepted as _input_ for selected endpoints (see <<section-concept-hermes-translation,Translation>>). In both cases the FHIR resources sent to the Fachdienst are built by Erpione; the client never communicates with the Fachdienst directly.
+
+The results of these calls are <<section-concept-persistence,stored locally>> so that the lookup endpoints and the Web UI can inspect them later; this local copy is a convenience cache and never the authoritative state of the prescription.
+
+
+=== Sequence Diagrams
+
+The first diagram shows the full-stack deployment: a tester prescribes through the Web UI, the request passes the reverse proxy and the BFF (including the Keycloak login when authentication is enabled) and finally reaches the Erpione service, which performs `$create` and `$activate` at the Fachdienst.
+
+[plantuml, "{pumldir}/runtime-fullstack-webui", svg]
+.Full-stack flow: prescribing via the Web UI
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/runtime-fullstack-webui.puml[]
+----
+
+The second diagram shows the simplified REST-only deployment from the perspective of an automated client acting as a pharmacy.
+
+[plantuml, "{pumldir}/runtime-rest-only", svg]
+.REST-only flow: claim, dispense and close as a pharmacy
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/runtime-rest-only.puml[]
+----

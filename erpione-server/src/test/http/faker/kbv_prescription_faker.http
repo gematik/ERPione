@@ -1,0 +1,72 @@
+import http-client.env.json
+
+
+### FAKER-KBV-PHARM-PRESCRIPTION-01
+# Fake Kbv-Bundle as FHIR+XML for pharmaceutical prescription
+GET {{host}}/faker/kbv/pharmaceutical
+Content-Type: application/json
+Accept: application/fhir+xml
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K220635158",
+    "birthDate": "02.12.1961"
+  },
+  "coverage": {
+    "type": "PKV",
+    "insurantState": "3"
+  }
+}
+
+### FAKER-KBV-PHARM-PRESCRIPTION-02
+# Fake KbvEPrescription as Hermes object for pharmaceutical prescription
+GET {{host}}/faker/kbv/pharmaceutical
+Content-Type: application/json
+Accept: application/json
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K220635158",
+    "birthDate": "02.12.1961"
+  },
+  "coverage": {
+    "type": "PKV",
+    "insurantState": "3"
+  }
+}
+
+### FAKER-KBV-EVDGA-PRESCRIPTION-01
+# Fake EVDGA-Bundle as FHIR+XML for DiGA prescription
+GET {{host}}/faker/kbv/evdga
+Content-Type: application/json
+Accept: application/fhir+xml
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K220635158",
+    "birthDate": "02.12.1961"
+  },
+  "coverage": {
+    "type": "GKV"
+  }
+}
+
+### FAKER-KBV-EVDGA-PRESCRIPTION-02
+# FakeKbvEPrescription as Hermes object for DiGA prescription
+GET {{host}}/faker/kbv/evdga
+Content-Type: application/json
+Accept: application/json
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K220635158",
+    "birthDate": "02.12.1961"
+  },
+  "coverage": {
+    "type": "GKV"
+  }
+}

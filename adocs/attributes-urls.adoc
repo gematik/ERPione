@@ -1,8 +1,15 @@
 
 :erpione-dockerhub-url: https://hub.docker.com/r/gematik1/erpione
-:erpione-dockerhub-link: {erpione-dockerhub-url}[ERPione @DockerHub]
+:erpione-dockerhub-link: {erpione-dockerhub-url}[Erpione @DockerHub]
 
 :gem-erp-url: https://www.gematik.de/anwendungen/e-rezept
 :gem-erp-link: {gem-erp-url}[E-Rezept | Gematik]
 :gem-ti-url: https://www.gematik.de/telematikinfrastruktur
 :gem-ti-link: {gem-ti-url}[Telematikinfrastruktur]
+
+:erp-e2e-url: https://github.com/gematik/erp-e2e-testsuite
+:erp-e2e-link: {erp-e2e-url}[E-Rezept E2E Testsuite]
+:bricks-url: https://github.com/gematik/lib-bbriccs
+:bricks-link: {bricks-url}[Bricks]
+:bricks-manual-url: https://gematik.github.io/lib-bbriccs/Bbriccs-User-Manual.html
+:bricks-manual-link: {bricks-manual-url}[Bricks User Manual]

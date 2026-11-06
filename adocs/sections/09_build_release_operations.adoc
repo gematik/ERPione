@@ -1,0 +1,861 @@
+include::attributes-sections.adoc[]
+
+[[section-build-release-operations]]
+== Build, Release & Operations
+
+This section covers the build process, deployment procedures, and operational aspects necessary to set up and maintain Erpione in your own infrastructure.
+
+=== Overview
+
+Erpione is a distributed system composed of multiple modules written mainly in Java and Kotlin. The build and deployment process involves:
+
+* Building multiple Maven modules (Java/Kotlin backend components)
+* Creating Docker container images for each service
+* Orchestrating containers via Docker Compose
+* Managing secrets and configuration
+
+[[section-prerequisites]]
+=== Prerequisites
+
+==== System Requirements
+
+[options="header",cols="1,3"]
+|===
+| Component | Requirement
+
+| Docker
+| Minimum version: 29.5.3 (tested and recommended). Older versions may work but without guarantees.
+Docker Engine with Docker Compose (v2.0+). See link:https://docs.docker.com/engine/install/[Docker Installation Guide]
+
+| Memory
+| **Without authentication (no Keycloak/BFF):** Minimum 1GB+
+
+**With full stack (Keycloak + BFF):** Minimum 2.5GB, Recommended 3GB+
+
+Total stack consumption is approximately 2.5GB with authentication enabled. Keycloak and BFF are the primary memory consumers. Allocate 3GB+ for comfortable operation and headroom.
+
+| Network
+| Connectivity to TI (telematics infrastructure) environments
+Proxy/SZZP access for production deployments (see <<section-deployment-view>>)
+
+|===
+
+==== Build Tools
+
+[options="header",cols="1,2,3"]
+|===
+| Tool | Version | Usage
+
+| Java Development Kit (JDK)
+| 21
+| Required for building and running all backend services (erpione-server, erpione-oauth2-bff)
+
+| Maven
+| 3.9.0+ (bundled via `./mvnw`)
+| Used to build Java/Kotlin modules. The repository includes the wrapper script `./mvnw`.
+
+| Git
+| Latest
+| For cloning the repository
+
+|===
+
+==== Supported Operating Systems
+
+The only hard requirement is **Java 21 capable JVM** and **Docker**. Erpione runs in containers, so the underlying OS is largely irrelevant.
+
+- **Linux**: Any distribution capable of running Java 21 and Docker (Ubuntu, Debian, RHEL, CentOS, Fedora, Rocky Linux, AlmaLinux, etc.)
+- **macOS**: Any version that supports Java 21 JVM (M1/M2 ARM64 and Intel architectures supported)
+- **Windows**: Windows 10/11 with WSL2 backend (to provide Linux kernel and Docker support). Requires Java 21 JVM in WSL2 environment
+
+[[section-build-process]]
+=== Build Process
+
+==== Repository Structure
+
+[source]
+----
+erpione-application/
+├── erpione-server/              # Main REST API service (Spring Boot, Java/Kotlin)
+├── erpione-oauth2-bff/          # Backend for Frontend (Spring Boot, OAuth2 client)
+├── erpione-frontend/            # Web UI (static HTML + JavaScript, served by Nginx)
+├── erpione-rest-data-ts/        # TypeScript data models
+├── erpione-cli/                 # Command-line interface client (Java/Kotlin)
+├── erpione-rest-client/         # REST client library (Kotlin)
+├── erpione-keycloak/            # Keycloak authentication server (container)
+├── erpione-reverse-proxy/       # Nginx reverse proxy configuration
+├── erpione-integration-coverage/# Integration tests & coverage reporting
+├── pom.xml                      # Parent Maven configuration
+├── dc-erpione-local.yml         # Docker Compose for local development
+└── dc-erpione.yml               # Docker Compose for production
+----
+
+==== Building Java/Kotlin Modules
+
+[[section-rebuild-all-modules]]
+===== Full Build (all modules)
+
+[source,shell]
+----
+cd $(git rev-parse --show-toplevel)
+
+# Clean and build all modules, skip tests
+./mvnw clean install -DskipTests
+
+# Package the main erpione-server JAR
+./mvnw package spring-boot:repackage -f erpione-server/pom.xml -DskipTests
+----
+
+===== Build Individual Modules
+
+[source,shell]
+----
+# Build only the server
+./mvnw clean package -f erpione-server/pom.xml -DskipTests
+
+# Build only the BFF
+./mvnw clean package -f erpione-oauth2-bff/pom.xml -DskipTests
+
+# Build only the CLI
+./mvnw clean package -f erpione-cli/pom.xml -DskipTests
+----
+
+===== Build Artifacts
+
+After successful build, look for:
+
+[options="header",cols="2,3"]
+|===
+| Component | Artifact Location
+
+| erpione-server
+| `erpione-server/target/erpione-server-*.jar`
+
+| erpione-oauth2-bff
+| `erpione-oauth2-bff/target/oauth2-bff-*.jar`
+
+|===
+
+==== Building Frontend
+
+The frontend consists of static HTML and JavaScript files served directly by Nginx. No framework (Vue, React, etc.) or build compilation is required.
+
+===== Frontend Structure
+
+The `erpione-frontend/` directory contains:
+
+- Static HTML files
+- JavaScript files
+- CSS stylesheets  
+- Images and assets
+- Nginx configuration (`default.conf`, `entrypoint.sh`)
+
+===== Frontend Deployment
+
+The frontend files in `erpione-frontend/dist/` are copied directly into the Nginx container during image build:
+
+[source,dockerfile]
+----
+FROM nginx:alpine
+COPY dist/ /usr/share/nginx/html/
+----
+
+**No build step is required** for the frontend. The static files are served as-is.
+
+**To update the frontend:**
+
+1. Modify HTML, CSS, or JavaScript files in `erpione-frontend/`
+2. Rebuild the Nginx container: `docker compose -f dc-erpione-local.yml build ui`
+3. Or copy updated files directly to running container: `docker cp ./erpione-frontend/dist/. erpione-ui-${ENVIRONMENT}:/usr/share/nginx/html/`
+
+==== Building Docker Images
+
+===== Build All Images
+
+[source,shell]
+----
+cd $(git rev-parse --show-toplevel)
+
+export ENVIRONMENT=rudev
+export VERSION=$(git describe --tags --always)
+export COMMIT_HASH=$(git rev-parse HEAD)
+export BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+# Build backend JARs
+./mvnw clean package -DskipTests -f erpione-server/pom.xml
+./mvnw clean package -DskipTests -f erpione-oauth2-bff/pom.xml
+
+# Build images using docker compose
+docker compose -f dc-erpione.yml build
+----
+
+===== Docker Image Specifications
+
+[options="header",cols="2,2,2,3"]
+|===
+| Service | Base Image | Size | Purpose
+
+| erpione-server
+| bellsoft/liberica-openjdk-alpine:21
+| ~1GB
+| Main REST API backend
+
+| erpione-oauth2-bff
+| eclipse-temurin:21-jre-alpine
+| ~500MB
+| OAuth2 session management frontend
+
+| erpione-frontend
+| nginx:alpine
+| ~100MB
+| Web UI serving static assets
+
+| erpione-reverse-proxy
+| nginx:alpine
+| ~100MB
+| Request routing and optionally TLS termination
+
+| erpione-keycloak
+| quay.io/keycloak/keycloak:latest
+| ~800MB
+| Authentication and authorization server
+
+|===
+
+===== Build Arguments
+
+Each Dockerfile accepts build arguments for metadata:
+
+[source]
+----
+--build-arg VERSION=1.0.0
+--build-arg COMMIT_HASH=abc123def456
+--build-arg BUILD_DATE=2026-08-19T09:00:00Z
+--build-arg UID=1000
+--build-arg GID=1000
+----
+
+[[section-configuration]]
+=== Configuration & Environment Variables
+
+==== Environment Files
+
+Create a `.env` file in the repository root for Docker Compose:
+
+[source]
+----
+# Core Configuration
+ENVIRONMENT=rudev
+ERP_FHIR_PROFILE=1.6.0
+ACTIVE_SPRING_PROFILES=rudev,noauth
+PUBLIC_PORT=8080
+
+# OAuth2 / Keycloak
+OAUTH2_ISSUER_URI=http://keycloak:8080/realms/erpione
+OAUTH2_CLIENT_ID=bff-client
+OAUTH2_CLIENT_SECRET=change-me   # TODO: Document secure secret generation
+KC_ADMIN_PASSWORD=admin          # TODO: Provide secure default
+KC_DB_USERNAME=erpione
+KC_DB_PASSWORD=erpione           # TODO: Provide secure default
+
+# Network / Proxy Configuration
+PROXY_HOST=localhost             # TODO: Document SZZP proxy configuration
+PROXY_PORT=3128
+NON_PROXY_HOST=localhost,127.*,keycloak,redis,resource-server
+
+# URLs
+ISSUER_HOSTNAME=localhost        # TODO: Document production hostname setup
+SPA_BASE_URI=http://localhost
+ALLOWED_ORIGINS=http://localhost
+
+# Redis
+REDIS_PASSWORD=redis-secret      # TODO: Document secure generation
+----
+
+==== Environment Variables by Service
+
+===== erpione-server (Resource Server)
+
+[options="header",cols="2,2,4"]
+|===
+| Variable | Example | Description
+
+| ERP_FHIR_PROFILE
+| 1.6.0
+| E-Rezept FHIR specification version to simulate
+
+| ACTIVE_SPRING_PROFILES
+| rudev,noauth
+| Comma-separated Spring Boot profiles. See <<section-spring-profiles>>
+
+| SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+| http://keycloak:8080/realms/erpione
+| Keycloak realm issuer URI for JWT validation
+
+| PROXY_HOST
+| proxy.example.com
+| HTTP proxy host for outbound E-Rezept backend connections
+
+| PROXY_PORT
+| 3128
+| HTTP proxy port
+
+| NON_PROXY_HOST
+| localhost,127.*,keycloak,redis,resource-server
+| Hosts to exclude from proxy routing
+
+|===
+
+===== erpione-oauth2-bff
+
+[options="header",cols="2,2,4"]
+|===
+| Variable | Example | Description
+
+| SPRING_PROFILES_ACTIVE
+| docker
+| Spring profile (docker, local, prod, etc.)
+
+| OAUTH2_CLIENT_ID
+| bff-client
+| OAuth2 client ID registered in Keycloak
+
+| OAUTH2_CLIENT_SECRET
+| secret-xyz
+| OAuth2 client secret (must match Keycloak registration)
+
+| OAUTH2_ISSUER_URI
+| http://keycloak:8080/realms/erpione
+| Keycloak realm issuer URI
+
+| RESOURCE_SERVER_URI
+| http://resource-server:8080
+| Internal URI for backend resource server
+
+| SPA_BASE_URI
+| http://localhost
+| Public URI of the Single Page Application
+
+| ALLOWED_ORIGINS
+| http://localhost,https://example.com
+| CORS-allowed origins for API requests
+
+| REDIS_HOST
+| redis
+| Redis hostname for session storage
+
+| REDIS_PORT
+| 6379
+| Redis port
+
+|===
+
+===== Keycloak
+
+[options="header",cols="2,2,4"]
+|===
+| Variable | Example | Description
+
+| KEYCLOAK_ADMIN
+| admin
+| Initial admin username
+
+| KEYCLOAK_ADMIN_PASSWORD
+| admin-password
+| Initial admin password (must be set)
+
+| KC_DB_USERNAME
+| erpione
+| Database username
+
+| KC_DB_PASSWORD
+| erpione-db-password
+| Database password (must be set)
+
+| KC_HTTP_RELATIVE_PATH
+| /kc
+| Relative path for Keycloak in proxy
+
+| KC_HOSTNAME
+| keycloak.example.com
+| Public hostname (for production)
+
+|===
+
+[[section-spring-profiles]]
+==== Spring Boot Profiles
+
+The `ACTIVE_SPRING_PROFILES` environment variable controls runtime behaviour:
+
+[options="header",cols="1,3"]
+|===
+| Profile | Description
+
+| **Environment Profiles** (pick one)
+|
+
+| `rudev`
+| Running against the RU-DEV environment
+
+| `ru`
+| Running against the RU(-REF) environment
+
+| `rudev`
+| Running against the TU environment
+
+| **Feature Profiles** (additive)
+|
+
+| `offline`
+| Run without connecting to the E-Rezept Fachdienst (offline mode)
+
+| `noauth`
+| Disable OAuth2/JWT authentication
+
+|===
+
+Example combinations:
+
+[source]
+----
+# Local development without authentication and without connecting to E-Rezept backend
+rudev,noauth,offline
+----
+
+[[section-secrets-management]]
+=== Secrets Management
+
+TODO: This section needs to be populated. Questions for review:
+
+1. **Secrets Generation**: How should operators generate secure secrets (Keycloak passwords, Redis passwords, OAuth2 secrets)?
+2. **Secrets Storage**: Where/how are secrets stored in production? (Kubernetes Secrets, Docker secrets, environment files, HashiCorp Vault?)
+3. **Secret Rotation**: What is the procedure for rotating secrets without downtime?
+4. **Certificate Management**: How are TLS certificates generated and managed?
+
+==== Development Secrets
+
+For development (docker-compose), create a `.env` file with default values.
+
+**WARNING**: Never commit `.env` files with real secrets to version control. Use `.gitignore`:
+
+[source]
+----
+.env
+.env.local
+*.secret
+----
+
+[[section-fachdienst-credentials]]
+==== E-Rezept Fachdienst Credentials (`application-secrets.yaml`)
+
+Every request towards the E-Rezept Fachdienst must carry a `User-Agent` header that identifies the Primärsystem. Patient actors (simulating the FdV / E-Rezept app) use the Internet route and additionally require an `X-api-key` header. Both values are environment-specific credentials and are therefore **not** part of the public repository: the file `application-secrets.yaml` is excluded via `.githubignore`, and the public source tree does not contain it.
+
+The server nevertheless expects these values. `application.yaml` includes the Spring profile `secrets` (`spring.profiles.include`), which makes Spring Boot load `application-secrets.yaml` next to the other `application-*.yaml` files when present. Operators running their own Erpione instance must supply this file (or equivalent configuration) themselves.
+
+The credentials are per environment profile (see <<section-spring-profiles>>) and live below `erpione.environment`:
+
+[options="header",cols="2,1,3"]
+|===
+| Property | Required | Description
+
+| `erpione.environment.ti.userAgent`
+| yes
+| `User-Agent` sent on the TI route (split-DNS endpoints via SZZP/Konnektor). Format defined by gematik, e.g. `<ProductName>/<Version> <VendorID>`
+
+| `erpione.environment.internet.userAgent`
+| Patient actors only
+| `User-Agent` sent on the Internet route, which is used by patient actors (simulating the FdV / E-Rezept app)
+
+| `erpione.environment.internet.xapiKey`
+| Patient actors only
+| `X-api-key` for the Internet endpoints of the Fachdienst (`erp-*.app.ti-dienste.de`). Only required when patient actors (FdV simulation) are used; doctors and pharmacies communicate via the TI route exclusively.
+|===
+
+Create `erpione-server/src/main/resources/application-secrets.yaml` from the following template and fill in your own values for every environment you intend to use. The ``---`` separated documents are activated per profile via `spring.config.activate.on-profile`:
+
+[source,yaml]
+----
+---
+spring:
+  config:
+    activate:
+      on-profile: tu
+erpione:
+  environment:
+    ti:
+      userAgent: "<your-user-agent>"
+    internet:
+      xapiKey: "<your-tu-x-api-key>"
+      userAgent: "<your-user-agent>"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: ru
+erpione:
+  environment:
+    ti:
+      userAgent: "<your-user-agent>"
+    internet:
+      xapiKey: "<your-ru-x-api-key>"
+      userAgent: "<your-user-agent>"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: rudev
+erpione:
+  environment:
+    ti:
+      userAgent: "<your-user-agent>"
+    internet:
+      xapiKey: "<your-rudev-x-api-key>"
+      userAgent: "<your-user-agent>"
+----
+
+Alternatively, the values can be provided without touching the source tree, e.g. as environment variables for the `erpione-server` container (`ERPIONE_ENVIRONMENT_INTERNET_XAPIKEY`, `ERPIONE_ENVIRONMENT_TI_USERAGENT`, `ERPIONE_ENVIRONMENT_INTERNET_USERAGENT`) or through an external config location (`SPRING_CONFIG_ADDITIONAL_LOCATION`). Standard Spring Boot property precedence applies.
+
+Obtaining credentials::
+The `X-api-key` and the agreed `User-Agent` for the gematik test environments (TU, RU, RU-DEV) are issued on request by gematik. Please contact https://fachportal.gematik.de/[gematik Fachportal] and state the environments you need access to.
+
+**WARNING**: Treat `application-secrets.yaml` like any other secret: never commit it to a public repository and keep it out of Docker images that are shared outside your organisation.
+
+==== Production Secrets
+
+TODO: Document production secrets management strategy.
+
+Recommendations:
+
+- Use Kubernetes Secrets (if running on Kubernetes)
+- Use Docker Secrets (if running on Docker Swarm)
+- Use HashiCorp Vault for external secret management
+- Use CI/CD platform secrets (GitHub Secrets, GitLab CI variables, etc.)
+
+[[section-deployment]]
+=== Deployment Procedures
+
+==== Prerequisites Checklist
+
+Before deploying, ensure:
+
+- [ ] Docker and Docker Compose installed and running
+- [ ] All required environment variables defined in `.env` file
+- [ ] Secrets file created and secured (`.env` not committed to git)
+- [ ] `application-secrets.yaml` created with your own `User-Agent` and `X-api-key` (see <<section-fachdienst-credentials>>)
+- [ ] Network connectivity the E-Rezept Fachdienst verified
+- [ ] TLS certificates prepared (for production)
+- [ ] Database volumes initialized
+- [ ] Sufficient disk space available
+- [ ] All build artifacts up-to-date
+
+
+==== Local Development Workflow
+
+This workflow is intended for local development and testing only; it is not suitable for production environments.
+
+To reduce OAuth2 complexity during development, the local stack runs without Keycloak and without the OAuth2 BFF. Authentication is therefore disabled in this setup.
+
+Contrary to the two possible <<section-deployment-view,Deployment Views>> the local Development Workflow is mostly the full deployment stack without the authentication server and the BFF. The local development workflow is intended for developers to quickly test changes in the backend or frontend without having to deal with the complexity of OAuth2 and Keycloak.
+
+NOTE: The `erpione-server` artifact must be built and repackaged before deployment; see <<section-build-process,Building Java/Kotlin Modules>> for the required `./mvnw package spring-boot:repackage -f erpione-server/pom.xml -DskipTests` step.
+
+
+[source,shell]
+----
+#!/bin/bash
+set -e
+
+ensure_volume() {
+  local volume_name="$1"
+  if ! docker volume inspect "$volume_name" >/dev/null 2>&1; then
+    docker volume create "$volume_name" >/dev/null
+    echo "Created volume: $volume_name"
+  else
+    echo "Volume already exists: $volume_name"
+  fi
+}
+
+cd $(git rev-parse --show-toplevel)
+
+# 1. Set environment
+export ENVIRONMENT=rudev
+export ERP_FHIR_PROFILE=1.6.0
+export ACTIVE_SPRING_PROFILES=${ENVIRONMENT},noauth
+export PUBLIC_PORT=8080
+
+# 2. Create required Docker volumes
+ensure_volume "erpione-data-${ENVIRONMENT}"
+
+# 3. Build and start containers
+docker compose -f dc-erpione-local.yml up -d --build
+
+# 4. Wait for services to be healthy
+echo "Waiting for services to start..."
+sleep 15
+
+# 5. Verify health
+docker compose -f dc-erpione-local.yml ps
+----
+
+Now you can access the local development stack at `http://localhost:8080`. The REST API is available at `http://localhost:8080/api/info`.
+
+==== Production Deployment
+
+TODO: Document the following:
+
+1. Pre-production checklist (security hardening, TLS setup, etc.)
+2. Health check procedures
+3. Load balancing setup (if applicable)
+4. Backup and recovery procedures
+5. Monitoring setup
+6. Logging aggregation
+7. Rollback procedures
+
+===== Deployment Execution
+
+[source,shell]
+----
+#!/bin/bash
+set -e
+
+export ENVIRONMENT=rudev
+export ERP_FHIR_PROFILE=1.6.0
+export ACTIVE_SPRING_PROFILES=rudev,noauth
+
+# Create volumes
+for vol in erpione-data erpione-redis-data erpione-keycloak; do
+  docker volume create "${vol}-${ENVIRONMENT}" || true
+done
+
+# Load secrets from external source
+#TODO: Document secret injection mechanism
+
+# Deploy
+docker compose -f dc-erpione.yml up -d --build
+
+# Monitor
+docker compose -f dc-erpione.yml logs -f
+----
+
+[[section-health-checks]]
+=== Health Checks & Validation
+
+After deployment, verify all services are operational:
+
+==== Service Health Endpoints
+
+[options="header",cols="2,2,3"]
+|===
+| Service | Endpoint | Expected Response
+
+| Resource Server
+| `http://localhost:8080/actuator/health`
+| `{"status":"UP"}`
+
+| BFF
+| `http://localhost:8080/actuator/health`
+| `{"status":"UP"}`
+
+| Reverse Proxy
+| `http://localhost:8080`
+| Nginx welcome page or proxied response
+
+| Keycloak
+| `http://localhost:8080/kc/health/ready`
+| HTTP 200 OK
+
+| Redis
+| `redis-cli ping`
+| PONG
+
+|===
+
+==== Manual Health Check Script
+
+[source,shell]
+----
+#!/bin/bash
+
+echo "=== Erpione Health Check ==="
+
+# Function to check HTTP endpoint
+check_http() {
+  local endpoint=$1
+  local name=$2
+  echo -n "Checking $name ($endpoint)... "
+  if curl -s -f "$endpoint" > /dev/null; then
+    echo "✓ OK"
+  else
+    echo "✗ FAILED"
+    return 1
+  fi
+}
+
+# Function to check container
+check_container() {
+  local container=$1
+  echo -n "Checking container $container... "
+  if docker ps --filter "name=$container" --filter "status=running" | grep -q "$container"; then
+    echo "✓ Running"
+  else
+    echo "✗ Not running"
+    return 1
+  fi
+}
+
+check_http "http://localhost:8080/actuator/health" "Resource Server"
+check_http "http://localhost:8080/kc/health/ready" "Keycloak"
+
+check_container "erpione-resource-server"
+check_container "erpione-bff"
+check_container "erpione-redis"
+check_container "erpione-keycloak"
+check_container "erpione-reverse-proxy"
+
+echo "=== Health Check Complete ==="
+----
+
+==== Database Verification
+
+TODO: Document:
+
+- How to verify database initialization
+- How to check data persistence
+- How to backup/restore database
+
+[source,shell]
+----
+# TODO: Add database health check commands
+# Check H2 database connectivity
+# Verify database schema initialization
+----
+
+==== API Verification
+
+TODO: Document:
+
+- How to test basic API endpoints
+- How to create test data
+- How to verify E-Rezept connectivity
+
+[source,shell]
+----
+# TODO: Add example API test commands
+# Example: curl http://localhost:8080/api/v1/health
+----
+
+[[section-logging-monitoring]]
+=== Logging & Monitoring
+
+==== Application Logs
+
+View container logs in real-time:
+
+[source,shell]
+----
+# All services
+docker compose -f dc-erpione-local.yml logs -f
+
+# Specific service
+docker compose -f dc-erpione-local.yml logs -f resource-server
+
+# With timestamps
+docker compose -f dc-erpione-local.yml logs -f --timestamps
+
+# Last N lines
+docker compose -f dc-erpione-local.yml logs --tail=100 resource-server
+----
+
+==== Log Locations
+
+[options="header",cols="2,3"]
+|===
+| Component | Log Location
+
+| erpione-server
+| Container stdout/stderr (docker logs)
+TODO: Document file-based logging location if applicable
+
+| erpione-bff
+| Container stdout/stderr (docker logs)
+
+| Keycloak
+| Container stdout/stderr (docker logs)
+
+| Nginx (reverse proxy & UI)
+| `/var/log/nginx/access.log` (inside container)
+
+|===
+
+==== Metrics & Monitoring
+
+TODO: Document the following:
+
+1. Which metrics are exposed by each service?
+2. How to scrape Prometheus metrics?
+3. How to set up monitoring dashboards (Grafana)?
+4. What alerts should be configured?
+
+[source]
+----
+# TODO: Metrics endpoints
+
+# erpione-server: http://localhost:8080/actuator/metrics
+# erpione-bff: http://localhost:8080/actuator/metrics
+# keycloak: TODO
+
+# TODO: Example Prometheus scrape config
+# TODO: Example Grafana dashboard setup
+----
+
+[[section-troubleshooting]]
+=== Troubleshooting
+
+==== Common Issues
+
+===== Services Not Starting
+
+[source]
+----
+# Check Docker daemon status
+docker version
+
+# Check service status
+docker compose -f dc-erpione-local.yml ps
+
+# View service logs
+docker compose -f dc-erpione-local.yml logs resource-server
+
+# Common causes:
+# - Port already in use: change PUBLIC_PORT in .env
+# - Volume permission issues: check docker volume permissions
+# - Out of memory: increase Docker memory allocation
+----
+
+===== Database Connection Failed
+
+TODO: Document:
+
+- Database connectivity troubleshooting
+- Schema initialization issues
+- Data corruption recovery
+
+===== Authentication/Keycloak Issues
+
+TODO: Document:
+
+- OAuth2 client configuration errors
+- JWT validation failures
+- Session management problems
+- Keycloak realm setup
+
+===== Proxy/Network Issues
+
+TODO: Document:
+
+- SZZP/proxy connectivity errors
+- TLS certificate validation failures
+- DNS resolution issues
+- E-Rezept backend connectivity

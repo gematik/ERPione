@@ -1,0 +1,26 @@
+@startuml
+
+hide stereotype
+left to right direction
+
+:User: as user <<User>>
+:Apotheker: as pharmacist <<Actor>>
+user .down.> pharmacist : perform as
+
+(E-Rezept löschen) as (uc_delete)
+(E-Rezept abrufen) as (uc_claim)
+(E-Rezept zurückgeben) as (uc_return)
+(E-Rezept dispensieren) as (uc_close)
+(Quittung erneut abrufen) as (uc_receipt)
+(Nachrichten abrufen) as (uc_read_communication)
+(Nachrichten versenden) as (uc_send_communication)
+
+
+pharmacist -down-> (uc_claim) : performs
+pharmacist --down-> (uc_return) : performs
+pharmacist -down-> (uc_close) : performs
+pharmacist --down-> (uc_delete) : performs
+pharmacist --down-> (uc_receipt) : performs
+pharmacist --down-> (uc_read_communication) : performs
+pharmacist --down-> (uc_send_communication) : performs
+@enduml

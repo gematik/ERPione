@@ -1,0 +1,28 @@
+{
+  "currency" : "EUR",
+  "items" : [ {
+    "name" : "Amoxicillin/Clavulansäure Heumann 875mg/125mg 10St",
+    "codeSystem" : "http://fhir.de/CodeSystem/ifa/pzn",
+    "code" : "11514676",
+    "priceComponent" : {
+      "category" : "2",
+      "type" : "informational",
+      "factor" : 2,
+      "insurantCost" : 0.0,
+      "totalCost" : 48.98,
+      "vatRate" : 19.0
+    }
+  }, {
+    "name" : "Noctu-Gebühr",
+    "codeSystem" : "http://TA1.abda.de",
+    "code" : "02567018",
+    "priceComponent" : {
+      "category" : "Mehrkosten",
+      "type" : "informational",
+      "factor" : 1,
+      "insurantCost" : 0.0,
+      "totalCost" : 2.5,
+      "vatRate" : 19.0
+    }
+  } ]
+}

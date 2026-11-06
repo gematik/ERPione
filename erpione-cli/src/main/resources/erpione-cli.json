@@ -1,0 +1,27 @@
+{
+  "envs": [
+    {
+      "name": "local",
+      "url": "http://localhost:8080"
+    },
+    {
+      "name": "dc_local",
+      "url": "http://server:8080"
+    },
+    {
+      "name": "RU-DEV",
+      "url": "https://erpps-test.dev.gematik.solutions/api/"
+    },
+    {
+      "name": "RU",
+      "url": "http://localhost:8080"
+    },
+    {
+      "name": "TU",
+      "url": "http://localhost:8080"
+    }
+  ],
+  "out": {
+    "pretty": "true"
+  }
+}

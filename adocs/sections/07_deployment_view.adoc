@@ -1,0 +1,61 @@
+include::attributes-sections.adoc[]
+
+[[section-deployment-view]]
+== Deployment View
+This section describes the technical infrastructure on which Erpione is executed.
+
+=== Infrastructure Level 1
+
+_**Service Deployment**_
+
+.Erpione Deployment View
+[plantuml, "{pumldir}/deployment-overview", svg]
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/deployment-overview.puml[]
+----
+
+as a lightweight alternative the Erpione service can also be run without the Web UI and authentication server, directly exposing the REST API.
+
+_**Simple Service Deployment**_
+
+.Erpione simple Deployment View
+[plantuml, "{pumldir}/deployment-overview-simple", svg]
+----
+include::{pumldir}/common-style.iuml[]
+include::{pumldir}/deployment-overview-simple.puml[]
+----
+
+Motivation::
+
+Erpione is designed for flexible, secure, and reproducible deployment. By running all core components (the Erpione service, authentication server, proxy etc.) as Docker containers, the system can be easily started, stopped, and managed in any environment that supports Docker.
+
+IMPORTANT: An SZZP acts as a central VPN access point or proxy. It protects the central network (e.g. the telematics infrastructure in the healthcare sector) by routing all connections through it. This connectivity to the TI must be provided by the runtime for the Erpione to run properly. Make sure to read and understand the implications as described in <<section-concept-ti-connectivity,TI Connectivity>>
+
+Quality and/or Performance Features::
+
+- **Isolation:** Each component runs in its own container, providing process and resource isolation.
+- **Portability:** The entire stack can be deployed on any host with Docker support.
+- **Configurability:** Environment variables and Docker Compose files allow for easy configuration of endpoints, secrets, and runtime options.
+
+Mapping of Building Blocks to Infrastructure::
+- **SZZP**: Handles all incoming and outgoing traffic to the TI.
+
+=== Infrastructure Level 2
+
+==== Resource Server Container
+
+- Runs the Spring Boot application with all business logic, REST API, and simulation features.
+- Connects to the database and Keycloak for persistence and authentication.
+
+==== Authentication Server Container
+
+- Keycloak provides authentication and authorization services for Erpione.
+
+==== Reverse Proxy Container
+
+- Nginx routes incoming requests to the appropriate backend services (e.g., REST API, Keycloak) and handles TLS termination if needed.
+
+==== Web UI Container
+
+- Nginx serves the static files of the web-based user interface, allowing users to interact with Erpione through a browser.

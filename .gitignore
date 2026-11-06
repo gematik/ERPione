@@ -7,8 +7,8 @@
 /.idea/sonarlint/**
 **/.DS_Store
 
+adocs/target/
 adocs/*.html
-!adocs/docinfo.html
 adocs/*.pdf
 adocs/plantuml/*.svg
 adocs/plantuml/*.cache
@@ -18,14 +18,22 @@ adocs/plantuml/*.cache
 *.ipa
 *.xcarchive
 *.pcs
+**/erpione.mv.db
+**/erpione.trace.db
+
+.gitlab
 
 COPYRIGHT_HEADER
+
 /jenkins/
 Jenkinsfile
 *.Jenkinsfile
-.gitlab
-CI
-*.ppcs
-*.pcs
-**/nginx.conf
-**/.env
+jenkins/secrets/*
+
+**/application-secrets.yaml
+**/application-secrets.yml
+**/application-secrets.properties
+**/*-secrets.yaml
+**/*-secrets.yml
+**/*-secrets.properties
+**/*-secrets.json

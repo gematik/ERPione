@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="utility.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="buttons.js"></script>
+    <script src="tutorial.js"></script>
+</head>
+<body>
+<div class=" ms-auto me-auto w-50 bg-warning text-info-emphasis d-none rounded-3 m-3" id="new-user-banner">
+    <p class="ms-3 m-auto d-inline-block text-center fw-semibold" id="welcome-text"></p>
+    <button class="btn btn-sm btn-outline-primary m-2" id="tutorial-start-new-user" onclick="startTutorial()">Starte hier!</button>
+</div>
+    <div class="container-md py-4 px-4 mx-auto" style="max-width: 40rem;">
+        <div class="card shadow-sm border-0 overflow-hidden">
+            <div class="card-header bg-white border-0 px-4 py-3">
+                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <img src="img/erpione.png" alt="Erpione" class="img-fluid" id="i-am-erpione" style="max-height: 54px; width: auto;">
+                        <h1 class="display-7 fw-semibold m-2" id="page-title">Erpione <span id="env-addition"></span></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-lg-4" id="quick-rx-container">
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-lg-15">
+                        <div class="card border-0 bg-body-tertiary">
+                            <p class="text-body-secondary mb-3">Erstelle ein mit zufälligen Werten befülltes Rezept für die angegebene KVNR. Für volle Kontrolle über die Werte, nutze das PVS!</p>
+                            <div class="card-body p-lg-4 d-flex">
+                                <form id="kvnr-form" class="row g-3" novalidate>
+                                    <div class="col-md-8">
+                                        <label for="kvnr-input" class="visually-hidden">KVNR</label>
+                                        <input id="kvnr-input" class="form-control form-control-lg" type="text" placeholder="X110123456" aria-label="KVNR" />
+                                    </div>
+                                    <div class="col-md-2 d-grid">
+                                        <button id="generate-button" class="btn btn-primary btn-lg" type="submit">Absenden</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="response-container"></div>
+        </div>
+    </div>
+    <script>
+        const envAddition = findElement('env-addition');
+        const kvnrForm = findElement('kvnr-form');
+        const kvnrInput = findElement('kvnr-input');
+        const generateButton = findElement('generate-button');
+        const welcomeText = findElement('welcome-text');
+        const newUserStartTutorial = findElement('tutorial-start-new-user');
+        const newUserBanner = findElement('new-user-banner');
+
+        let userData = JSON.parse(localStorage.getItem('userData'));
+        const username = userData?.name || userData?.username || 'Gast';
+        if(userData && userData.isNewUser === undefined){
+            userData.isNewUser = true;
+            localStorage.setItem('userData', JSON.stringify(userData));
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const env = window.ERPIONE_ENV || "LOCAL";
+            envAddition.textContent = `${env}`;
+
+            welcomeText.textContent = `Hallo ${username}! Neu hier? Mach dich mit Erpione vertraut und starte die Einführung!`;
+            if(userData){
+                if(userData.isNewUser){
+                    newUserBanner.classList.toggle('d-none', false);
+                    newUserBanner.classList.toggle('d-flex', true);
+                }
+            } else {
+                newUserBanner.classList.toggle('d-none', false);
+                newUserBanner.classList.toggle('d-flex', true);
+            }
+        });
+
+        kvnrForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const kvnr = kvnrInput.value.trim();
+            if (!kvnr) {
+                kvnrInput.focus();
+                kvnrInput.classList.add('is-invalid');
+                return;
+            }
+
+            kvnrInput.classList.remove('is-invalid');
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating…';
+
+            fetch(`/api/erp/pharmaceutical`, {
+                method: 'POST',
+                credentials: "same-origin",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-Token': getXsrfToken(),   // required for POST
+                    'x-actor': 'machaon'
+                },
+                body: JSON.stringify({ patient: { kvnr } })
+            })
+                .then(response => checkForLogin(response))
+                .then(async response => [response.ok, await response.json()])
+                .then(response => {
+                    hideSpinner();
+                    const [ok, data] = response;
+                    const codeBox = getHighlightedCodeBox(data)
+                    codeBox.prepend(createEditPrescriptionButton(data))
+                    document.getElementById('response-container').prepend(codeBox);
+                    if (ok) {
+                        appendAlert(`E-Rezept ${data.prescription.medication.name} (${data.taskId}) für ${kvnr} erfolgreich ausgestellt`, "success")
+                    } else {
+                        appendAlert(`Fehler: ${data.message}`, "danger")
+                    }
+                    generateButton.disabled = false;
+                    generateButton.textContent = 'Generate';
+                })
+                .catch(handleUnexpectedFetchError);
+        });
+
+        const tutorials = [];
+        tutorials.push({
+            selector: '#i-am-erpione',
+            title: `Hallo ${username}!`,
+            text: 'Willkommen, mein Name ist Erpione. Ich bin die Schwester von Epione, der griechischen Göttin der Schmerzenslinderung.\n Ich bin sozusagen die Göttin der E-Rezepte, und dies ist mein Reich!',
+            position: 'bottom'
+        });
+        tutorials.push({
+            selector: '#nav-item-tutorial',
+            title: 'Ruf mich herbei',
+            text: 'Ich bin jederzeit bereit dir auszuhelfen, egal wo in meinem Reich du bist! Klicke dafür einfach wieder auf diesen Button.',
+            position: 'bottom'
+        });
+        tutorials.push({
+            selector: '#fd-status',
+            title: 'FD Status',
+            text: 'Hier siehst du den aktuellen Status des Fachdienstes. Er wird alle 5 Minuten automatisch aktualisiert. Mit einem Klick gelangst du zu weiteren Details.',
+            position: 'bottom'
+        });
+        tutorials.push({
+            selector: '#quick-rx-container',
+            title: 'Schnellrezept',
+            text: 'Hier kannst du bequem ein zufälliges Rezept für eine KVNR erzeugen, ohne dich mit vielen Werten auseinandersetzen zu müssen.',
+            position: 'left'
+        });
+        tutorials.push({
+            selector: '#kvnr-input',
+            title: 'KVNR',
+            text: 'Gib hier die KVNR ein für die das Rezept sein soll.',
+            position: 'left'
+        });
+        tutorials.push({
+            selector: '#generate-button',
+            title: 'Absenden',
+            text: 'Und drücke dann einfach auf Absenden! Das Rezept mache ich dann für dich fertig 😄',
+            position: 'right',
+        });
+        tutorials.push({
+            selector: '#nav-item-pvs',
+            title: 'Das PVS',
+            text: 'Solltest du doch mehr Kontrolle brauchen, nutze einfach das PVS!',
+            position: 'bottom',
+        });
+        tutorials.push({
+            selector: '#nav-item-prescriptions',
+            title: 'E-Rezepte',
+            text: 'Überblick über alle E-Rezepte in meinem Reich erhälst du hier! Dort findest du auch das AVS.',
+            position: 'bottom',
+        });
+        tutorials.push({
+            selector: '#nav-item-actors',
+            title: 'Akteure',
+            text: 'Ich habe viele talentierte ÄrztInnen und ApothekerInnen in meinem Gefolge, die für dich E-Rezepte handhaben. Wer sie sind findest du hier aufgezeichnet.',
+            position: 'bottom',
+        });
+        tutorials.push({
+            selector: '#nav-item-comms',
+            title: 'Nachrichten',
+            text: 'Alle Nachrichten die ich erhalte, werden hier gesammelt. So kannst du immer den Überblick behalten.',
+            position: 'bottom',
+        });
+        tutorials.push({
+            selector: '#nav-item-eu-pharmacy',
+            title: 'Der NCPeH',
+            text: 'Wenn es um E-Rezepte im Ausland geht, kann ich den NCPeH simulieren. Hier findest du alle Operationen dazu.',
+            position: 'bottom',
+        });
+        tutorials.push({
+            selector: '#nav-item-openapi',
+            title: 'Swagger OpenAPI',
+            text: 'Die Gänze aller meiner Operationen findest du hier, in der OpenAPI. Ich kann ganz schön viel, aber wenn dir etwas fehlt, dann wende dich an meine erwürdigen Diener und sie werden es mir beibringen.<br><a href="https://service.gematik.de/servicedesk/customer/portal/11" target="_blank">Zum Anfrage-Portal</a>',
+            position: 'bottom',
+            isLast: true
+        });
+        Tutorial.setSteps(tutorials)
+    </script>
+</body>
+</html>

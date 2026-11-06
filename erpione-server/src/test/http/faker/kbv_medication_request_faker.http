@@ -1,0 +1,29 @@
+import http-client.env.json
+
+
+### FAKER-KBV-MEDICATION-REQUEST-01
+# MedicationRequest without MVO
+GET {{host}}/faker/kbv/medication-request
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "dosage": "1-0-1",
+  "packageQuantity": "42",
+  "note": "nur nach dem Essen einnehmen!",
+  "substitutionAllowed": false
+}
+
+### FAKER-KBV-MEDICATION-REQUEST-02
+# MedicationRequest with random MVO
+GET {{host}}/faker/kbv/medication-request
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "dosage": "1-0-1",
+  "packageQuantity": 42,
+  "note": "nur nach dem Essen einnehmen!",
+  "substitutionAllowed": false,
+  "mvo": {}
+}

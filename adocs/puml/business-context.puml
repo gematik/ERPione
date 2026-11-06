@@ -1,0 +1,15 @@
+@startuml
+
+hide stereotype
+
+:User: as user <<User>>
+:Arzt: as doctor <<Actor>>
+:Apotheker: as pharmacist <<Actor>>
+:Kostenträger: as ktr <<Actor>>
+:EU Apotheker: as ncpeh <<Actor>>
+
+user .down.> ncpeh
+user .down.> ktr
+user .down.> pharmacist
+user .down.> doctor
+@enduml

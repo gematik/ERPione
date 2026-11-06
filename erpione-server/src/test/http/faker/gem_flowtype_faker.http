@@ -1,0 +1,6 @@
+import http-client.env.json
+
+### FAKER-GEM-FLOWTYPE-01
+GET {{host}}/faker/gem/flowtype?type=200
+Content-Type: application/json
+apikey: {{apikey}}

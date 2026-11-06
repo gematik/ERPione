@@ -1,0 +1,21 @@
+@startuml
+
+hide stereotype
+left to right direction
+
+:User: as user <<User>>
+:Arzt: as doctor <<Actor>>
+user .down.> doctor : perform as
+
+
+(Pharmazeutisches E-Rezept einstellen) as (uc_create_pharmaceutical)
+(DiGA E-Rezept einstellen) as (uc_create_diga)
+(T-Rezept einstellen) as (uc_create_trezept)
+(E-Rezept löschen) as (uc_delete)
+
+doctor -down-> (uc_create_pharmaceutical) : performs
+doctor -down-> (uc_create_diga) : performs
+doctor -down-> (uc_create_trezept) : performs
+doctor -down-> (uc_delete) : performs
+
+@enduml

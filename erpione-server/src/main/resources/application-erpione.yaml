@@ -1,0 +1,166 @@
+
+erpione:
+  onlineMode: true
+  doctors:
+    - mnemonic: Machaon
+      smcbIccsn: 80276001011699901102
+      hbaIccsn: 80276001011699901501
+
+    - mnemonic: Podaleirios
+      smcbIccsn: 80276883110000163953  # Krankenhaus
+      hbaIccsn: 80276001011699901344
+
+    - mnemonic: Telesphorus
+      smcbIccsn: 80276883110000163952 # Psychotherapeutische Praxis
+      hbaIccsn: 80276883110000163949  # Psychotherapeut/-in
+
+  pharmacists:  # "Asclepiades" are daughters of Asklepios, the Greek god of medicine
+    - mnemonic: Hygieia
+      smcbIccsn: 80276001011699902303 # christine ulmendorfer the only pharmacy we have in VZD
+      hbaIccsn: 80276001011699901726
+
+    - mnemonic: Panacea
+      smcbIccsn: 80276001011699900861 # Krankenhausapotheke
+      hbaIccsn: 80276001011699901726
+
+    - mnemonic: Iaso
+      smcbIccsn: 80276883110000163973
+      hbaIccsn: 80276001011699901726
+
+    - mnemonic: Akeso
+      smcbIccsn: 80276001011699902301 # adelheid ulmendorfer, telematik-id 3-01.2.2023001.16.101
+      hbaIccsn: 80276001011699901726
+
+  ktrs: # LEIs/KTRs get mnemonics from regions related to Asklepios and Epione
+    - mnemonic: Thessaly
+      smcbIccsn: 80276883110000163954
+
+  ncpehs:
+    - mnemonic: Madrid
+      customName: Farmacia del Sol
+      countryCode: ES
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Warschau
+      customName: Apteka Słoneczna
+      countryCode: PL
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Prag
+      customName: Lékárna v Centru
+      countryCode: CZ
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Wien
+      customName: Edelweiss-Apotheke
+      countryCode: AT
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Vaduz # pharmacy from Lichtenstein
+      customName: Fürsten Apotheke
+      countryCode: LI
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Valletta # pharmacy from Malta
+      customName: Spiżerija Vitalis
+      countryCode: MT
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Vilnius
+      customName: Apotheka Eurovaistine
+      countryCode: LT
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Riga
+      customName: Aptieka Avotu
+      countryCode: LV
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Brussels
+      customName: Apotheek Du Centre
+      countryCode: BE
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Helsinki
+      customName: Kaivopuiston apteekki
+      countryCode: FI
+      smcbIccsn: ncpeh-smb
+
+    - mnemonic: Ljubljana
+      customName: Lekarna Ljubljana Center
+      countryCode: SI
+      smcbIccsn: ncpeh-smb
+
+---
+spring:
+  config:
+    activate:
+      on-profile: tu
+erpione:
+  fhirProfile: 1.5.0
+  environment:
+    vauCertificate: "MIIDATCCAqigAwIBAgIDALdfMAoGCCqGSM49BAMCMIGEMQswCQYDVQQGEwJERTEfMB0GA1UECgwWZ2VtYXRpayBHbWJIIE5PVC1WQUxJRDEyMDAGA1UECwwpS29tcG9uZW50ZW4tQ0EgZGVyIFRlbGVtYXRpa2luZnJhc3RydWt0dXIxIDAeBgNVBAMMF0dFTS5LT01QLUNBNTYgVEVTVC1PTkxZMB4XDTI2MDIyNjEyMzExOVoXDTMxMDIyNTEyMzExOFowYDELMAkGA1UEBhMCREUxIjAgBgNVBAoMGUlCTSBURVNULU9OTFkgLSBOT1QtVkFMSUQxFzAVBgNVBAUTDjA4NzQ3LVRVRU5DMDA0MRQwEgYDVQQDDAtlcmV6ZXB0LXZhdTBaMBQGByqGSM49AgEGCSskAwMCCAEBBwNCAASVdnha9zx8e32o0IQqZKB/cr+x6YyQB66YRBJZqiGy3AcuF/NZEqzytemqbaETsrZWIaVtSAOdoawOQfsNMvmFo4IBKTCCASUwHQYDVR0OBBYEFCeWpNSKJj5MO6ERG/S0kf5k8/ydMB8GA1UdIwQYMBaAFNW4HHmJo6WtxY22/lv+EDcDnQPDME0GCCsGAQUFBwEBBEEwPzA9BggrBgEFBQcwAYYxaHR0cDovL2Rvd25sb2FkLXRlc3RyZWYuY3JsLnRpLWRpZW5zdGUuZGUvb2NzcC9lYzAOBgNVHQ8BAf8EBAMCAwgwIQYDVR0gBBowGDAKBggqghQATASBIzAKBggqghQATASBSjAMBgNVHRMBAf8EAjAAMFMGBSskCAMDBEowSDBGMEQwQjBAMDIMMEUtUmV6ZXB0IHZlcnRyYXVlbnN3w7xyZGlnZSBBdXNmw7xocnVuZ3N1bWdlYnVuZzAKBggqghQATASCAjAKBggqhkjOPQQDAgNHADBEAiAftivibiDcPReQjnsELHd0HTAN89ew4xp+n5F1J9XGSAIgXs5VmhvyABrgDbI2N2fBi11co6/PCxTFkf/UjLBrjZY="
+    ti:
+      tslBaseUrl: "http://download-test.tsl.telematik-test/ECC"
+      fdBaseUrl: "https://erp-test.zentral.erp.splitdns.ti-dienste.de"
+      idp:
+        discoveryDocumentUrl: "https://idp-test.zentral.idp.splitdns.ti-dienste.de/.well-known/openid-configuration"
+        clientId: "gematikTestPs"
+        redirectUri: "http://test-ps.gematik.de/erezept"
+        scopes: ["openid", "e-rezept"]
+    internet:
+      tslBaseUrl: "https://download-test.tsl.ti-dienste.de/ECC"
+      discoveryDocumentUrl: "https://idp-test.app.ti-dienste.de/.well-known/openid-configuration"
+      fdBaseUrl: "https://erp-test.app.ti-dienste.de"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: ru
+erpione:
+  fhirProfile: 1.4.0
+  environment:
+    vauCertificate: "MIIDAzCCAqmgAwIBAgICG4IwCgYIKoZIzj0EAwIwgYQxCzAJBgNVBAYTAkRFMR8wHQYDVQQKDBZnZW1hdGlrIEdtYkggTk9ULVZBTElEMTIwMAYDVQQLDClLb21wb25lbnRlbi1DQSBkZXIgVGVsZW1hdGlraW5mcmFzdHJ1a3R1cjEgMB4GA1UEAwwXR0VNLktPTVAtQ0EyOCBURVNULU9OTFkwHhcNMjEwNTEwMDgyOTU5WhcNMjYwNTA5MDgyOTU4WjBgMQswCQYDVQQGEwJERTEiMCAGA1UECgwZSUJNIFRFU1QtT05MWSAtIE5PVC1WQUxJRDEXMBUGA1UEBRMOMDg3NDctUlVFTkMwMDIxFDASBgNVBAMMC2VyZXplcHQtdmF1MFowFAYHKoZIzj0CAQYJKyQDAwIIAQEHA0IABD5xWMtXS8nUUlQl8iQE/Qz/IXaMCsFOCOSlOLV2AOyIYJ5ExAP73a0wQvTT+0L2uzqrUIcpmiVQ8qpdE+gMt2ejggErMIIBJzAdBgNVHQ4EFgQUMG1tgML5/BG9sTVaj2+olZZML2kwHwYDVR0jBBgwFoAUAGo4kPOZriGPUtruwYxugK1hIskwTwYIKwYBBQUHAQEEQzBBMD8GCCsGAQUFBzABhjNodHRwOi8vb2NzcDItdGVzdHJlZi5rb21wLWNhLnRlbGVtYXRpay10ZXN0L29jc3AvZWMwDgYDVR0PAQH/BAQDAgMIMCEGA1UdIAQaMBgwCgYIKoIUAEwEgSMwCgYIKoIUAEwEgUowDAYDVR0TAQH/BAIwADBTBgUrJAgDAwRKMEgwRjBEMEIwQDAyDDBFLVJlemVwdCB2ZXJ0cmF1ZW5zd8O8cmRpZ2UgQXVzZsO8aHJ1bmdzdW1nZWJ1bmcwCgYIKoIUAEwEggIwCgYIKoZIzj0EAwIDSAAwRQIhAKKuMAYO2lC+OWLPorM5m4Q0bTIBFhXNHQhn3dXc6SrUAiBWvxJ8mVgcEwbL5zXYikOOfQK20tk2uwPMp+4g+hRvmw=="
+    ti:
+      tslBaseUrl: "http://download-ref.tsl.telematik-test/ECC"
+      fdBaseUrl: "https://erp-ref.zentral.erp.splitdns.ti-dienste.de"
+      idp:
+        discoveryDocumentUrl: "https://idp-ref.zentral.idp.splitdns.ti-dienste.de/.well-known/openid-configuration"
+        clientId: "gematikTestPs"
+        redirectUri: "http://test-ps.gematik.de/erezept"
+        scopes: ["openid", "e-rezept"]
+    internet:
+      tslBaseUrl: "https://download-ref.tsl.ti-dienste.de/ECC"
+      discoveryDocumentUrl: "https://idp-ref.app.ti-dienste.de/.well-known/openid-configuration"
+      fdBaseUrl: "https://erp-ref.app.ti-dienste.de"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: rudev
+erpione:
+  fhirProfile: 1.5.0
+  environment:
+    vauCertificate: "MIIDAzCCAqmgAwIBAgICG4IwCgYIKoZIzj0EAwIwgYQxCzAJBgNVBAYTAkRFMR8wHQYDVQQKDBZnZW1hdGlrIEdtYkggTk9ULVZBTElEMTIwMAYDVQQLDClLb21wb25lbnRlbi1DQSBkZXIgVGVsZW1hdGlraW5mcmFzdHJ1a3R1cjEgMB4GA1UEAwwXR0VNLktPTVAtQ0EyOCBURVNULU9OTFkwHhcNMjEwNTEwMDgyOTU5WhcNMjYwNTA5MDgyOTU4WjBgMQswCQYDVQQGEwJERTEiMCAGA1UECgwZSUJNIFRFU1QtT05MWSAtIE5PVC1WQUxJRDEXMBUGA1UEBRMOMDg3NDctUlVFTkMwMDIxFDASBgNVBAMMC2VyZXplcHQtdmF1MFowFAYHKoZIzj0CAQYJKyQDAwIIAQEHA0IABD5xWMtXS8nUUlQl8iQE/Qz/IXaMCsFOCOSlOLV2AOyIYJ5ExAP73a0wQvTT+0L2uzqrUIcpmiVQ8qpdE+gMt2ejggErMIIBJzAdBgNVHQ4EFgQUMG1tgML5/BG9sTVaj2+olZZML2kwHwYDVR0jBBgwFoAUAGo4kPOZriGPUtruwYxugK1hIskwTwYIKwYBBQUHAQEEQzBBMD8GCCsGAQUFBzABhjNodHRwOi8vb2NzcDItdGVzdHJlZi5rb21wLWNhLnRlbGVtYXRpay10ZXN0L29jc3AvZWMwDgYDVR0PAQH/BAQDAgMIMCEGA1UdIAQaMBgwCgYIKoIUAEwEgSMwCgYIKoIUAEwEgUowDAYDVR0TAQH/BAIwADBTBgUrJAgDAwRKMEgwRjBEMEIwQDAyDDBFLVJlemVwdCB2ZXJ0cmF1ZW5zd8O8cmRpZ2UgQXVzZsO8aHJ1bmdzdW1nZWJ1bmcwCgYIKoIUAEwEggIwCgYIKoZIzj0EAwIDSAAwRQIhAKKuMAYO2lC+OWLPorM5m4Q0bTIBFhXNHQhn3dXc6SrUAiBWvxJ8mVgcEwbL5zXYikOOfQK20tk2uwPMp+4g+hRvmw=="
+    ti:
+      tslBaseUrl: "http://download-ref.tsl.telematik-test/ECC"
+      fdBaseUrl: "https://erp-dev.zentral.erp.splitdns.ti-dienste.de"
+      idp:
+        discoveryDocumentUrl: "https://idp-ref.zentral.idp.splitdns.ti-dienste.de/.well-known/openid-configuration"
+        clientId: "gematikTestPs"
+        redirectUri: "http://test-ps.gematik.de/erezept"
+        scopes: ["openid", "e-rezept-dev"]
+    internet:
+      tslBaseUrl: "https://download-ref.tsl.ti-dienste.de/ECC"
+      discoveryDocumentUrl: "https://idp-ref.app.ti-dienste.de/.well-known/openid-configuration"
+      fdBaseUrl: "https://erp-dev.app.ti-dienste.de"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: offline
+erpione:
+  onlineMode: false

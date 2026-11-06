@@ -1,0 +1,54 @@
+import http-client.env.json
+
+# Sina Hüllmann
+@kvnr = X110614233
+
+# Leonie Hütter
+#@kvnr = X110603293
+
+@actor = Ljubljana
+#@actor = Vaduz
+#@actor = Telesphorus
+#@actor = Hygieia
+
+@accesscode = pfy6k0
+
+### EU-DEMOGRAPHICS-01
+# read the demographics of a patient
+GET {{host}}/eu/demographics/{{kvnr}}?ac={{accesscode}}
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+### EU-PRESCRIPTIONS-01
+# read the prescriptions of a patient
+GET {{host}}/eu/prescriptions/{{kvnr}}?ac={{accesscode}}
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+
+### EU-CLAIM-01
+# claim the selected prescriptions from EU
+POST {{host}}/eu/claim/{{kvnr}}?ac={{accesscode}}
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+{
+  "claims": ["160.000.125.538.945.78", "160.000.125.538.946.75"]
+}
+
+### EU-CLOSE-01
+# close the selected prescription from EU
+POST {{host}}/eu/close/{{kvnr}}?ac={{accesscode}}
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+{
+  "prescriptions": [
+    { "prescriptionId": "160.000.125.538.945.78" },
+    { "prescriptionId": "160.000.125.538.946.75" }
+  ]
+}

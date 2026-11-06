@@ -1,0 +1,47 @@
+include::./attributes-sections.adoc[]
+
+[[section-introduction-and-goals]]
+== Introduction
+
+This document describes the architecture of Erpione, a modern open source e-Health platform simulator. Erpione's primary goal is to provide a comprehensive simulation environment for E-Rezept client systems. This enables vendors to test their applications by simulating the missing bits of the E-Rezept workflow, such as the PVS, AVS, and NCPeH systems. Erpione allows vendors to focus on their own application logic without needing access to other real complementary systems, which are often unavailable or impractical for testing purposes.
+
+=== Requirements
+
+Erpione must provide the following core capabilities to support its business goals:
+
+* Simulate the behaviour and interactions of complementary systems in the E-Rezept workflow. These systems include PVS (Praxisverwaltungssystem), AVS (Apothekenverwaltungssystem), and NCPeH (National Contact Point for eHealth).
+* End-to-end testing of E-Rezept client systems must be possible even when real complementary systems are not available.
+* It is essential to abstract the complexity of these systems so that vendors can develop and test their own solutions efficiently.
+
+The primary users are vendors developing client systems for E-Rezept, ePA, and other solutions that interact with the E-Rezept backend service.
+
+==== Reference to E-Rezept
+
+Erpione is designed as a 'Primärsystem-Simulator' based on the E-Rezept system specifications. Erpione's requirements and functionalities align with the following official E-Rezept documents and resources:
+
+* Systemspezifisches Konzept E-Rezept
+* Spezifikation E-Rezept-Fachdienst
+* Spezifikation Datenmodell E-Rezept
+* Implementierungsleitfaden Primärsysteme – E-Rezept
+
+These documents serve as the authoritative basis for the simulation logic and interoperability provided by Erpione. For detailed technical and process requirements, please refer to the official E-Rezept documentation at https://gemspec.gematik.de (or the current official source).
+
+=== Quality Goals
+
+[options="header",cols="1,3,3"]
+|===
+| Prio |Quality Goal | Description
+
+| 1
+| Ease of Use
+| Erpione must provide a seamless and intuitive experience for vendors, abstracting away the complexity of the E-Rezept ecosystem. The simulator must handle the intricate details of the complementary systems. This allows users to focus on developing and testing their own client logic without deep knowledge of the complementary systems.
+
+| 2
+| End-to-End and Exploratory Testing
+| The architecture must minimise the overhead and friction involved in testing end-to-end workflows. Erpione must enable rapid feedback cycles and support both automated E2E and manual exploratory testing scenarios.
+
+| 3
+| Maintainability and Adaptability
+| Erpione should be easy to maintain and extend, allowing for quick adaptation to changes in the E-Rezept specifications or the needs of different vendors. The architecture must support modular updates and clear separation of concerns.
+|===
+

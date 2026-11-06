@@ -1,0 +1,201 @@
+.editable-code {
+    cursor: text;
+    width: 100%;
+    min-height: 30vh;
+    max-height: 50vh;
+}
+
+/* CodeMirror editors replacing the editable-code textareas */
+.CodeMirror {
+    height: auto;
+    min-height: 30vh;
+    max-height: 50vh;
+    border: 1px solid var(--bs-dark);
+    border-radius: var(--bs-border-radius);
+    font-size: 0.875em;
+}
+.CodeMirror-scroll {
+    min-height: 30vh;
+    max-height: 50vh;
+}
+.CodeMirror.border-danger {
+    border-color: var(--bs-danger);
+}
+.cm-error-line {
+    background: rgba(220, 53, 69, 0.15);
+}
+
+#profile-pic {
+    cursor: pointer;
+    transition: box-shadow 0.2s, border 0.2s;
+    max-height: 2em;
+    background: #fafafa;
+}
+#profile-pic:hover {
+    box-shadow: 0 0 0 2px #0d6efd44;
+    border: 2px solid #0d6efd44;
+}
+
+#env-highlight {
+    color: #00ff64;
+    font-size: 0.6em;
+    font-weight: bolder;
+    margin-left: 0.0em;
+}
+
+#env-addition {
+    color: #00ff64;
+    font-size: 0.6em;
+    font-weight: bolder;
+    margin-left: 0.0em;
+}
+
+#pvs-header {
+    float:left;
+    width: 100%;
+}
+
+img.actor-role-NCP {
+    background-color: #003399
+}
+
+.eu-image-overlay {
+    position: relative;
+    display: inline-block;
+}
+
+.eu-image-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("img/eu-overlay.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border-radius: inherit;
+}
+
+/* operation mode when selecting hermes or fhir mode */
+#operation-mode {
+    float: left;
+}
+#operation-mode input {
+    position: absolute;
+    opacity: 0;
+}
+#operation-mode input + label {
+    padding: 0.7em;
+    margin-top: 0.7em;
+    float: left;
+    color: #000;
+    cursor: pointer;
+}
+#operation-mode input:checked + label {
+    background: #0d6efd44;
+    border-radius: 0.7em;
+}
+
+#asvnr-randomizer, #mvo-exact-toggle {
+    border-color: var(--bs-border-color);
+}
+
+/* hermes-toggles allow to set additional flags to prescriptions */
+.toggle-group {
+    float: left;
+}
+.toggle-group input {
+    position: absolute;
+    opacity: 0 !important;
+}
+.toggle-group input + label {
+    padding: 0.7em;
+    margin-right: 0.7em;
+    float: left;
+    color: #000;
+    cursor: pointer;
+    border-color: #0d6efd44;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 0.7em;
+}
+.toggle-group input:checked + label {
+    background: #0d6efd44;
+}
+
+#alert-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3000;
+    width: min(28rem, calc(100vw - 2rem));
+    pointer-events: none;
+}
+
+#alert-container .alert {
+    pointer-events: auto;
+}
+
+.collapsible-section {
+    overflow: hidden;
+    opacity: 1;
+    max-height: 32rem;
+}
+
+.collapsible-section.is-opening {
+    transition: max-height 580ms ease-in, opacity 450ms ease;
+}
+
+.collapsible-section.is-closing {
+    transition: max-height 320ms ease-in-out, opacity 260ms ease;
+}
+
+.collapsible-section.is-collapsed {
+    opacity: 0;
+    max-height: 0;
+    pointer-events: none;
+}
+
+.tutorial-highlight {
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+}
+
+.tutorial-bubble {
+    position: absolute;
+    min-width: min(20rem, calc(100vw - 2rem));
+    max-width: min(20rem, calc(100vw - 2rem));
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2);
+    padding: 1rem 1.125rem 0.875rem;
+    pointer-events: auto;
+}
+
+.tutorial-bubble::after {
+    content: "";
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    background: #ffffff;
+    transform: rotate(45deg);
+}
+
+.tutorial-bubble[data-placement="bottom"]::after {
+    top: -0.4rem;
+    left: 2.5rem;
+}
+
+.tutorial-bubble[data-placement="top"]::after {
+    bottom: -0.4rem;
+    left: 2.5rem;
+}
+
+.tutorial-bubble[data-placement="right"]::after {
+    left: -0.4rem;
+    top: 2.5rem;
+}
+
+.tutorial-bubble[data-placement="left"]::after {
+    right: -0.4rem;
+    top: 2.5rem;
+}

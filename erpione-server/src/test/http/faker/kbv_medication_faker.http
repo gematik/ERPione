@@ -1,0 +1,60 @@
+import http-client.env.json
+
+### FAKER-KBV-MEDICATION-01
+POST {{host}}/faker/kbv/medication
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "PZN",
+  "category": "Thalidomid",
+  "packagingSize": "42"
+}
+
+### FAKER-KBV-MEDICATION-02
+POST {{host}}/faker/kbv/medication
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "FreeText",
+  "supplyForm": "Kautabletten",
+  "standardSize": "N3",
+  "freeText": "Metformin 850mg Tabletten N3"
+}
+
+### FAKER-KBV-MEDICATION-03
+POST {{host}}/faker/kbv/medication
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "Wirkstoff",
+  "supplyForm": "Tabletten",
+  "standardSize": "N3"
+}
+
+### FAKER-KBV-MEDICATION-04
+POST {{host}}/faker/kbv/medication
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "Rezeptur",
+  "supplyForm": "GEL",
+  "pzn": "10206346",
+  "name": "Aluminiumchlorid-Hexahydrat",
+  "freeText": "Viskose Aluminiumchlorid-Hexahydrat-Lösung 20 % (NRF 11.132.)"
+}
+
+### FAKER-KBV-MEDICATION-0X
+# override the body-type: attention!!
+POST {{host}}/faker/kbv/medication?type=FreeText
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "PZN",
+  "category": "Thalidomid",
+  "packagingSize": "42"
+}

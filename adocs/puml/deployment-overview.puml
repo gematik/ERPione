@@ -1,0 +1,34 @@
+@startuml
+interface "HTTP" as HTTP
+node "Host System" {
+  node "Docker Engine" {
+    node "Reverse Proxy" {
+      [nginx] as "Nginx"
+    }
+    node "BFF" {
+      [bff] as "Token Relay"
+    }
+    node "Web UI" {
+      [webUI] as "Nginx"
+    }
+    node "Resource Server" {
+      [erpione] as "Erpione"
+    }
+    node "Authentication Server" {
+      [auth] as "Keycloak"
+    }
+  }
+
+  [szzp] as "SZZP"
+}
+
+[nginx] -left-> [HTTP]
+[nginx] -right-> [webUI]
+[nginx] -down-> [bff]
+[nginx] -down-> [auth]
+[webUI] --> [bff]
+[bff] --> [erpione]
+[bff] <--> [auth] : "OAuth2.0"
+[erpione] -right-> [szzp]
+[szzp] -right-> [TI]
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+autonumber
+skinparam sequenceMessageAlign center
+
+participant "Client System\n(e.g. test automation)" as client
+box "Erpione Service" #ee83600f
+  participant "RestController" as ctrl
+  participant "ErpioneActorService" as stage
+  participant "Usecase" as uc
+  participant "ErpioneActor\n(Apotheker)" as actor
+  participant "ErpioneErrorHandler\n(@ControllerAdvice)" as handler
+end box
+participant "E-Rezept\nFachdienst" as fd
+
+== Fachdienst rejects the request ==
+client -> ctrl : POST /api/erp/{pid}/claim?ac=...\nx-actor: <pharmacy>
+ctrl -> stage : getInstitutionOrThrow(actorId)
+stage --> ctrl : HealthcareInstitution
+ctrl -> uc : ClaimPrescription.with(pid, ac)\n.performAs(actor)
+uc -> actor : request(Task/$accept)
+actor -> fd : POST /Task/{id}/$accept?ac=...
+fd --> actor : OperationOutcome (e.g. Task not found)
+actor --> uc : throw ErpResponseExpectationError\n(expected AcceptBundle, actual OperationOutcome)
+uc --> ctrl : ErpResponseExpectationError
+ctrl -> handler : handleErpResponseExpectationError(ex)
+handler -> handler : map OperationOutcome.issue[]\nto IssueData (severity, details, diagnostics)
+handler --> client : <Fachdienst status code>\nErrorData {type: FACHDIENST, message, issues[]}
+
+== Erpione internal error ==
+client -> ctrl : POST /api/erp/{pid}/claim?ac=...\nx-actor: <unknown actor>
+ctrl -> stage : getInstitutionOrThrow(actorId)
+stage --> ctrl : throw ErpioneNotFoundError
+ctrl -> handler : handleActorNotFoundException(ex)
+handler -> handler : build IssueData from exception\n(class name, message, cause)
+handler --> client : 404 Not Found\nErrorData {type: ERPIONE, message, issues[]}
+@enduml

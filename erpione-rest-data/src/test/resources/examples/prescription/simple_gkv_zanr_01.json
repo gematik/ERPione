@@ -1,0 +1,16 @@
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K220635158",
+    "birthDate": "02.12.1961"
+  },
+  "coverage": {
+    "type": "GKV"
+  },
+  "practitioner": {
+    "anr": {
+      "type": "ZANR",
+      "value": "157307391"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+import http-client.env.json
+
+### FAKER-KBV-PATIENT-01
+# create a random patient FHIR resource
+GET {{host}}/faker/kbv/patient
+Content-Type: application/json
+apikey: {{apikey}}
+
+### FAKER-KBV-PATIENT-02
+# create a random patient FHIR resource with some data
+GET {{host}}/faker/kbv/patient
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "birthDate": "10.06.1986",
+  "insuranceType": "PKV",
+  "kvnr": "D123123123"
+}
+
+### FAKER-KBV-PATIENT-03
+# create a random patient FHIR resource with a complex name
+GET {{host}}/faker/kbv/patient
+Content-Type: application/json
+apikey: {{apikey}}
+
+{
+  "type": "GKV",
+  "kvnr": "X110614233",
+  "name": {
+    "prefix": "Prof. habil. Dr. med",
+    "given": "Friedrich-Wilhelm-Karl-Gustav-Justus-Gotfried",
+    "family": "Grossherzog von und zu der Schaumberg-von-und-zu-Schaumburg-und-Radeberg"
+  },
+  "birthDate": "07.12.1952"
+}

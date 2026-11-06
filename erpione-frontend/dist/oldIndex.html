@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const env = window.ERPIONE_ENV || "LOCAL";
+            document.getElementById("page-title").textContent = `Erpione ${env}`;
+        });
+    </script>
+</head>
+<body>
+    <div class="container text-center">
+        <h1 id="page-title">Erpione</h1>
+        <img src="img/erpione.png" class="img-fluid" alt="Erpione" />
+    </div>
+</body>
+</html>

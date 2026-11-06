@@ -1,0 +1,151 @@
+import http-client.env.json
+
+@actor = Machaon
+#@actor = Telesphorus
+#@actor = Podaleirios
+
+@prescriptionId = 160.000.114.599.334.28
+@accessCode = 4b70929a3c6ee079fd4c00ad4aa70173be9de8f46e32e2be40892aad9d79763c
+
+### DOC-PHARMACEUTICAL-PRESCRIBE-01
+# prescribe a completly random pharmaceutical prescription
+POST {{host}}/erp/pharmaceutical
+Content-Type: application/json
+x-actor: {{actor}}
+#Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MThkM2Q1Yi1mZGI3LTRlN2UtOWY2ZC1lMWZjNjE2YmU0MzIiLCJhdWQiOiJlcnBpb25lLWhlYWRsZXNzIiwic2NwIjpbIm9wZW5pZCJdLCJzY29wZSI6Im9wZW5pZCIsImRlbGVnYXRlZF9ieSI6ImJmZiIsImlzcyI6ImVycGlvbmUtYmZmIiwibmFtZSI6IkFsZXhhbmRlciBLYWlzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhbGV4YW5kZXIua2Fpc2VyQGdlbWF0aWsuZGUiLCJleHAiOjE3ODY0Mjc3MTIsImlhdCI6MTc4NjQyNzYwMywianRpIjoiZTM3NzkyZTMtM2ZlYS00Yzg3LWJjMjAtNDdjNWYzZGFkMWVlIiwiZW1haWwiOiJhbGV4YW5kZXIua2Fpc2VyQGdlbWF0aWsuZGUifQ.FpFDepdGh9fsVsA4QopSU4Xd98qBBeW5LkT4VJT4GDM
+Cookie: {{cookie}}
+X-XSRF-TOKEN: {{xsrfToken}}
+
+### DOC-PHARMACEUTICAL-PRESCRIBE-02
+# prescribe pharmaceutical with json as a simple PZN prescription
+POST {{host}}/erp/pharmaceutical
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "X110614233",
+    "name": {
+      "prefix": "Prof. habil. Dr. med",
+      "given": "Friedrich-Wilhelm-Karl-Gustav-Justus-Gotfried",
+      "family": "Schaumberg-von-und-zu-Schaumburg-und-Radeberg"
+    },
+    "birthDate": "10.06.1986"
+  },
+  "coverage": {
+    "type": "GKV"
+  },
+  "medicationRequest": {
+    "note": "Hello World live von der Demo #2"
+  }
+}
+
+### DOC-PHARMACEUTICAL-PRESCRIBE-03
+# prescribe pharmaceutical with json as Freetext prescription
+POST {{host}}/erp/pharmaceutical
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K030182229"
+  },
+  "coverage": {
+    "type": "GKV"
+  },
+  "medication": {
+    "type": "FREETEXT",
+    "supplyForm": "Kautabletten",
+    "standardSize": "N3",
+    "freeText": "Metformin 850mg Tabletten N3"
+  }
+}
+
+### DOC-PHARMACEUTICAL-PRESCRIBE-04
+# prescribe pharmaceutical with json as Ingredient prescription
+POST {{host}}/erp/pharmaceutical
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K030182229"
+  },
+  "coverage": {
+    "type": "GKV"
+  },
+  "medication": {
+    "type": "INGREDIENT",
+    "supplyForm": "Tabletten",
+    "standardSize": "N3"
+  }
+}
+
+### DOC-PHARMACEUTICAL-PRESCRIBE-05
+# prescribe pharmaceutical with json as Compounding prescription
+POST {{host}}/erp/pharmaceutical
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+{
+  "medication": {
+    "type": "Rezeptur",
+    "supplyForm": "GEL",
+    "pzn": "10206346",
+    "name": "Aluminiumchlorid-Hexahydrat",
+    "freeText": "Viskose Aluminiumchlorid-Hexahydrat-Lösung 20 % (NRF 11.132.)"
+  }
+}
+
+### DOC-PHARMACEUTICAL-PRESCRIBE-06
+# prescribe pharmaceutical with xml
+POST {{host}}/erp/pharmaceutical
+Content-Type: application/fhir+xml
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+< /path/to/Beispiel_1_PZN.xml
+
+### DOC-EVDGA-PRESCRIBE-01
+# prescribe a completly random EVDGA
+POST {{host}}/erp/evdga
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+### DOC-EVDGA-PRESCRIBE-02
+# prescribe DIGA with xml
+POST {{host}}/erp/evdga
+Content-Type: application/fhir+xml
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+< /path/to/EVDGA_Bundle.xml
+
+### DOC-ABORT-01
+# abort/delete a prescription
+DELETE {{host}}/erp/abort/{{prescriptionId}}
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+### DOC-ABORT-02
+# abort/delete a prescription with a custom access code
+DELETE {{host}}/erp/abort/{{prescriptionId}}?ac={{accessCode}}
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}
+
+### DOC-ABORT-EXAMPLE-02
+# abort/delete a prescription with a custom access code
+DELETE {{host}}/erp/abort/160.000.114.599.332.34?ac=530d32c41dda8e3a9c71b14298e67c38762682df8efa67298231fa838d70fdf7
+Content-Type: application/json
+x-actor: {{actor}}
+apikey: {{apikey}}

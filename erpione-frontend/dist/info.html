@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione Info</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <!-- highlightjs for highlighting xml/json data  -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-light.min.css"
+          integrity="sha512-o5v54Kh5PH0dgnf9ei0L+vMRsbm5fvIvnR/XkrZZjN4mqdaeH7PW66tumBoQVIaKNVrLCZiBEfHzRY4JJSMK/Q=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+            integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js"
+            integrity="sha512-f2/ljYb/tG4fTHu6672tyNdoyhTIpt4N1bGrBE8ZjwIgrjDCd+rljLpWCZ2Vym9PBWQy2Tl9O22Pp2rMOMvH4g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="utility.js"></script>
+    <script src="buttons.js"></script>
+    <script src="info.js"></script>
+    <script src="tutorial.js"></script>
+</head>
+<body>
+
+<div class="container" id="meta">
+    <div class="container text-start row border border-dark-subtle rounded" id="meta-container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="2">Erpione Service Information</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Connectivity</td>
+                <td id="erpione-status"></td>
+            </tr>
+            <tr>
+                <td>Version</td>
+                <td id="erpione-build-version"></td>
+            </tr>
+            <tr>
+                <td>Build</td>
+                <td id="erpione-build-date"></td>
+            </tr>
+            <tr>
+                <td>FHIR-Configuration</td>
+                <td id="erpione-fhir-version"></td>
+            </tr>
+            <tr>
+                <td>ERP-Service</td>
+                <td id="erpione-erp-url"></td>
+            </tr>
+            <tr>
+                <td>IDP-Service</td>
+                <td id="erpione-idp-url"></td>
+            </tr>
+            <tr>
+                <td><label for="erpione-vau-certificate">Vau-Certificate</label></td>
+                <td><textarea readonly id="erpione-vau-certificate" class="border-0 bg-body w-100"></textarea></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="container" id="erp-fd-capabilities">
+    <div class="container text-start row border border-dark-subtle rounded" id="fd-container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="2" id="fd-title">Fachdienst Service Information</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Connectivity</td>
+                <td><span id="fd-health"></span>&#9<span id="fd-latency"></span></td>
+            </tr>
+            <tr>
+                <td>Software</td>
+                <td id="fd-software"></td>
+            </tr>
+            <tr>
+                <td>Version</td>
+                <td id="fd-version"></td>
+            </tr>
+            <tr>
+                <td>Release-Date</td>
+                <td id="fd-release-date"></td>
+            </tr>
+            <tr>
+                <td>Build-Date</td>
+                <td id="fd-build-date"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        startInfoRequests();
+    });
+
+    const tutorials = [];
+    tutorials.push({
+        selector: '#meta-container',
+        title: 'Informationen über mich',
+        text: 'Hier findest du alle relevanten Informationen über mich, und ob ich gerade für dich da sein kann.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#meta-container tbody tr',
+        title: 'Verbindungsqualität',
+        text: 'Hier steht, wie gut deine Verbindung zu mir ist. Falls ich nicht erreichbar bin, keine Angst ich bin bestimmt bald wieder zurück!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'button.btn.btn-outline-info',
+        title: 'Hermes\' Botschaft',
+        text: 'Hermes spricht JSON, welches damals vom Argonauten Iason erfunden wurde. Falls du wissen willst was genau in seinen Nachrichten von und zu mir steht, nutze diesen Button.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#fd-container',
+        title: 'Informationen über den Fachdienst',
+        text: 'Hier findest du alle relevanten Informationen über den Fachdienst und seinen aktuellen Status.',
+        position: 'top'
+    });
+
+    tutorials.push({
+        selector: '#fd-container tbody tr',
+        title: 'Verbindungsqualität',
+        text: 'Ob und wie schnell der Fachdienst erreichbar ist, siehst du hier. ',
+        position: 'top',
+        isLast: true
+    });
+    Tutorial.setSteps(tutorials);
+</script>
+</body>
+</html>

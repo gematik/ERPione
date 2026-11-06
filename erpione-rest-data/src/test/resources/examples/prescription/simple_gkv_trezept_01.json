@@ -1,0 +1,13 @@
+{
+  "patient": {
+    "type": "GKV",
+    "kvnr": "K220635158",
+    "birthDate": "02.12.1961"
+  },
+  "medication": {
+    "category": "02"
+  },
+  "coverage": {
+    "type": "GKV"
+  }
+}

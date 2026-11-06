@@ -1,0 +1,14 @@
+import http-client.env.json
+
+### ERROR-01
+# Address an unknown actor
+GET {{host}}/actors/123123
+Content-Type: application/json
+apikey: {{apikey}}
+
+### ERROR-01
+# Search for prescriptions with an invalid flowType
+GET {{host}}/erp/prescriptions?flowType=103170002
+Content-Type: application/json
+apikey: {{apikey}}
+

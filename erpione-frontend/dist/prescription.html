@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Erpione Prescription</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <!-- highlightjs for highlighting xml/json data  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-light.min.css" integrity="sha512-o5v54Kh5PH0dgnf9ei0L+vMRsbm5fvIvnR/XkrZZjN4mqdaeH7PW66tumBoQVIaKNVrLCZiBEfHzRY4JJSMK/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js" integrity="sha512-f2/ljYb/tG4fTHu6672tyNdoyhTIpt4N1bGrBE8ZjwIgrjDCd+rljLpWCZ2Vym9PBWQy2Tl9O22Pp2rMOMvH4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/xml.min.js" integrity="sha512-G6iETlA7Rg1Z7KZFmG68IxKR81lXlDYESQ3wxy/aeKHaowjIHBGG03C79OveDgTsBN6h/2GNtQFNi8QDOAgmHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>hljs.highlightAll();</script>
+
+    <!-- CodeMirror 5 for the editable FHIR/Hermes inputs -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js" integrity="sha512-6cPYokihlrofMNApz7OXVQNObWjLiKGIBBb7+UB+AuMiRCLKmFKgrwms21sHq3bdFFZWpfHYRJBJvMFMPj1S9g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js" integrity="sha512-Cbz+kvn+l5pi5HfXsEB/FYgZVKjGIhOgYNBwj4W2IHP2y8r3AdyDCQRnEUqIQ+6aJjygKPTyaNT2eIihaykJlw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js" integrity="sha512-LarNmzVokUmcA7aUDtqZ6oTS+YXmUKzpGdm8DxC46A6AHu+PQiYCUlwEGWidjVYMo/QXZMFMIadZtrkfApYp/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- pdf.js for checking Kostenbeleg PDFs for embedded PKCS#7 files -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="env.js"></script>
+    <script src="nav.js"></script>
+    <script src="actors.js"></script>
+    <script src="error-handling.js"></script>
+    <script src="avs.js"></script>
+    <script src="com_reply.js"></script>
+    <script src="put_dialog.js"></script>
+    <script src="check_chargeitem.js"></script>
+    <script src="buttons.js"></script>
+    <script src="utility.js"></script>
+    <script src="prescription.js"></script>
+    <script src="tutorial.js"></script>
+</head>
+<body>
+
+<div class="container pt-3 border border-dark-subtle rounded">
+    <fieldset>
+        <form class="container-fluid" id="avs-container">
+            <div class="input-group mb-3">
+                <label for="selected-actor" class="input-group-text">
+                    <img src="img/hygieia.png" id="actor-thumbnail" class="img-thumbnail m-0" style="max-width: 2em" alt="Hygieia">
+                </label>
+                <div class="form-floating">
+                    <select class="form-select" id="selected-actor" onchange="updateActorThumbnail()">
+                        <option selected value="Hygieia">Hygieia</option>
+                        <option value="Panacea">Panacea</option>
+                        <option value="Iaso">Iaso</option>
+                        <option value="Akeso">Akeso</option>
+                        <option value="Thessaly">Thessaly</option>
+                    </select>
+                    <label for="selected-actor">Identität</label>
+                </div>
+            </div>
+            <div id="prescription-action-buttons" class="form-control"></div>
+
+            <div id="input-editor" style="display: none;">
+                <div class="d-flex justify-content-end mt-2" id="input-mode">
+                    <div id="input-mode-buttons" class="btn-group btn-group-sm" role="group" aria-label="Eingabeformat">
+                        <input id="hermes-mode" name="input-mode" type="radio" onclick="updateFhirMode()" class="btn-check" autocomplete="off" checked="checked" />
+                        <label class="btn btn-outline-primary" for="hermes-mode">Hermes</label>
+                        <input id="fhir-mode" name="input-mode" type="radio" onclick="updateFhirMode()" class="btn-check" autocomplete="off" />
+                        <label class="btn btn-outline-secondary" for="fhir-mode">FHIR</label>
+                    </div>
+                </div>
+                <fieldset id="fhir-input-mask" class="row border border-dark-subtle rounded" style="display: none;">
+                    <legend>
+                        Dispense- oder CloseOperationParameter als FHIR+XML
+                    </legend>
+                    <textarea id="fhir-input" class="editable-code"></textarea>
+                </fieldset>
+                <fieldset id="hermes-input-mask" class="row border border-dark-subtle rounded" style="display: none;">
+                    <legend>Dispensierdaten als Hermes+JSON</legend>
+                    <textarea id="hermes-input" class="editable-code"></textarea>
+                    <div id="hermes-input-error" class="text-danger small mb-2" role="alert" hidden></div>
+                </fieldset>
+            </div>
+        </form>
+
+        <div id="response-container"></div>
+    </fieldset>
+</div>
+
+<script>
+    initializePrescriptionContainer();
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(element => new bootstrap.Tooltip(element));
+</script>
+
+<script>
+    const tutorials = [];
+    tutorials.push({
+        selector: '#nav-item-prescriptions',
+        title: 'Kein AVS',
+        text: 'Statt eines traditionellen AVS geht es bei mir vor allem um die E-Rezepte. Daher findest du alle Funktionen direkt pro Rezept gebündelt!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#selected-actor',
+        title: 'Bei wem willst du einlösen?',
+        text: 'Hier stehen alle Akteurein meinem Gefolge zur Auswahl die Rezepte weiterverabeiten dürfen!',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: '#prescription-action-buttons',
+        title: 'Weiterverarbeitung',
+        text: 'Abhängig vom Status siehst du hier, was dein Akteur mit dem Rezept tun kann. Probier es doch mal aus 😄',
+        position: 'bottom',
+    });
+    tutorials.push({
+        selector: '#input-mode-buttons',
+        title: 'Moduswahl',
+        text: 'Hier kannst du den Eingabemodus für die Dispensierdaten auswählen. Änderungen im Hermes-Modus werden direkt in den FHIR-Modus übernommen.',
+        position: 'left',
+    });
+    tutorials.push({
+        selector: '#input-editor',
+        title: 'Dispensierdaten eingeben',
+        text: 'Über diesen Editor können die Dispensierdaten direkt als Hermes-JSON oder als natives FHIR-XML eingegeben werden.',
+        position: 'top',
+    });
+    tutorials.push({
+        selector: 'thead',
+        title: 'Der Status',
+        text: 'Hier siehst du den aktuellen Status des Rezepts. Dieser bestimmt, welche Aktionen durchgeführt werden können.',
+        position: 'bottom'
+    });
+    tutorials.push({
+        selector: 'button.btn.btn-sm',
+        title: 'Werte kopieren',
+        text: 'Solltest du die Id, den Access-Code oder das Secret woanders benötigen, kannst du sie bequem kopieren.',
+        position: 'left'
+    });
+    tutorials.push({
+        selector: 'button.btn.btn-outline-info',
+        title: 'Hermes\' Botschaft',
+        text: 'Hermes spricht fließend JSON, ich glaube es hat etwas mit dem goldenen Vließ zu tun. Den genauen Inhalt des Rezepts findest du auf jeden Fall hier.',
+        position: 'top',
+        isLast: true
+    });
+    Tutorial.setSteps(tutorials);
+</script>
+
+</body>
+</html>

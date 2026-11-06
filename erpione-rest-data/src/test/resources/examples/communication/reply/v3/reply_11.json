@@ -1,0 +1,26 @@
+{
+  "reference": {
+    "prescriptionId": "200.000.003.720.207.76"
+  },
+  "type": "REPLY",
+  "message": {
+    "version": 3,
+    "text": "Some Text to state your request",
+    "transactionID": "ABCD-EFGH-IJKL-MNOP",
+    "communicationType": "paymentInfo",
+    "totalAmount": 12530,
+    "paymentMethods": [
+      {
+        "method": "cash"
+      },
+      {
+        "method": "bankaccount",
+        "url": "https://my.payment.provider.de/pay/<payment_transaction_id>"
+      },
+      {
+        "method": "paypal",
+        "url": "https://paypal.me/<some_account>"
+      }
+    ]
+  }
+}
