@@ -5,12 +5,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<meta name="application-name" content="<em>ERPione</em>">
-<meta name="description" content="<em>ERPione</em> TODO">
+<meta name="application-name" content="<em>Erpione</em>">
+<meta name="description" content="The <em>Erpione</em> is a modern open source e-Health client system simulator">
 <meta name="author" content="gematik GmbH">
-<meta name="copyright" content="2025 by gematik GmbH, Berlin">
+<meta name="copyright" content="2026 by gematik GmbH, Berlin">
 <link rel="icon" type="image/x-icon" href="./images/erpione.ico">
-<title>ERPione</title>
+<title>Erpione Documentation</title>
 <style>
 /*
  * ${GEMATIK_COPYRIGHT_STATEMENT}
@@ -232,140 +232,149 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 .CodeRay .change .change{color:#66f}
 .CodeRay .head .head{color:#f4f}
 </style>
-<link rel="license" href="https://www.apache.org/licenses/LICENSE-2.0.txt" title="Apache License, Version 2.0">
-
-<!-- Generate a nice TOC -->
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js"></script>
-<!-- We do not need the tocify CSS because the asciidoc CSS already provides most of what we neeed -->
-
-<style>
-    .tocify-header {
-        font-style: italic;
-    }
-
-    .tocify-subheader {
-        font-style: normal;
-        font-size: 90%;
-    }
-
-    .tocify ul {
-        margin: 0;
-    }
-
-    .tocify-focus {
-        color: #7a2518;
-        background-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .tocify-focus > a {
-        color: #7a2518;
-    }
-</style>
-
-<script type="text/javascript">
-    $(function () {
-        // Add a new container for the tocify toc into the existing toc so we can re-use its
-        // styling
-        $("#toc").append("<div id='generated-toc'></div>");
-        $("#generated-toc").tocify({
-            extendPage: true,
-            context: "#content",
-            highlightOnScroll: true,
-            hideEffect: "slideUp",
-            // Use the IDs that asciidoc already provides so that TOC links and intra-document
-            // links are the same. Anything else might confuse users when they create bookmarks.
-            hashGenerator: function(text, element) {
-                return $(element).attr("id");
-            },
-            // Smooth scrolling doesn't work properly if we use the asciidoc IDs
-            smoothScroll: false,
-            // Set to 'none' to use the tocify classes
-            theme: "none",
-            // Handle book (may contain h1) and article (only h2 deeper)
-            selectors: $( "#content" ).has( "h1" ).size() > 0 ? "h1,h2,h3,h4,h5" : "h2,h3,h4,h5",
-            ignoreSelector: ".discrete"
-        });
-
-        // Switch between static asciidoc toc and dynamic tocify toc based on browser size
-        // This is set to match the media selectors in the asciidoc CSS
-        // Without this, we keep the dynamic toc even if it is moved from the side to preamble
-        // position which will cause odd scrolling behavior
-        var handleTocOnResize = function() {
-            if ($(document).width() < 768) {
-                $("#generated-toc").hide();
-                $(".sectlevel0").show();
-                $(".sectlevel1").show();
-            }
-            else {
-                $("#generated-toc").show();
-                $(".sectlevel0").hide();
-                $(".sectlevel1").hide();
-            }
-        }
-
-        $(window).resize(handleTocOnResize);
-        handleTocOnResize();
-    });
-</script>
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1><em>ERPione</em></h1>
+<h1><em>Erpione</em></h1>
 <div class="details">
 <span id="author" class="author">gematik GmbH</span><br>
-<span id="revnumber">version 0.9.2,</span>
-<span id="revdate">2025-05-16</span>
+<span id="revnumber">version 1.0.0,</span>
+<span id="revdate">2026-11-06</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_scope">Scope</a>
+<li><a href="#section-introduction-and-goals"> 1. Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#_eponym">Eponym</a></li>
-<li><a href="#_architecture">Architecture</a>
+<li><a href="#_requirements">1.1. Requirements</a>
 <ul class="sectlevel3">
-<li><a href="#_backend">Backend</a></li>
-<li><a href="#_frontend">Frontend</a></li>
-<li><a href="#_proxy">Proxy</a></li>
+<li><a href="#_reference_to_e_rezept">1.1.1. Reference to E-Rezept</a></li>
 </ul>
 </li>
+<li><a href="#_quality_goals">1.2. Quality Goals</a></li>
 </ul>
 </li>
-<li><a href="#_erpione_cli">ERPione CLI</a>
+<li><a href="#section-architecture-constraints"> 2. Architecture Constraints</a></li>
+<li><a href="#section-context-and-scope"> 3. Context and Scope</a>
 <ul class="sectlevel2">
-<li><a href="#_installation">Installation</a>
-<ul class="sectlevel3">
-<li><a href="#docker_usage">Docker</a></li>
-<li><a href="#native_usage">Nativ</a></li>
-<li><a href="#py_source_usage">From source</a></li>
+<li><a href="#_business_context">3.1. Business Context</a></li>
+<li><a href="#_technical_context">3.2. Technical Context</a></li>
 </ul>
 </li>
-<li><a href="#_curl">cURL</a></li>
-<li><a href="#_configuration">Configuration</a>
-<ul class="sectlevel3">
-<li><a href="#api_key_env">API-Key</a></li>
-<li><a href="#default_env">Default Environment</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_use_cases">Use cases</a>
+<li><a href="#section-solution-strategy"> 4. Solution Strategy</a></li>
+<li><a href="#section-building-block-view"> 5. Building Block View</a>
 <ul class="sectlevel2">
-<li><a href="#_help">Help</a></li>
-<li><a href="#_issue_prescriptions">Issue prescriptions</a>
-<ul class="sectlevel3">
-<li><a href="#_data_matrix_codes">Data Matrix Codes</a></li>
+<li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
 </ul>
 </li>
-<li><a href="#_accept_prescriptions">Accept prescriptions</a></li>
-<li><a href="#_dispense_prescriptions">Dispense prescriptions</a></li>
-<li><a href="#_close_prescriptions">Close prescriptions</a></li>
-<li><a href="#_abort_prescriptions">Abort prescriptions</a></li>
-<li><a href="#_create_charge_items">Create charge items</a></li>
-<li><a href="#_change_charge_items">Change charge items</a></li>
-<li><a href="#_service_information">Service information</a></li>
+<li><a href="#section-runtime-view"> 6. Runtime View</a>
+<ul class="sectlevel2">
+<li><a href="#_scope_and_purpose">6.1. Scope and Purpose</a></li>
+<li><a href="#section-runtime-concepts">6.2. Recurring Runtime Concepts</a></li>
+<li><a href="#section-runtime-typical-flows">6.3. Typical Runtime Flows</a>
+<ul class="sectlevel3">
+<li><a href="#_prescription_creation">6.3.1. Prescription creation</a></li>
+<li><a href="#_prescription_claim_dispensation_and_close">6.3.2. Prescription claim, dispensation and close</a></li>
+<li><a href="#_manual_exploratory_workflow_via_web_ui">6.3.3. Manual exploratory workflow via Web UI</a></li>
+<li><a href="#_automated_api_workflow">6.3.4. Automated API workflow</a></li>
+</ul>
+</li>
+<li><a href="#_sequence_diagrams">6.4. Sequence Diagrams</a></li>
+</ul>
+</li>
+<li><a href="#section-deployment-view"> 7. Deployment View</a>
+<ul class="sectlevel2">
+<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
+<li><a href="#_infrastructure_level_2">7.2. Infrastructure Level 2</a>
+<ul class="sectlevel3">
+<li><a href="#_resource_server_container">7.2.1. Resource Server Container</a></li>
+<li><a href="#_authentication_server_container">7.2.2. Authentication Server Container</a></li>
+<li><a href="#_reverse_proxy_container">7.2.3. Reverse Proxy Container</a></li>
+<li><a href="#_web_ui_container">7.2.4. Web UI Container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#section-crosscutting-concepts"> 8. Cross-cutting Concepts</a>
+<ul class="sectlevel2">
+<li><a href="#section-concept-hermes">8.1. Hermes – FHIR Abstraction</a>
+<ul class="sectlevel3">
+<li><a href="#_hermes_data_model">8.1.1. Hermes Data Model</a></li>
+<li><a href="#section-concept-hermes-translation">8.1.2. Translation</a></li>
+<li><a href="#_faker_capability">8.1.3. Faker Capability</a></li>
+</ul>
+</li>
+<li><a href="#section-concept-actors">8.2. Actor Model</a>
+<ul class="sectlevel3">
+<li><a href="#_actor_roles">8.2.1. Actor Roles</a></li>
+<li><a href="#section-concept-actor-resolution">8.2.2. Actor Resolution</a></li>
+<li><a href="#section-concept-actor-execution">8.2.3. Execution as an Actor</a></li>
+</ul>
+</li>
+<li><a href="#section-concept-persistence">8.3. Local Persistence</a></li>
+<li><a href="#section-concept-error-handling">8.4. Error Handling</a></li>
+<li><a href="#section-concept-ti-connectivity">8.5. TI Connectivity</a></li>
+</ul>
+</li>
+<li><a href="#section-build-release-operations"> 9. Build, Release &amp; Operations</a>
+<ul class="sectlevel2">
+<li><a href="#_overview">9.1. Overview</a></li>
+<li><a href="#section-prerequisites">9.2. Prerequisites</a>
+<ul class="sectlevel3">
+<li><a href="#_system_requirements">9.2.1. System Requirements</a></li>
+<li><a href="#_build_tools">9.2.2. Build Tools</a></li>
+<li><a href="#_supported_operating_systems">9.2.3. Supported Operating Systems</a></li>
+</ul>
+</li>
+<li><a href="#section-build-process">9.3. Build Process</a>
+<ul class="sectlevel3">
+<li><a href="#_repository_structure">9.3.1. Repository Structure</a></li>
+<li><a href="#_building_javakotlin_modules">9.3.2. Building Java/Kotlin Modules</a></li>
+<li><a href="#_building_frontend">9.3.3. Building Frontend</a></li>
+<li><a href="#_building_docker_images">9.3.4. Building Docker Images</a></li>
+</ul>
+</li>
+<li><a href="#section-configuration">9.4. Configuration &amp; Environment Variables</a>
+<ul class="sectlevel3">
+<li><a href="#_environment_files">9.4.1. Environment Files</a></li>
+<li><a href="#_environment_variables_by_service">9.4.2. Environment Variables by Service</a></li>
+<li><a href="#section-spring-profiles">9.4.3. Spring Boot Profiles</a></li>
+</ul>
+</li>
+<li><a href="#section-secrets-management">9.5. Secrets Management</a>
+<ul class="sectlevel3">
+<li><a href="#_development_secrets">9.5.1. Development Secrets</a></li>
+<li><a href="#section-fachdienst-credentials">9.5.2. E-Rezept Fachdienst Credentials (<code>application-secrets.yaml</code>)</a></li>
+<li><a href="#_production_secrets">9.5.3. Production Secrets</a></li>
+</ul>
+</li>
+<li><a href="#section-deployment">9.6. Deployment Procedures</a>
+<ul class="sectlevel3">
+<li><a href="#_prerequisites_checklist">9.6.1. Prerequisites Checklist</a></li>
+<li><a href="#_local_development_workflow">9.6.2. Local Development Workflow</a></li>
+<li><a href="#_production_deployment">9.6.3. Production Deployment</a></li>
+</ul>
+</li>
+<li><a href="#section-health-checks">9.7. Health Checks &amp; Validation</a>
+<ul class="sectlevel3">
+<li><a href="#_service_health_endpoints">9.7.1. Service Health Endpoints</a></li>
+<li><a href="#_manual_health_check_script">9.7.2. Manual Health Check Script</a></li>
+<li><a href="#_database_verification">9.7.3. Database Verification</a></li>
+<li><a href="#_api_verification">9.7.4. API Verification</a></li>
+</ul>
+</li>
+<li><a href="#section-logging-monitoring">9.8. Logging &amp; Monitoring</a>
+<ul class="sectlevel3">
+<li><a href="#_application_logs">9.8.1. Application Logs</a></li>
+<li><a href="#_log_locations">9.8.2. Log Locations</a></li>
+<li><a href="#_metrics_monitoring">9.8.3. Metrics &amp; Monitoring</a></li>
+</ul>
+</li>
+<li><a href="#section-troubleshooting">9.9. Troubleshooting</a>
+<ul class="sectlevel3">
+<li><a href="#_common_issues">9.9.1. Common Issues</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_release_notes">Appendix A: Release Notes</a></li>
@@ -375,72 +384,703 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="imageblock text-center">
-<div class="content">
-<img src="./images/erpione-logo.png" alt="erpione logo" width="30%">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This document describes the current <em>Erpione</em> architecture. The documentation of the predecessor <strong>PrimSys</strong> is no longer available as rendered HTML. But you can still find the original AsciiDoc source files in the <code>adocs/legacy_primsys/</code> folder of this repository.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-introduction-and-goals"><a class="anchor" href="#section-introduction-and-goals"></a> 1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document describes the architecture of Erpione, a modern open source e-Health platform simulator. Erpione&#8217;s primary goal is to provide a comprehensive simulation environment for E-Rezept client systems. This enables vendors to test their applications by simulating the missing bits of the E-Rezept workflow, such as the PVS, AVS, and NCPeH systems. Erpione allows vendors to focus on their own application logic without needing access to other real complementary systems, which are often unavailable or impractical for testing purposes.</p>
+</div>
+<div class="sect2">
+<h3 id="_requirements"><a class="anchor" href="#_requirements"></a>1.1. Requirements</h3>
+<div class="paragraph">
+<p>Erpione must provide the following core capabilities to support its business goals:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulate the behaviour and interactions of complementary systems in the E-Rezept workflow. These systems include PVS (Praxisverwaltungssystem), AVS (Apothekenverwaltungssystem), and NCPeH (National Contact Point for eHealth).</p>
+</li>
+<li>
+<p>End-to-end testing of E-Rezept client systems must be possible even when real complementary systems are not available.</p>
+</li>
+<li>
+<p>It is essential to abstract the complexity of these systems so that vendors can develop and test their own solutions efficiently.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The primary users are vendors developing client systems for E-Rezept, ePA, and other solutions that interact with the E-Rezept backend service.</p>
+</div>
+<div class="sect3">
+<h4 id="_reference_to_e_rezept"><a class="anchor" href="#_reference_to_e_rezept"></a>1.1.1. Reference to E-Rezept</h4>
+<div class="paragraph">
+<p>Erpione is designed as a 'Primärsystem-Simulator' based on the E-Rezept system specifications. Erpione&#8217;s requirements and functionalities align with the following official E-Rezept documents and resources:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Systemspezifisches Konzept E-Rezept</p>
+</li>
+<li>
+<p>Spezifikation E-Rezept-Fachdienst</p>
+</li>
+<li>
+<p>Spezifikation Datenmodell E-Rezept</p>
+</li>
+<li>
+<p>Implementierungsleitfaden Primärsysteme – E-Rezept</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These documents serve as the authoritative basis for the simulation logic and interoperability provided by Erpione. For detailed technical and process requirements, please refer to the official E-Rezept documentation at <a href="https://gemspec.gematik.de" class="bare">gemspec.gematik.de</a> (or the current official source).</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_quality_goals"><a class="anchor" href="#_quality_goals"></a>1.2. Quality Goals</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 42.8571%;">
+<col style="width: 42.8572%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Prio</th>
+<th class="tableblock halign-left valign-top">Quality Goal</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ease of Use</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Erpione must provide a seamless and intuitive experience for vendors, abstracting away the complexity of the E-Rezept ecosystem. The simulator must handle the intricate details of the complementary systems. This allows users to focus on developing and testing their own client logic without deep knowledge of the complementary systems.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">End-to-End and Exploratory Testing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The architecture must minimise the overhead and friction involved in testing end-to-end workflows. Erpione must enable rapid feedback cycles and support both automated E2E and manual exploratory testing scenarios.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maintainability and Adaptability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Erpione should be easy to maintain and extend, allowing for quick adaptation to changes in the E-Rezept specifications or the needs of different vendors. The architecture must support modular updates and clear separation of concerns.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-architecture-constraints"><a class="anchor" href="#section-architecture-constraints"></a> 2. Architecture Constraints</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Erpione shall be:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>plattform-independent and should run in containerized environments</p>
+</li>
+<li>
+<p>designed to provide a REST API for integration with other test systems and tools</p>
+</li>
+<li>
+<p>usable without real hardware components. Examples of these components include Konnektors and eHealth-Kartenlesegeräte, which are typically required for E-Rezept workflows. By simulating these components, Erpione allows vendors to test their applications without needing access to physical hardware, which can be costly and difficult to obtain for testing purposes.</p>
+</li>
+<li>
+<p>modular and extensible to allow for future extensions and adaptations to different use cases</p>
+</li>
+<li>
+<p>built on gematik&#8217;s shared test foundations rather than re-implementing the E-Rezept domain. Erpione reuses the <a href="https://github.com/gematik/erp-e2e-testsuite">E-Rezept E2E Testsuite</a>, which in turn is based on the <a href="https://github.com/gematik/lib-bbriccs">Bricks</a> framework (B²riC²s). As a consequence Erpione inherits the Screenplay Pattern (actors, abilities, use cases) and the FHIR handling conventions defined there; see the <a href="https://gematik.github.io/lib-bbriccs/Bbriccs-User-Manual.html">Bricks User Manual</a> for the underlying concepts and <a href="#section-building-block-view">Building Block View</a> for how the layers fit together.</p>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-context-and-scope"><a class="anchor" href="#section-context-and-scope"></a> 3. Context and Scope</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_business_context"><a class="anchor" href="#_business_context"></a>3.1. Business Context</h3>
+<div class="paragraph">
+<p>Erpione acts as a "Primärsystem Simulator" for the E-Rezept ecosystem. Its primary function is to assist vendors in developing and testing client systems for the E-Rezept, ePA, and associated services by simulating the key interactions with the E-Rezept backend.</p>
+</div>
+<div class="paragraph">
+<p>The business context includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulation of LEI (Leistungserbringende Institution):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>PVS (Praxisverwaltungssystem)</p>
+</li>
+<li>
+<p>AVS (Apothekenverwaltungssystem)</p>
+</li>
+<li>
+<p>KTR (Kostenträger)</p>
+</li>
+<li>
+<p>NCPeH (National Contact Point for eHealth)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Providing test data for end-to-end testing of E-Rezept workflows.</p>
+</li>
+<li>
+<p>Providing test data randomization capabilities to support exploratory testing and robustness testing.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The business context does not include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulation of FdV (Frontend des Versicherten).</p>
+</li>
+<li>
+<p>Integration of real hardware components e.g. Konnektor.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Erpione uses an actor-based approach to model interactions. This concept is heavily inspired by the Screenplay Pattern with its Actor Model, which emphasizes using actors to represent different roles and responsibilities in a system. In this context, actors can be considered entities that perform actions and interact with the E-Rezept Fachdienst, thus facilitating the modeling of complex interactions in a clear, modular way. All Erpione actors are preconfigured with their own identity, derived from SMC-B, HBA and some additional configurations. A more detailed description of Erpione actors and their runtime handling is provided in <a href="#section-concept-actors">Actor Model</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_technical_context"><a class="anchor" href="#_technical_context"></a>3.2. Technical Context</h3>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9oLLKsFsZ0GlUTNMFJI7g2qbLWg8RIKJIhKLHlniOT5QEKc4x18xCXsw4Ar_xrsue13ajKsN63UynlFcvam4l8OmzX1wi61P1pzpRyZr9jKVYBq3GVxBMSP3QSiLiWxWE6NGVzpT64m7WAle0PxSKhLbO1NHOV32BUB5kXPr9BE10HOm5bQ2t-tXJtF6xf3WzuJ2YO-_JJq-dqZDVfe_BWL4dEP9R7Z42g1HpW0r9c3O1aFe8EmGExSVvhuCnkVP7ANOxExTcpXJfyQyBcxM28LAxLdltwwrvnL5LrLG7-HW_xY-fGNFkI8T_UGGuxO4vfYZXCKn2mBZMUrLaHVzSUfDI6AVkF1uARmRCgIb56WSg6DGnm2YUas1kUbagTaDUSQZHOaoMAi1cuylXeiAtKZxJyJJMEYK7sytxyP3A0fopL7fw0ip3r6BZqGpcYY61sJP9roac3WNN4K4fADfQ1irurffA5kbdRHkcZO9gVO_T3F-mFGaAaJfrFwGPN_-EWRqH-CKjWh9pfdSbs_EqPhIs5peTfHrEifdXddLpbcR3TcMywst2zNPo-0fqHreAls_402s5IRfg_k5enECn-D2bki5IZoLIAAnSbs9otYgit3BII5WKKtE7i-TaelBzNMxf6xLvwrR3c7sdox8hIPfjQoSPYYyD0oI7gHQnmpHMQvMomWmbG_qwy52jAQ6eMrbdB1AbLSOTORhQooVikG_Q7QKNtiOi9oLjHjIIZZqLh0leTceQ_rxBW9cPlc8RSxXnEa4daus8NABY4rfJ5-kGRu4pJPInNDBmXlEF80_0Gas54YtfncgT0jKHcuBlfMRPJwJ_a7H00rFW00" /></div></div>
+<div class="paragraph">
+<p>Erpione exposes its simulation capabilities via well-defined technical interfaces:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>REST APIs</strong>: For interaction with the simulated client systems.</p>
+</li>
+<li>
+<p><strong>Web-based User Interface</strong>: For manual and exploratory testing.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Mapping Input/Output to Channels:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Domain-specific behaviours (e.g., prescription creation, claim, status updates) are mapped to REST endpoints.</p>
+</li>
+<li>
+<p>The Erpione REST endpoints are primarily designed to communicate using the <a href="#section-concept-hermes">Hermes Data Model</a>, a simplified JSON representation of the E-Rezept domain data which abstracts away the complexities of the underlying FHIR-based E-Rezept specifications.</p>
+</li>
+<li>
+<p>For certain behaviours (e.g., creating prescriptions), Erpione may also support the use of FHIR resources as input. These resources are then directly used for the communication with the E-Rezept Fachdienst.</p>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-solution-strategy"><a class="anchor" href="#section-solution-strategy"></a> 4. Solution Strategy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Erpione is primarily implemented in Java using the Spring Boot framework, which provides a robust foundation for building modular, maintainable, and production-grade services. The data model is defined in Kotlin, chosen for its seamless interoperability with Java, enhanced flexibility, and strong null-safety features, which help prevent common programming errors and improve code quality.</p>
+</div>
+<div class="paragraph">
+<p>The system architecture follows the Backend-for-Frontend (BFF) pattern. Authentication is managed via Keycloak, which is integrated into the BFF layer to provide secure, standards-based identity management.</p>
+</div>
+<div class="paragraph">
+<p>Deployment is handled using Docker Compose, targeting on-premise environments. This enables straightforward setup, reproducibility, and isolation of all required services, making it easy for vendors and testers to run Erpione in their own infrastructure.</p>
+</div>
+<div class="paragraph">
+<p>These technology and architectural decisions directly support Erpione&#8217;s key quality goals: high operability and ease of use, reduced overhead for end-to-end testing, and maintainability. By abstracting the complexity of the E-Rezept ecosystem and providing a flexible, secure, and easy-to-deploy simulator, Erpione enables vendors to focus on their own development and testing tasks without being burdened by the details of complementary systems.</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-building-block-view"><a class="anchor" href="#section-building-block-view"></a> 5. Building Block View</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section provides an overview of Erpione&#8217;s static architecture by describing its main building blocks, their responsibilities, and how they interact. Erpione itself is based on a layered and modular architecture which is heavily inspired by the <a href="https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals">Screenplay Pattern</a>. The building blocks are designed to be cohesive, loosely coupled, and easily testable.</p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9nzaijEmp0GHVV-2WjsI8424eegAseQ6XRbfRRv03UPjbPT9x9TeGhuToPsceS4P1FFdElhyKsOiIS94Q7uyDoMcdwwDQNNyQ2aTChp_LQNHrKafKHo2H3UFupkDfsYr0Ne0MtODpcxPWR-DGt33V_RrDFMj6TzD91p0wrrRVpKDqxJD9o53NqM2ff-SXkcer5ZnMwQF2R6ScsF1qd8JXH0ZGKDfJrLGCYuliEOSbCVgYbZTHr5PEmISy1dnvXx8oBdyIvGInDSNTIoB26ama7v5acy5b9O0SQXUEgkeY6tN6rboq-U-lLGC5kyqqGAKDPfiFJLK3KlbO8zZkL4yxVNtqJB0zu-vxhmmonVuiKgYHUFIu9nzsUgAYboRaMfA4QDQLWm_lWuMxbhQnhe86eI6TCAzARK1rGGtt8qIpfa25P-JxR2jb2OFVwRz4FONSrO49m3G0oAhoL-5UzsLMzhsQu-fQdO5sxhCXcqknG6xTwroGHKWR_33olRy-00" /></div></div>
+<div class="paragraph">
+<p>Erpione does not implement the E-Rezept domain itself but builds on two gematik libraries, each adding one layer of abstraction:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Bricks (B²riC²s)</strong> is the generic foundation. The <a href="https://github.com/gematik/lib-bbriccs">Bricks</a> framework provides reusable building bricks for maintainable test suites: the Screenplay core with actors, abilities and use cases shown in the diagram above, FHIR building bricks for profile-safe resource handling, and software abstractions for smartcards (HBA, SMC-B) and the Konnektor. Its concepts are documented in the <a href="https://gematik.github.io/lib-bbriccs/Bbriccs-User-Manual.html">Bricks User Manual</a>.</p>
+</li>
+<li>
+<p><strong>E-Rezept E2E Testsuite</strong> is the domain layer built on Bricks. The <a href="https://github.com/gematik/erp-e2e-testsuite">E-Rezept E2E Testsuite</a> contributes everything specific to the E-Rezept: the FHIR profiles of KBV, gematik and DAV, the client for the E-Rezept Fachdienst and the use cases such as prescribe, accept, dispense and close. It is the heart of the system and the place where the core functionality dealing with the Fachdienst is built and maintained.</p>
+</li>
+<li>
+<p><strong>Erpione</strong> exposes these capabilities as a service. It adds the REST API and the Web UI, the <a href="#section-concept-hermes">Hermes</a> abstraction and the <a href="#section-concept-actors">actor stage</a> with preconfigured identities, so that the testsuite&#8217;s actors can be driven interactively or by external test systems.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock"><div class="content"><object type="image/svg+xml" data="https://plantuml.gematik.solutions/plantuml/svg/U9oLLjjkcq0GVUShfgHI7YfSagOEhLmhbzgLrKiisr4VegXQms2lGW3jhXkbbt_lmgvXWSLIyn8pSywSsPdZDICkdXCSEo3_I2Wo1h_Bpm23oyOZm1K97pOiswNHTPR8p15Yy6RedyOr8cCHiaPMv_uw-wgt70yM3OAOz1TLsQgeKNh7CIGSgz95uKzcuUbq6am2dVr2KzJnwvDWwlkwrEYrdiS55uI9tMFYE2zUvh8MsU2D_4_5Ctm0zoHsPNpDQFXWHCzyju27HU7fbh8YTXJ7PoU-xvhnguB7PTQ0leAMJ8VGmPlobUu2kOXtIIaT16_zE7PRgPRwdj3RW4cpiQnjp97HHnIePa1840ph6LJ9LYirgRUP9jNEj3Qqp1bDDsKtxn3NP-TkCtELPQ8gfy6zNTIKPM6JyfHjPhCBNGTSTMHN-xGAntAdtbhdEaunlZ1t9JBC8WmL_huDT-hlHbMUgNMr59g6C3KYJyaa55FHr359DgbylugMM7lfXXn_b4CC2OkuHtBQb6lIQiv3bgRu86yeQvF_onea60jltDEAUS_qpAOgq5cF8ubtDCeruHu81tSMpU6wV7RXoFVFXqFq0yCb4s-1lp0NC3cTm4fEdE-eG0EhntU7B2_RiRkWJEzrUzPNOkfZzqomhUP5sLCw6FondhWZhT0bs3QzBg4QPwLemJ2wsLOWumGMQAalaSOUx8UlExKxGIwptfBwihlGkKVqSdWPyTOov75rKN2rVtrDb61zXV1k7PqfH6jdi9ncQM45zGFhnrgDfX8Qar1Y5fFb2YxdCxVGcYpcivjlan_okLTWFugYiYT_e7_I45MZMWwMAkWseJkgKDzn3RUpLhAuSxo82DAiz556uAkqI-8wFSBUVbtTxHy0jlTw06gQfGUl75WOmHZWVME2tLaeImxQfFSm6idta_7ua9RkhJKwYyOkxu4wnmKuof2dnm8OflAz2SIM27Z2955PYtZLSy_bs3kXYcZrUU7QD1C89GookFTugoq2tnA6aM4ErNYOfOBGbCidwPpL3Iy94SRo_Is2VCSmUPREXy-PI6WwSEIPeH1rd0lvKRw-_GFv0uM2" ><div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/svg/U9oLLjjkcq0GVUShfgHI7YfSagOEhLmhbzgLrKiisr4VegXQms2lGW3jhXkbbt_lmgvXWSLIyn8pSywSsPdZDICkdXCSEo3_I2Wo1h_Bpm23oyOZm1K97pOiswNHTPR8p15Yy6RedyOr8cCHiaPMv_uw-wgt70yM3OAOz1TLsQgeKNh7CIGSgz95uKzcuUbq6am2dVr2KzJnwvDWwlkwrEYrdiS55uI9tMFYE2zUvh8MsU2D_4_5Ctm0zoHsPNpDQFXWHCzyju27HU7fbh8YTXJ7PoU-xvhnguB7PTQ0leAMJ8VGmPlobUu2kOXtIIaT16_zE7PRgPRwdj3RW4cpiQnjp97HHnIePa1840ph6LJ9LYirgRUP9jNEj3Qqp1bDDsKtxn3NP-TkCtELPQ8gfy6zNTIKPM6JyfHjPhCBNGTSTMHN-xGAntAdtbhdEaunlZ1t9JBC8WmL_huDT-hlHbMUgNMr59g6C3KYJyaa55FHr359DgbylugMM7lfXXn_b4CC2OkuHtBQb6lIQiv3bgRu86yeQvF_onea60jltDEAUS_qpAOgq5cF8ubtDCeruHu81tSMpU6wV7RXoFVFXqFq0yCb4s-1lp0NC3cTm4fEdE-eG0EhntU7B2_RiRkWJEzrUzPNOkfZzqomhUP5sLCw6FondhWZhT0bs3QzBg4QPwLemJ2wsLOWumGMQAalaSOUx8UlExKxGIwptfBwihlGkKVqSdWPyTOov75rKN2rVtrDb61zXV1k7PqfH6jdi9ncQM45zGFhnrgDfX8Qar1Y5fFb2YxdCxVGcYpcivjlan_okLTWFugYiYT_e7_I45MZMWwMAkWseJkgKDzn3RUpLhAuSxo82DAiz556uAkqI-8wFSBUVbtTxHy0jlTw06gQfGUl75WOmHZWVME2tLaeImxQfFSm6idta_7ua9RkhJKwYyOkxu4wnmKuof2dnm8OflAz2SIM27Z2955PYtZLSy_bs3kXYcZrUU7QD1C89GookFTugoq2tnA6aM4ErNYOfOBGbCidwPpL3Iy94SRo_Is2VCSmUPREXy-PI6WwSEIPeH1rd0lvKRw-_GFv0uM2" /></div></div></object></div></div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Important Interfaces</dt>
+<dd>
+<p>The following interfaces are central to the interaction between Erpione’s building blocks and with external systems:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>REST API</strong>: The main interface for client systems and the web frontend, exposing endpoints for prescription management, actor actions, and test data generation. Follows RESTful conventions and uses JSON (not FHIR) as the primary data format.</p>
+</li>
+<li>
+<p><strong>Data Model (Kotlin/Java Classes)</strong>: Shared data structures used across the REST API, ensuring consistent serialization and deserialization of business objects. These classes form the <strong>Hermes Data Model</strong>, which abstracts away the complexities of the underlying FHIR while still supporting all necessary data for testing scenarios. The translation between the Hermes Data Model and FHIR is handled internally by the HermesService. Hermes and its capabilities are described in detail in <a href="#section-concept-hermes">Hermes</a>.</p>
+</li>
+<li>
+<p><strong>FHIR Interface</strong>: Used internally and externally for E-Rezept data exchange, based on the HL7 FHIR standard. Ensures compatibility with the E-Rezept backend and client systems.</p>
+</li>
+<li>
+<p><strong>Authentication &amp; Authorization (OAuth2/OpenID Connect)</strong>: Integrates with Keycloak to secure API endpoints and the frontend, supporting OAuth2 and OIDC flows for user and system authentication.</p>
+</li>
+<li>
+<p><strong>Persistence Layer</strong>: Provides access to stored test data and simulation state via Spring Data JPA.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>These interfaces are designed to be modular and extensible, supporting both automated and manual testing scenarios.</p>
+</div>
+<div class="sect2">
+<h3 id="_whitebox_overall_system"><a class="anchor" href="#_whitebox_overall_system"></a>5.1. Whitebox Overall System</h3>
+<div class="paragraph">
+<p>The following section details the internal structure of Erpione by breaking down the overall system into its main building blocks and illustrating their interactions.</p>
+</div>
+<div class="imageblock"><div class="content"><object type="image/svg+xml" data="https://plantuml.gematik.solutions/plantuml/svg/U9o5bDjkr30GXk_p5AFbPX5DAI2XLHL5RRSDBIfGzV00RZBPDVLwWZqfAgZlpYJnfaa9PIzMyHm-p_nZE_7yO32DG7ugPtBmk_q6s3qSBG6EL7wtSbJROab6FAyG5ny-xhqldoB85UX6tk1xZBRK6uylGXUBKlqRsdbxw01TUyoLnnxTW3yDmLcMBKuMmNkkBGRxyjqYsziBgEHjqEF0it9SRqmKLK9IAuJPYQiqMOGhTFSwnvdi5KNAMcB5ue3P9NfUacL7ng2RWVAGzqkV9BvosgxYMo9EqoZIbj6LAaS8v5RnG9VexYDDGqzlu9vq0GvBXtvzLbJNT8VMpry7xxdsd0JIcVMikMxAEbQiKbWXjtH_PajocxRWFlDRrIoLIKvH6Lxdok65etijkhUPVvldLzoq0bPjy0NAe8mMD5YF2Oz3DKxHRT077VhccJvxIVikVzSF5Uv0kTPE5AVQvNqDJ9bOE_Iy2UX22z5W7B9DV37egDQcQRRnTFjraRUTlLbi4mhCgUXeIwEytsadZvQVzJQSTDzQaA8HgEY7ycJyAX9DcBzOt93LUU-QddsdUqbzs5ZUThoDuJdcGewid2YqNT0bLkIrLFqG0kCOq5LnRhHq2TASAb2CmwEghMQjZFw5GxX8Nv7rc5ocSfX_r79fvgsv_HnOjpdPLjrMsIHBOI1pqEF_Qj-C7eXZg2H6RiAXdnzsBr-RExYli5lGJnkdavHzI19NMxd6mupOwTMQdwLibTu7ZmPpqShHPfnci6oonfFP1tRAUgCOuQVcTHHDKIcUg3AQAdcoEDab226lbGXmWBQGL-yFEWNwXW00" ><div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/svg/U9o5bDjkr30GXk_p5AFbPX5DAI2XLHL5RRSDBIfGzV00RZBPDVLwWZqfAgZlpYJnfaa9PIzMyHm-p_nZE_7yO32DG7ugPtBmk_q6s3qSBG6EL7wtSbJROab6FAyG5ny-xhqldoB85UX6tk1xZBRK6uylGXUBKlqRsdbxw01TUyoLnnxTW3yDmLcMBKuMmNkkBGRxyjqYsziBgEHjqEF0it9SRqmKLK9IAuJPYQiqMOGhTFSwnvdi5KNAMcB5ue3P9NfUacL7ng2RWVAGzqkV9BvosgxYMo9EqoZIbj6LAaS8v5RnG9VexYDDGqzlu9vq0GvBXtvzLbJNT8VMpry7xxdsd0JIcVMikMxAEbQiKbWXjtH_PajocxRWFlDRrIoLIKvH6Lxdok65etijkhUPVvldLzoq0bPjy0NAe8mMD5YF2Oz3DKxHRT077VhccJvxIVikVzSF5Uv0kTPE5AVQvNqDJ9bOE_Iy2UX22z5W7B9DV37egDQcQRRnTFjraRUTlLbi4mhCgUXeIwEytsadZvQVzJQSTDzQaA8HgEY7ycJyAX9DcBzOt93LUU-QddsdUqbzs5ZUThoDuJdcGewid2YqNT0bLkIrLFqG0kCOq5LnRhHq2TASAb2CmwEghMQjZFw5GxX8Nv7rc5ocSfX_r79fvgsv_HnOjpdPLjrMsIHBOI1pqEF_Qj-C7eXZg2H6RiAXdnzsBr-RExYli5lGJnkdavHzI19NMxd6mupOwTMQdwLibTu7ZmPpqShHPfnci6oonfFP1tRAUgCOuQVcTHHDKIcUg3AQAdcoEDab226lbGXmWBQGL-yFEWNwXW00" /></div></div></object></div></div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivation</dt>
+<dd>
+<p>The architecture of Erpione is heavily inspired by the Screenplay Pattern, which fosters maintainability, extensibility, and a strict separation of concerns. By structuring the system around clear roles and responsibilities — such as test data generation, API handling, and integration with the E-Rezept Fachdienst — Erpione enables users to focus on their specific development and testing needs without being burdened by the complexity of the entire E-Rezept ecosystem. The Screenplay Pattern’s emphasis on modularity and composability supports rapid adaptation to changes in specifications, facilitates the addition of new simulation features, and ensures that each component can be tested and evolved independently. Ultimately, this architectural approach helps Erpione fulfill its goal of providing a robust, user-friendly simulation environment for end-to-end testing and development.</p>
+</dd>
+<dt class="hdlist1">Contained Building Blocks</dt>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Name</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Responsibility</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RestController</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exposes REST endpoints for client systems and the frontend; routes requests to the appropriate simulation or integration logic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HermesService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Translates between the Hermes Data Model and the FHIR-based data model; see <a href="#section-concept-hermes">Hermes</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ErpioneActorService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages the actor stage and helps controllers select actors; see <a href="#section-concept-actors">Actor Model</a>. This concept is heavily inspired by the <a href="https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals">Screenplay Pattern</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ErpioneActor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Models an actor in the Screenplay Pattern, encapsulating the state and behaviour of a test actor; see <a href="#section-concept-actors">Actor Model</a>.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-runtime-view"><a class="anchor" href="#section-runtime-view"></a> 6. Runtime View</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Erpione&#8217;s runtime view illustrates how its main components interact during typical and critical scenarios. This section provides representative examples of end-to-end workflows, such as creation and dispensation of prescriptions. The focus is on the dynamic behaviour and communication between Erpione&#8217;s building blocks, supporting stakeholders in understanding operational and integration aspects without requiring deep knowledge of the static architecture.</p>
+</div>
+<div class="sect2">
+<h3 id="_scope_and_purpose"><a class="anchor" href="#_scope_and_purpose"></a>6.1. Scope and Purpose</h3>
+<div class="paragraph">
+<p>The runtime view focuses on the dynamic behaviour of Erpione during representative workflows.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>What happens inside Erpione during a user-triggered action</p>
+</li>
+<li>
+<p>How the REST API, frontend, authentication, and internal services collaborate</p>
+</li>
+<li>
+<p>How Erpione communicates with the E-Rezept Fachdienst and related external systems</p>
+</li>
+<li>
+<p>How runtime behaviour differs between full-stack and simplified deployments</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The participants of the scenarios are the external systems introduced in <a href="#section-context-and-scope">Context and Scope</a> — above all the E-Rezept Fachdienst and the complementary systems that take over a prescription during its lifecycle — and the building blocks described in <a href="#section-building-block-view">Building Block View</a>.</p>
+</div>
+<div class="paragraph">
+<p>The prescription lifecycle itself (draft, ready, in-progress, completed, cancelled) is owned and enforced by the E-Rezept Fachdienst and is specified in the <a href="https://github.com/gematik/api-erp/tree/master/docs">api-erp documentation</a>. Erpione does not re-implement this state machine; it triggers the individual transitions on behalf of an actor. The <a href="#section-runtime-typical-flows">Typical Runtime Flows</a> below show which REST endpoint of Erpione maps to which Fachdienst operation along this lifecycle.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-runtime-concepts"><a class="anchor" href="#section-runtime-concepts"></a>6.2. Recurring Runtime Concepts</h3>
+<div class="paragraph">
+<p>The workflows described below are all composed of the same few cross-cutting concepts: <a href="#section-concept-actor-resolution">actor resolution</a>, <a href="#section-concept-hermes-translation">Hermes translation</a>, <a href="#section-concept-actor-execution">execution as an actor</a> and <a href="#section-concept-persistence">local persistence</a>. They are described once in <a href="#section-crosscutting-concepts">Cross-cutting Concepts</a>; the individual flows refer to them instead of repeating the details.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-runtime-typical-flows"><a class="anchor" href="#section-runtime-typical-flows"></a>6.3. Typical Runtime Flows</h3>
+<div class="paragraph">
+<p>All domain workflows in Erpione follow the same basic shape, regardless of whether they are triggered by the Web UI or by an automated client. A request arrives at the REST API together with an <code>x-actor</code> header; the controller <a href="#section-concept-actor-resolution">resolves the actor</a> from the actor stage and <a href="#section-concept-hermes-translation">translates the payload</a> from the Hermes Data Model (or takes a raw FHIR resource) into the FHIR resource required for the operation. The operation is then <a href="#section-concept-actor-execution">executed as the selected actor</a>, which signs, authenticates and sends one or more FHIR operations to the E-Rezept Fachdienst. The response is translated back into the Hermes Data Model, <a href="#section-concept-persistence">stored locally</a> and returned to the caller as JSON.</p>
+</div>
+<div class="paragraph">
+<p>This means that Erpione itself does not implement the prescription lifecycle; the authoritative state of a prescription is always held by the Fachdienst. Erpione&#8217;s responsibility at runtime is to orchestrate the correct sequence of FHIR operations for a given actor role, hide the complexity of signing, authentication and FHIR profiling, and keep a local copy of the results so that clients and the Web UI can inspect them later.</p>
+</div>
+<div class="paragraph">
+<p>The following subsections show this pattern for the most relevant scenarios: creating a prescription as a physician, taking over and dispensing a prescription as a pharmacy, and the two ways of reaching the REST API — interactively through the Web UI in a full-stack deployment and programmatically in a simplified REST-only deployment.</p>
+</div>
+<div class="sect3">
+<h4 id="_prescription_creation"><a class="anchor" href="#_prescription_creation"></a>6.3.1. Prescription creation</h4>
+<div class="paragraph">
+<p>A physician actor creates a pharmaceutical prescription with <code>POST /api/erp/pharmaceutical</code>. The request carries the <code>x-actor</code> header and an optional body; the <code>direct</code> query parameter switches to a direct assignment ("Direktzuweisung").</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The controller <a href="#section-concept-actor-resolution">resolves the actor</a> from the actor stage. Only actors with an HBA (physicians) are accepted here.</p>
+</li>
+<li>
+<p>The body is <a href="#section-concept-hermes-translation">translated</a> into a KBV prescription bundle:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Content-Type: application/json</code> — the Hermes prescription payload is converted into FHIR. Omitted fields are faked so the resulting bundle still conforms to the active KBV profiles; an empty body therefore produces a complete random prescription.</p>
+</li>
+<li>
+<p><code>Content-Type: application/fhir+xml</code> — the body is taken as a FHIR template. An optional <code>kvnr</code> query parameter replaces the patient&#8217;s KVNR in the template.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The controller selects the prescribe operation for the bundle and <a href="#section-concept-actor-execution">executes it as the resolved actor</a>. The flow type (160, 169, 200, 209 or 166 for T-Rezept) is derived from the insurance kind in the bundle, the <code>direct</code> flag and the medication category.</p>
+</li>
+<li>
+<p>Executed as the actor, the operation performs two Fachdienst calls:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>Task/$create</code> with the flow type — the Fachdienst returns a draft <code>Task</code> containing the prescription ID and access code.</p>
+</li>
+<li>
+<p>The KBV bundle is adjusted (prescription ID, current dates, MVO dates) and signed as QES with the actor&#8217;s HBA through the software Konnektor. <code>Task/$activate</code> uploads the signed bundle; the Fachdienst validates it and returns the activated <code>Task</code> (status <code>ready</code>).</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>The activated task is translated back into the Hermes Data Model, enriched with the prescription data and the signature information, <a href="#section-concept-persistence">stored locally</a> and returned as JSON. The response contains everything a pharmacy needs to claim the prescription (prescription ID and access code); a Data-Matrix-Code can be fetched afterwards with <code>GET /api/erp/dmc/{pid}</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>DiGA prescriptions (<code>POST /api/erp/evdga</code>, flow type 162) and the KTR use cases (<code>/approve</code>, <code>/decline</code>) as well as the EU pharmacy workflows under <code>/api/eu</code> follow exactly the same pattern with different operations towards the Fachdienst and are therefore not described separately.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_prescription_claim_dispensation_and_close"><a class="anchor" href="#_prescription_claim_dispensation_and_close"></a>6.3.2. Prescription claim, dispensation and close</h4>
+<div class="paragraph">
+<p>A pharmacy actor takes over a prescription in up to three steps. All endpoints are located under <code>/api/erp/{pid}</code> and <a href="#section-concept-actor-resolution">resolve the actor</a> as an institution, i.e. an SMC-B is sufficient.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Claim</strong> — <code>POST /api/erp/{pid}/claim?ac=&lt;accessCode&gt;</code> calls <code>Task/$accept</code> at the Fachdienst. The returned accept bundle contains the <code>Task</code> (now <code>in-progress</code> with a <code>secret</code>) and the signed KBV bundle. Erpione decodes the KBV bundle, translates both into the Hermes Data Model, <a href="#section-concept-persistence">stores them</a> (overriding any already known data for this prescription) and returns the task including the secret.</p>
+</li>
+<li>
+<p><strong>Dispense</strong> (optional) — <code>POST /api/erp/{pid}/dispense</code> calls <code>Task/$dispense</code>. The body is either Hermes JSON or FHIR XML describing the dispensed medication and is <a href="#section-concept-hermes-translation">translated</a> into the dispense parameters; if omitted, matching dispense data is generated. The Fachdienst keeps the task <code>in-progress</code> and Erpione returns an empty acknowledgement.</p>
+</li>
+<li>
+<p><strong>Close</strong> — <code>POST /api/erp/{pid}/close</code> calls <code>Task/$close</code> with the close parameters (same input options as dispense). The Fachdienst completes the task and returns the signed receipt, which is translated into the Hermes Data Model, <a href="#section-concept-persistence">stored</a> and returned. The raw FHIR receipt bundle can be re-fetched later with <code>GET /api/erp/receipts/{pid}</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If a pharmacy cannot fulfil the prescription it can hand it back with <code>POST /api/erp/{pid}/return</code> (<code>Task/$reject</code>), and any involved institution can delete it with <code>DELETE /api/erp/{pid}/abort</code> (<code>Task/$abort</code>).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_manual_exploratory_workflow_via_web_ui"><a class="anchor" href="#_manual_exploratory_workflow_via_web_ui"></a>6.3.3. Manual exploratory workflow via Web UI</h4>
+<div class="paragraph">
+<p>In the <a href="#section-deployment-view">full-stack deployment</a> a tester works with Erpione through the browser. The Web UI is a static single-page application served by its own Nginx container and reached through the reverse proxy under <code>/ui</code>. It never talks to the Erpione service directly; all calls go to <code>/api/**</code> on the reverse proxy, which forwards them to the OAuth2 BFF.</p>
+</div>
+<div class="paragraph">
+<p>Whether the user has to authenticate depends on the deployment configuration:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Authentication enabled</strong> (default): the Erpione service runs as a stateless OAuth2 resource server and requires a valid JWT for every <code>/api/**</code> request. The BFF therefore redirects an unauthenticated browser to Keycloak (<code>/oauth2/authorization/&#8230;&#8203;</code>, <code>/login</code>), performs the OIDC authorization code flow, keeps the tokens in a server-side session and hands only a session cookie to the browser. For every subsequent <code>/api</code> call the BFF attaches the access token as <code>Authorization: Bearer</code> header before relaying the request to the Erpione service (token relay) and refreshes the token transparently when needed.</p>
+</li>
+<li>
+<p><strong>Authentication disabled</strong>: when the Spring profile <code>noauth</code> is active, the Erpione service permits all requests. This mode is intended for local or isolated test environments where Keycloak is not needed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once a request reaches the Erpione service, the processing is identical to the API workflow described above. The Web UI only provides a convenient way to select an actor (<code>GET /api/actors</code>), fill in Hermes payloads, trigger the prescribe/claim/dispense/close actions and inspect the persisted results (<code>GET /api/erp/{pid}</code>, <code>GET /api/erp/prescriptions/{kvnr}</code>, <code>GET /api/erp/receipts</code>). <a href="#section-concept-actor-resolution">Actor resolution</a>, <a href="#section-concept-hermes-translation">Hermes translation</a> and <a href="#section-concept-persistence">persistence</a> are handled locally inside Erpione; only the FHIR operations themselves leave the deployment towards the Fachdienst via the SZZP.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_automated_api_workflow"><a class="anchor" href="#_automated_api_workflow"></a>6.3.4. Automated API workflow</h4>
+<div class="paragraph">
+<p>An external test system drives Erpione purely via REST. In the <a href="#section-deployment-view">simplified deployment</a> the Erpione service exposes its REST API directly, typically with the <code>noauth</code> profile; in the full-stack deployment the client has to obtain a JWT from Keycloak and send it as bearer token (or go through the BFF like the Web UI does).</p>
+</div>
+<div class="paragraph">
+<p>The request/response lifecycle for a single call is:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The client sends an HTTP request to <code>/api/erp/&#8230;&#8203;</code> with the <code>x-actor</code> header and, where applicable, the prescription ID in the path and <code>ac</code> / <code>secret</code> as query parameters.</p>
+</li>
+<li>
+<p>The controller <a href="#section-concept-actor-resolution">resolves the actor</a>, <a href="#section-concept-hermes-translation">translates the body</a> and <a href="#section-concept-actor-execution">executes the operation as the actor</a> as described in the two prescription flows above.</p>
+</li>
+<li>
+<p>The response is always JSON in the Hermes Data Model (the task, the receipt or an empty acknowledgement) or an <code>ErrorData</code> payload in case of failure (see <a href="#section-concept-error-handling">Error Handling</a>). The only exception is <code>GET /api/erp/receipts/{pid}</code>, which returns the raw FHIR receipt bundle as <code>application/fhir+xml</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The API is JSON-first: the Hermes Data Model is the primary and stable contract, while raw FHIR is accepted as <em>input</em> for selected endpoints (see <a href="#section-concept-hermes-translation">Translation</a>). In both cases the FHIR resources sent to the Fachdienst are built by Erpione; the client never communicates with the Fachdienst directly.</p>
+</div>
+<div class="paragraph">
+<p>The results of these calls are <a href="#section-concept-persistence">stored locally</a> so that the lookup endpoints and the Web UI can inspect them later; this local copy is a convenience cache and never the authoritative state of the prescription.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sequence_diagrams"><a class="anchor" href="#_sequence_diagrams"></a>6.4. Sequence Diagrams</h3>
+<div class="paragraph">
+<p>The first diagram shows the full-stack deployment: a tester prescribes through the Web UI, the request passes the reverse proxy and the BFF (including the Keycloak login when authentication is enabled) and finally reaches the Erpione service, which performs <code>$create</code> and <code>$activate</code> at the Fachdienst.</p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9o5LDzJ6Z4GVizViKFx83F2eUrq64ST0Jb5QwM2zSMNaDkJb2Ev9ZbGE_tVkpdkaBDeURWXkzz---sFvD2wfmIF6T2F2wSD_Cx_0pGxbID0bulPWz6PYdew8Sy7nFQdBwtz-0MXJOIcuYryVrZ9UclnNT9sE-PlawwyQz8DwioYu1RNr9xuR9Cu3CDslrrulqg5XRstrmvRhOBgC2ZwSM8TDowR9undJgjiFa73x4ogb1i-1uk_CbG2hz1Q_e2TH3ue4AWSeTYgZxKnMZhMW5ilpZ2AT5B8b2i7jQxHIpBUgvqxdC3je9xZ9Yjh5Ng32pHKsT3enoSAK0zIFQxmgJUz8Wx35LKSLnsN-2GIpMUvToQgphv9fLO88pGBAP2otFH7O-WC2s6uyhyAQjpWCwRkNeLSJ2E9oheS7KUC-PAXSLoM10UWKrHG9heTiD93eBmEWfprnn1aagtEbMYQ1sM6LRSOEpg2JkQcr74foA4Lx6YLFC6IJ40Zcu8arOfF4epgS7JqPZQUoY0VcDt86iVaZhLPSXCnVsfKj7nkxK401YDfK3Xm6WBjS-u7_gkDVCublPbp6pXeDfllAZYceP7jUd3QoqjVHq9FHmXXefUC48rrzE2KH78XQ4LpjR51EoMnCrHRQh84ysH2wvd4lC532X16Jj3FjDOnppHTwkI_axMO-3xaRTo5M2Q9bpxVXTgQehQj6SFhKJ41sgyWdN8pvm8pFzBaNZqs2i9pD7EqS36w_lQV3XLh-b_gIlyEe8lSaBB3YxlnCIivAdHKXauMM9HuhpOaUU1bzmU4vuCRcD1xa-0cHnnH-9ZRMV1H6EGE6LaQ5VB8yDZbcEt9UVGpiwxWfkJV-oEmzE1mbnc4XUGmqh6xz7VWlDkflv6TfCl5rlob9tf7GruTMOh2T-WUzpswJdfIUfwaTI-1w_7ijrfG8c77Twk-Nhro2GXJJhMoLDw-tXdoPCMkJVMIOlErIlFr7voIXcBF1Ls5NJYzwh4JL14ztty1NnqsVm00" /></div></div>
+<div class="paragraph">
+<p>The second diagram shows the simplified REST-only deployment from the perspective of an automated client acting as a pharmacy.</p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9orLTzF6a4GVh-_Oc9zW0GEQfE6454HeMgr67yqVV1bsHjWmztkTNTFfSR_lNExnm5MiQOf3t3iVD-tCz_CmAwnynZt0g0NurPfU7JF065txIl08UEpYLQPZ7egfiW7nDQdpysTyHAXT8HwBLh4deA5wet1ZQAjrfYzBkgZfUYAT6QGCuEbT2xyPLLuC1Yq-gqYUYOa5kUzZwr1irb8xJOAFmwCPTfcIHomp2gP9IFKWPa9cJBD4Z3uCqF9yHoDOHFinc8YWQEqX0e8OWKNAPCMjdgne6EucXkBoQsiO3W9mQAna0idp0ebgrl0372734Rg0RRwEgLpX2lKTuBZriBEPkxBclubIVMKj5h5CMelP7Ny75O8kfwMeeIbCYVu77oCEa6p2fkwa-Uu6--vGsHyqvLKU3TLTeeprBvQDspFAHUeZI2ZP75jD0fGHa2Mh9lQhr_YBqpjhHmmFet8DsCTOHm5GQS3lPY912hRZ7D2LQ7J2RoxKDzpza0RBePNrz1WgMYWJXkFgOYU6ZpdxJFU2SFmLZxKNP9js4sdJ2UCp_S2HoOHvnkfJD2UqEN2PdaZX_fwgjLznV5EechWOVNbhSV8OZlbJECAhLJDE45SyXSQ3TSYpSFXlR3J2YLO8zUgjp9CKO-LJhh6NrGDY4TilxzjqFbm6bkvPcRMM7WG-2Z1nb5PlKCyvfKNiABsW33r5SMk2nxICiK8JhS6XaOU8_Xw-1r6Bh18myyAiQmwDKfMQ0xwdcBfdVAFaAi8_nGe-D68k8RTOSdqoaiJ5-U5Rtd0TxSDEyrc6ORAwTNmMms4v758AyiraW_vV1m9azBCK2tAESpYlv-HgE2Myr43lo-GtmRar-3uv19-d9-LRLrnP30LcbPMPPeZDC1RiTx_HN8NVkYGHeIp-7rDNoJvPjiNm7rlpqlDFyU84iXjAcqh-lMA_KbgvqVCic8LLUxpDiy_txE9wZzQx9Bw5tzzDM-Pwr0RdBr4ZhJYKF6hi6c12kWmipLAnJrNNzoN9R2wOJsMAByarU20VcZfx-utv8YS7m00" /></div></div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-deployment-view"><a class="anchor" href="#section-deployment-view"></a> 7. Deployment View</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section describes the technical infrastructure on which Erpione is executed.</p>
+</div>
+<div class="sect2">
+<h3 id="_infrastructure_level_1"><a class="anchor" href="#_infrastructure_level_1"></a>7.1. Infrastructure Level 1</h3>
+<div class="paragraph">
+<p><em><strong>Service Deployment</strong></em></p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9nzKbrhmZ0KVS-l2DcppZaOPOZuCRl9nYPQ6IW-nFPMYpMH99rsO_zzILDDHMQVadFkEVUUcxQaobDe8wm_6Yeky4znnhZUFRjYtAFXPYLung8-JpLp0-3TFpIQiQlW8W9nnfRSBpgwJYLSDVMycFvlQjcJQSKwan1I2IThO_nSDVPztnju9VkMC2Zn_ftdDngbLUkst4T7AYfKjarHmXI8c8Q0oKiGZ0Yc4fi3OZmo69SAJtAfO4kAvXP-uk561nsmbUv4ogaiDOOl47hIaU27d9m6dflImyBOatTp9CY5jCgUxrVgbt5igmE-0OR7aDByKlC9IpmTLcHxM4w7LzkCGV9CwC0J47hKYXR4Bk4Ch7fWBvVwRgRMm5GIKgKBBbsevgt5A-HXokd6UHIlEPVVtpjRCPdDHWHfzBYUMWgnghNntBp1mi4YMQqBtEPpHCJtpE1cNPTeCGiwBgNc2elj5lTZw19hrKuw_8Z9XqdRh3S8SjjnmnH1K9d7mO4Ui0Ciql_N7pr80Fy0" /></div></div>
+<div class="paragraph">
+<p>as a lightweight alternative the Erpione service can also be run without the Web UI and authentication server, directly exposing the REST API.</p>
+</div>
+<div class="paragraph">
+<p><em><strong>Simple Service Deployment</strong></em></p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9nzaC5Emp0CXkzv2YkS1mKabCCq3KOBI1mcMYwhUeXQjrJhaYb9aJR4kvEcMTiTHaxs_zkVxSorEJIu860VpurKyEDYWEl7inJWYUVRIibM52lPMESAaTq_17VbM25LWUhCzTulEL4_DVuBPQpabw6zEq0dw5PZpZKEw0xyCWL7KSH2vjttMg3NLxSi2WAFcj_u_rXgmvLfTmsfXK5LyXo1lYR9cWBNq0L4oABJf3OG7xJ17NN3U_bPvbjxQ2WgEudwhNhh0xLibUN5gBvHqM7b5DM-bWApRWGD-uIIqwdkq5GVZ_k-8DvirfHOTUoRDLYQsGBIRi5iQgYw-dAEwoSUCyh9MqQMA0fxyHzLN9SF" /></div></div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivation</dt>
+<dd>
+<p>Erpione is designed for flexible, secure, and reproducible deployment. By running all core components (the Erpione service, authentication server, proxy etc.) as Docker containers, the system can be easily started, stopped, and managed in any environment that supports Docker.</p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+An SZZP acts as a central VPN access point or proxy. It protects the central network (e.g. the telematics infrastructure in the healthcare sector) by routing all connections through it. This connectivity to the TI must be provided by the runtime for the Erpione to run properly. Make sure to read and understand the implications as described in <a href="#section-concept-ti-connectivity">TI Connectivity</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Quality and/or Performance Features</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Isolation:</strong> Each component runs in its own container, providing process and resource isolation.</p>
+</li>
+<li>
+<p><strong>Portability:</strong> The entire stack can be deployed on any host with Docker support.</p>
+</li>
+<li>
+<p><strong>Configurability:</strong> Environment variables and Docker Compose files allow for easy configuration of endpoints, secrets, and runtime options.</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Mapping of Building Blocks to Infrastructure</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>SZZP</strong>: Handles all incoming and outgoing traffic to the TI.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_infrastructure_level_2"><a class="anchor" href="#_infrastructure_level_2"></a>7.2. Infrastructure Level 2</h3>
+<div class="sect3">
+<h4 id="_resource_server_container"><a class="anchor" href="#_resource_server_container"></a>7.2.1. Resource Server Container</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Runs the Spring Boot application with all business logic, REST API, and simulation features.</p>
+</li>
+<li>
+<p>Connects to the database and Keycloak for persistence and authentication.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_authentication_server_container"><a class="anchor" href="#_authentication_server_container"></a>7.2.2. Authentication Server Container</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Keycloak provides authentication and authorization services for Erpione.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_reverse_proxy_container"><a class="anchor" href="#_reverse_proxy_container"></a>7.2.3. Reverse Proxy Container</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Nginx routes incoming requests to the appropriate backend services (e.g., REST API, Keycloak) and handles TLS termination if needed.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_web_ui_container"><a class="anchor" href="#_web_ui_container"></a>7.2.4. Web UI Container</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Nginx serves the static files of the web-based user interface, allowing users to interact with Erpione through a browser.</p>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_scope"><a class="anchor" href="#_scope"></a>Scope</h2>
+<h2 id="section-crosscutting-concepts"><a class="anchor" href="#section-crosscutting-concepts"></a> 8. Cross-cutting Concepts</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>As a national competence center for digital health, gematik GmbH provides a lot of services and applications for testing the telematics infrastructure (TI) services. <em>ERPione</em> is one of them. It is a software solution that enables the convenient creation of e-prescriptions in a test environment. It is designed to be used by developers and testers who want to test the integration of e-prescriptions into their applications.</p>
+<p>This section describes the concepts that span several building blocks of Erpione and recur in every runtime scenario. They are introduced once here so that the <a href="#section-building-block-view">Building Block View</a> and the <a href="#section-runtime-view">Runtime View</a> can refer to them instead of repeating the details: how clients exchange data with Erpione without having to deal with FHIR (Hermes), how actions are performed on behalf of a test actor (actor model), how results are kept locally (persistence), how failures are reported (error handling) and which connectivity Erpione needs towards the Telematikinfrastruktur.</p>
 </div>
 <div class="sect2">
-<h3 id="_eponym"><a class="anchor" href="#_eponym"></a>Eponym</h3>
+<h3 id="section-concept-hermes"><a class="anchor" href="#section-concept-hermes"></a>8.1. Hermes – FHIR Abstraction</h3>
 <div class="paragraph">
-<p>The name <em>ERPione</em> is a combination of ERP - short for e-prescription (<a href="https://www.gematik.de/anwendungen/e-rezept">E-Rezept | Gematik</a>) - and the Greek goddess Epione. As the goddess of pain relief and the mother of Hygieia, the patron saint of pharmacists, she is an ideal namesake.</p>
+<p>Hermes is Erpione&#8217;s FHIR abstraction: a domain-level data model together with the translation layer that maps it to and from FHIR. The name refers to the Greek messenger god who mediates between two worlds – here between the business view of a prescription and the FHIR representation required by the E-Rezept Fachdienst. Hermes consists of two parts:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <strong>Hermes Data Model</strong> is the simplified representation of the E-Rezept domain data exposed by Erpione&#8217;s REST API as JSON. It describes prescriptions, dispenses, receipts and related business objects without any FHIR-specific semantics.</p>
+</li>
+<li>
+<p>The <strong>HermesService</strong> is the translator that maps the Hermes Data Model to the FHIR resources expected by the E-Rezept Fachdienst, and FHIR responses back into the Hermes Data Model.</p>
+</li>
+</ul>
 </div>
-<div class="sect2">
-<h3 id="_architecture"><a class="anchor" href="#_architecture"></a>Architecture</h3>
+<div class="sect3">
+<h4 id="_hermes_data_model"><a class="anchor" href="#_hermes_data_model"></a>8.1.1. Hermes Data Model</h4>
 <div class="paragraph">
-<p>The architecture of <em>ERPione</em> follows a modular client-server approach, separating responsibilities between backend, frontend, and proxy components to ensure scalability, maintainability, and clear abstraction of technical details.</p>
+<p>The Hermes Data Model is implemented as plain Kotlin/Java classes which are shared across the REST API and serialised as JSON. The classes are designed to be simple and intuitive: they carry the business data a tester cares about – patient, prescriber, medication, dispense information – and leave out the structural and terminological ceremony of FHIR (bundles, references, profiles, codings). At the same time they support all data necessary for realistic testing scenarios, so that nothing relevant for the E-Rezept Fachdienst is lost in translation.</p>
 </div>
-<div class="imageblock text-center">
-<div class="content">
-<img src="./images/erpione_setup.png" alt="erpione setup" width="100%">
+<div class="paragraph">
+<p>The main advantage of this decoupling is stability. The FHIR profiles of the E-Rezept are more likely to change over time than the business view of a prescription. A profile upgrade is therefore handled entirely inside the HermesService; the Hermes Data Model can stay stable even when the underlying FHIR profile version changes, and in many cases it does not need to change at all. The Hermes Data Model is the primary and stable contract of Erpione&#8217;s REST API.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_backend"><a class="anchor" href="#_backend"></a>Backend</h4>
+<h4 id="section-concept-hermes-translation"><a class="anchor" href="#section-concept-hermes-translation"></a>8.1.2. Translation</h4>
 <div class="paragraph">
-<p>The backend handles all tasks such as communicating with the TI, processing <a href="https://www.hl7.org/fhir/">FHIR</a> or creating cryptographic signatures.</p>
+<p>Clients talk to Erpione in the Hermes Data Model, not in FHIR. Before an operation is executed, the HermesService translates the incoming payload into the FHIR resource the Fachdienst expects (for example a KBV prescription bundle or the parameters of a dispense). After the operation, the FHIR response of the Fachdienst is translated back into the Hermes Data Model before it is returned to the client. In both directions the FHIR resources that reach the Fachdienst are built by Erpione; the client never communicates with the Fachdienst directly.</p>
+</div>
+<div class="paragraph">
+<p>FHIR stays optional rather than hidden. For selected endpoints (<code>/pharmaceutical</code>, <code>/evdga</code>, <code>/dispense</code>, <code>/close</code>) a client may alternatively send a raw FHIR resource with <code>Content-Type: application/fhir+xml</code>. Such a resource is taken as a template and used as-is, so that vendors can test their own FHIR resources against the Fachdienst without re-modelling them in the Hermes Data Model. Raw FHIR output is available where it is relevant for testing, e.g. the signed receipt bundle via <code>GET /api/erp/receipts/{pid}</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_frontend"><a class="anchor" href="#_frontend"></a>Frontend</h4>
+<h4 id="_faker_capability"><a class="anchor" href="#_faker_capability"></a>8.1.3. Faker Capability</h4>
 <div class="paragraph">
-<p>The frontend itself is relatively lean (<a href="https://de.wikipedia.org/wiki/Thin_Client">Thin Client</a>). It therefore contains little to no domain knowledge, e.g. about FHIR or the e-prescription itself, but merely serves as an intermediary between the user and the backend service.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_proxy"><a class="anchor" href="#_proxy"></a>Proxy</h4>
-<div class="paragraph">
-<p>The proxy is almost transparent to the user, but performs two essential tasks: routing to the appropriate environments and access control to the actual service via <a href="https://en.wikipedia.org/wiki/API_key">API keys</a>.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_erpione_cli"><a class="anchor" href="#_erpione_cli"></a>ERPione CLI</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The <em>ERPione</em> CLI is a command line interface that allows you to interact with the <em>ERPione</em> application from the terminal. It provides a set of commands for managing and configuring the application, as well as for performing various tasks.</p>
-</div>
-<div class="sect2">
-<h3 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h3>
-<div class="paragraph">
-<p>The <em>ERPione</em> can be used in three variants. In the simplest case, <em>ERPione</em> can be used directly as a <a href="#native_usage">native</a> and executable application for the respective operating system.</p>
-</div>
-<div class="paragraph">
-<p>The container variant uses <a href="https://www.docker.com/">Docker</a> for execution and also offers additional features such as a <a href="https://de.wikipedia.org/wiki/Manpage">manpage</a>, the <a href="https://ohmyz.sh/">oh-my-zsh</a> and the integration of <a href="https://hub.docker.com/r/gematik1/erp-cli-fhir">erp-cli-fhir</a>.</p>
-</div>
-<div class="paragraph">
-<p>The last variant for execution directly via the source files is possible, but is only recommended for developers and enthusiasts.</p>
+<p>A second advantage of Hermes is its faker capability. When a data field is not relevant for a scenario, it can simply be omitted. Hermes fills the gap with a syntactically fitting, profile-conformant value, so that the resulting FHIR resource is still valid for the active profiles. Fields that are provided by the client are never overwritten. As a consequence an empty request body yields a complete, valid resource – for example a complete random prescription – which makes it possible to generate synthetic FHIR data sets that are accepted and processed by the E-Rezept Fachdienst.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -449,633 +1089,1440 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-If you have already installed <a href="https://www.docker.com/">Docker</a>, the <a href="#docker_usage">container variant</a> should be your preferred choice.
+The REST API provides dedicated <code>/faker</code> endpoints which you can use to play around with Hermes and inspect the generated data.
 </td>
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-concept-actors"><a class="anchor" href="#section-concept-actors"></a>8.2. Actor Model</h3>
+<div class="paragraph">
+<p>Erpione&#8217;s architecture is heavily inspired by the <a href="https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals">Screenplay Pattern</a>: every business operation is performed <em>by</em> an actor. An <code>ErpioneActor</code> encapsulates the state and behaviour of a test actor – its identity (HBA or SMC-B), its role and everything needed to talk to the Telematikinfrastruktur. The <code>ErpioneActorService</code> manages the stage of actors and gives controllers a simple way to select and work with actors during a workflow. This keeps actor handling separate from request processing and domain logic.</p>
+</div>
 <div class="sect3">
-<h4 id="docker_usage"><a class="anchor" href="#docker_usage"></a>Docker</h4>
+<h4 id="_actor_roles"><a class="anchor" href="#_actor_roles"></a>8.2.1. Actor Roles</h4>
 <div class="paragraph">
-<p>The <em>ERPione</em> can be loaded directly as a Docker image from <a href="https://hub.docker.com/r/gematik1/erpione">DockerHub</a> with <a href="https://docs.docker.com/engine/reference/commandline/pull/">docker pull</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">docker pull gematik1/erpione</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The image can now be started with the following command using <a href="https://docs.docker.com/engine/reference/commandline/run/">docker run</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">docker run -it --name <em>ERPione</em> \
-      --env ERPIONE_API_KEY=$ERPIONE_API_KEY \
-      -v $FULL_HOST_PATH:/home/gematik/shared \
-      gematik1/erpione</code></pre>
-</div>
+<p>These are the main actor roles in the context of Erpione:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>With <code>-it</code> (abbreviated for <code>--interactive</code> and <code>--tty</code>), the container is started in an interactive TTY session and the user lands directly in the container.</p>
+<p><strong>Arzt</strong>: Represents a physician who uses the PVS of its LEI.</p>
 </li>
 <li>
-<p>The container name <code><em>ERPione</em></code> is freely selectable</p>
+<p><strong>Apotheker</strong>: Represents a pharmacist who uses the AVS of its LEI.</p>
 </li>
 <li>
-<p>With <code>--env ERPIONE_API_KEY=$ERPIONE_API_KEY</code> the API key is stored in the container as an environment variable. Here, <code>$ERPIONE_API_KEY</code> must be replaced with the actual API key if the environment variable is <strong>not</strong> stored on the host computer</p>
+<p><strong>Kostenträger</strong>: Represents a health insurance that approves DiGA prescriptions.</p>
 </li>
 <li>
-<p>With <code>-v $FULL_HOST_PATH:/home/gematik</code> a <a href="https://docs.docker.com/storage/volumes/">Volume</a> is included in the container (quasi a shared folder between the container and the host computer) to enable the exchange of files between the container and the host computer. If this is not required, this argument can also be omitted.</p>
+<p><strong>EU-Apotheker</strong>: Represents a pharmacist from an EU country who can receive and dispense prescriptions via the NCPeH.</p>
 </li>
 </ul>
 </div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9nza4rEmp0GXVS-XINs8O1KMP4LjLHD5x3j0InxsaH9xMWy4Ig8st0JBaRYc3PUW5VsUy_V_4XFbmvAniUZD3da7-7EURP9dfm_AzsUq0tMR5qtEdS0uccLFnvl2OS6C76Zzyb-gGSF_qA5EAg_eRDxXIxGWmUjF5pH4tY_15TL9NOYkg-DXQXl7qILvn4bx-C-rfuKqd3k6AiR0zmJ83YwzC1OCSrGSEMdeiYbdDvboOeDlbFGZGkxapBiC5YzenhQ-A-l5PwLRZmjCozkh689lxzECTTI0jaTUCgnkeTwaM2XeSouDvkLivjA8p0LRfsa-Zm1MuCrun9-0BR0f540" /></div></div>
 <div class="paragraph">
-<p>The <code>-it</code> switch means that the container is <strong>not</strong> shut down when it is exited.
-As long as the container is running, you can always dial into the container again using <a href="https://docs.docker.com/engine/reference/commandline/exec/">docker exec</a>.</p>
+<p>The use cases of <code>Arzt</code> are:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">docker exec -ti <em>ERPione</em> /bin/zsh</code></pre>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9oDaarEmp0GXVS-XIKsxQAbW8IYA8fQIjCD2uHWNLdsfB5musWy4MeHr-82N0pRf7yBscPb-xttwSqecQErWPnn_mb95lbdF7C-d1nTENyGyds9jgtLr1glN04aT_UZstBliAW0ZzHE-s9Rwfk3az0aASN_q3zr1pr0jmwaSB131_3y45mKHJ9BElL9rz2zJs-IOZJgKDbrju-n8u7KhWnZbLR07G62fNK3p419d2n7lQo8AuqWITkQiJJCbdBXGXdaMHRkUSxI2MuelYiRTvfbSRTUYiQXiX_rCD-gAMy0Iuihds2CzPuhWIknWPQqanKuFXkym0OQug1htyiOgFk1tclbGY88WaKJCp9af31zrdlKyyabGQMNmjjVppi9eyERTrZpynqQxgqA313q6Uj66uH91_c9fllftObGR7cPTLlpZBjhUkXYOwYL_mD-0LdY_sC0" /></div></div>
+<div class="paragraph">
+<p>The use cases of <code>Apotheker</code> are:</p>
 </div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9oDairEmp0GXEz-2ajSog6bW8IYgefQ4EM2a43YNBdsfh58x6Yz1W7YjJXnwujXjm7SFzISuimtizb9XevUAyWP3vUGP96_B-yvxutNZfnV2laqH-kDkh9LK8u0ilEB_bdnHrXKW6jggtsmdzH71_-6PbaXzeUkrD_G9DexaCB1RtGClac39vD9Tfsrwgqsq3w_Eiqc_NuRDJnf-nWv4aY-hXWhjGBk210ilJR0AYY8a-MevoLnfH4aQMiO6yJT1bou-3B8XyDupdCs63UMIdXgnQOKM0kf7GLaMN9WbewUiY-cbwV4W3U0XSKwE1dhN7SVu0qQujNYqyaIp75Cx7WvLL01mN62Y1dw8Y5a9NIT0cyU5r-XVfWb509vD2ccj6l0E1qAICEiYzFklIRoPiu13VZjeQ4Sq0q5yax84hKi2SmEIgYfj7NjZPOYjhbXU0PqO5HYYSTD2sD9SzrOPZTFLlyhqws1ATcklmzToumD79BPVfh3ng_gEepTAkqGsuxYKjieoE6t_mOZZbQw" /></div></div>
+<div class="paragraph">
+<p>The use cases of <code>Kostenträger</code> are:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>With <code>-it</code> (abbreviated for <code>--interactive</code> and <code>--tty</code>), the container is started in an interactive TTY session and the user lands directly in the container.</p>
-</li>
-<li>
-<p>The container name <code><em>ERPione</em></code> that was previously selected for `docker run</p>
-</li>
-<li>
-<p>The last argument <code>/bin/zsh</code> specifies which shell is to be used.</p>
-</li>
-</ul>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9nzaS5Ema0GXk_x59DuWKCHDJ4DQHeGAGSzcNWsstPQDYoxpUnM0iQtyJ6yyMBkrW958Zrrz__wvPzfPEn6Oip0FJopck2ZUGSOJ4wE00yyMvQaQvLFjNJ95M9uTp-yBOw4fXpf96spJxQtlXgyA0t3Wlyl_KqFqewwDfXnWmUr5y-xuYH9mbdOfiz2ONi_lGcJuR1LHTVjFiR6ShBrIZAs43c2iKYexQP29h6mO3MGA1SMSa6OMQ4LOoC_smYuyMK8eiYVuvYDdhJxN5dQVPKjiBG-RpRiW0OVv7gj1d4JZQ12AZIj7CjOxr7C9p0BNd2BbGMUKbsWwdjFhyxUCid5gl-NsjQq-tQxnRI34jgQr1cRubf8ASeEoQkAz3kUeJoLk50TCCTCkcNs6VF5Wy1F4SITOiTXp3dI5hh8xAjSXFOrkj0OLUx-u0ymUUFX" /></div></div>
+<div class="paragraph">
+<p>The use cases of <code>EU Apotheker</code> are:</p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9o5aKrEmp0GXVS-nKXisaLB0Gb5LHMrj0aRLaXTLwuzIQmcjZLsG0LnBIx0nOXBI5EL7wzilpUVvurdpkzBZ1aqYmjl25uFUu3nukG8SCV5BYTJQxaqPQDS84OtjvFhxEWm995Er5PxOz_KjSC_eL6KyT-XNse7xQ5hXu8xxD01VDy7fsaQ9L6hFYYDxVtoAaedanOrkspdCNUUaw-hah52IGJdaT3ulKLMOkR16o2L5nwa8XHU6StOD6IR0dUX6OBPB9pZc4sJDIoiyGNkMbqBYqLZE8ouSHpyOscUzJXknIbOfCnGrVWP6womCZbnMoWd2eGLzwY1RwdEK0y3Sb2BZUnCmWtP856w_7XtMqu8oUWHNz1wF2l2UcC9dI1bGunGkDZcV8lmPFInJeEg80IfNScrx9TBvIngXqF6s5Vpen1b59ytTOpbVh2UjVAllNkwxvoZbitFVG9YF-MH" /></div></div>
+</div>
+<div class="sect3">
+<h4 id="section-concept-actor-resolution"><a class="anchor" href="#section-concept-actor-resolution"></a>8.2.2. Actor Resolution</h4>
+<div class="paragraph">
+<p>Every request to the REST API names the actor who shall perform the action via the <code>x-actor</code> header. The controller looks this actor up on the actor stage and checks that the actor&#8217;s role is suitable for the requested operation: creating a prescription requires a healthcare professional with an HBA (a physician), whereas pharmacy operations only require an institution with an SMC-B. An unknown or unsuitable actor is rejected before anything is sent to the Fachdienst (see <a href="#section-concept-error-handling">Error Handling</a>).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="native_usage"><a class="anchor" href="#native_usage"></a>Nativ</h4>
+<h4 id="section-concept-actor-execution"><a class="anchor" href="#section-concept-actor-execution"></a>8.2.3. Execution as an Actor</h4>
 <div class="paragraph">
-<p>In principle, no special commissioning is necessary. <em>ERPione</em> can be used directly as an executable application without any installation. However, for the user&#8217;s convenience, it is recommended to initially set up the <a href="#api_key_env">API-Key in the environment variables</a>.</p>
-</div>
-<div class="paragraph">
-<p>The executable applications must be generated separately for each operating system. Currently, <em>ERPione</em> is provided native executable for the following operating systems:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Windows</p>
-</li>
-<li>
-<p>Linux</p>
-</li>
-<li>
-<p>macOS</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="py_source_usage"><a class="anchor" href="#py_source_usage"></a>From source</h4>
-<div class="paragraph">
-<p>This variant is only recommended for developers and Python enthusiasts and requires the Python toolchain for execution</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://www.python.org/downloads/">Python 3.11</a></p>
-</li>
-<li>
-<p><a href="https://pypi.org/project/pip/">pip</a></p>
-</li>
-<li>
-<p>ideally <a href="https://docs.python.org/3/library/venv.html#module-venv">venv</a> or <a href="https://virtualenv.pypa.io/en/latest/">virtualenv</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>A <em>virtual environment</em> can be created and activated with the following call from the main directory of <em>ERPione</em>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">python -m venv <em>ERPione</em>_venv
-
-source <em>ERPione</em>_venv/bin/activate</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The dependencies can then be installed within the <em>virtual environment</em> using pip:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">pip install -r requirements.txt</code></pre>
-</div>
+<p>The business operation itself is modelled as a use case that is performed <em>by</em> the resolved actor. Executing a use case as an actor means that the actor signs documents with its HBA or SMC-B through a software Konnektor, authenticates against the IdP and sends one or more FHIR operations to the E-Rezept Fachdienst on its own behalf. Controllers only decide <em>which</em> use case to run for <em>whom</em>; the actor encapsulates everything needed to actually talk to the Telematikinfrastruktur.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_curl"><a class="anchor" href="#_curl"></a>cURL</h3>
+<h3 id="section-concept-persistence"><a class="anchor" href="#section-concept-persistence"></a>8.3. Local Persistence</h3>
 <div class="paragraph">
-<p>cURL is a command-line tool for transferring data using various network protocols. It is widely used for testing APIs and web services. In the context of <em>ERPione</em>, cURL can be used to interact with the RESTful API endpoints provided by the application.</p>
+<p>The result of each operation is stored locally per prescription ID: the current task state together with access code, secret, prescription data and signature information after a prescribe or claim, and the receipt after a close. These stored copies feed the lookup endpoints (<code>GET /api/erp/{pid}</code>, <code>GET /api/erp/prescriptions/{kvnr}</code>, <code>GET /api/erp/receipts</code>) and the Web UI. They are a convenience cache only — the authoritative state of a prescription always lives in the Fachdienst — and expired prescriptions are purged periodically.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_configuration"><a class="anchor" href="#_configuration"></a>Configuration</h3>
-<div class="sect3">
-<h4 id="api_key_env"><a class="anchor" href="#api_key_env"></a>API-Key</h4>
+<h3 id="section-concept-error-handling"><a class="anchor" href="#section-concept-error-handling"></a>8.4. Error Handling</h3>
 <div class="paragraph">
-<p>The API key is required for each <em>ERPione</em> request. To avoid having to specify it for each operation, it is possible to store the API key permanently as <a href="https://de.wikipedia.org/wiki/Umgebungsvariable">environment variable</a>.</p>
+<p>When an error occurs, Erpione represents it with <code>ErrorData</code>. The error payload contains an <code>ErrorType</code> that indicates whether the error originates in Erpione itself or in the Fachdienst. A human-readable message explains the problem, and optional issues can be included to narrow down the root cause.</p>
 </div>
 <div class="paragraph">
-<p>To do this, the API key must be stored under the <code>ERPIONE_API_KEY</code> environment variable in the operating system. This procedure differs from operating system to operating system. There are numerous instructions on the Internet, e.g., for <a href="https://phoenixnap.com/kb/windows-set-environment-variable">Windows</a> and <a href="https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/">Linux</a>.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="default_env"><a class="anchor" href="#default_env"></a>Default Environment</h4>
-<div class="paragraph">
-<p>The environment (TU, RU, RU-DEV) can be specified separately for each request using the <code>--env</code> switch.
-To avoid having to specify this switch for each individual call, a default environment can be defined using the environment variable <code>ERPIONE_ENV</code>. The default environment can then be overridden with `--env'.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_use_cases"><a class="anchor" href="#_use_cases"></a>Use cases</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The <em>ERPione</em> CLI is a command line interface that allows you to interact with the <em>ERPione</em> application from the terminal. It provides a set of commands for managing and configuring the application, as well as for performing various tasks.</p>
-</div>
-<div class="sect2">
-<h3 id="_help"><a class="anchor" href="#_help"></a>Help</h3>
-<div class="paragraph">
-<p>The <code>-h</code> (or <code>--help</code>) argument is the first port of call to get initial help on the CLI arguments.</p>
-</div>
-<div class="paragraph">
-<p>For example, you can use the following help to get an overview of the available subcommands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione --help</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The appropriate help for a particular subcommand is then displayed as follows:</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">structure</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione SUBCOMMAND --help</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">example</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione prescribe --help
-usage: erpione prescribe [-h] [-e {tu,ru,rudev}] [-s SERVER] [--api-key API_KEY | --api-key-file API_FILE] [--actor ACTOR] [--dmc] bundles_path
-
-positional arguments:
-  bundles_path          Path to KBV-Bundles to be prescribed
-
-options:
-  -h, --help            show this help message and exit
-  -e {tu,ru,rudev}, --env {tu,ru,rudev}
-                        Specification the Environment for this call. This argument will overwrite the default environment configured via ERPIONE_ENV
-  -s SERVER, --server SERVER
-                        The URL of the PrimSys-REST server (default: https://erpps-test.dev.gematik.solutions/)
-  --api-key API_KEY     API-Key for accessing the service
-  --api-key-file API_FILE
-                        Path to file where the API-Key is stored
-  --actor ACTOR         ID or name of the actor
-  --dmc                 Download Data-Matrix-Codes</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>Most subcommands have a common base of switches for the <em>ERPione</em>:</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. common arguments</caption>
-<colgroup>
-<col style="width: 14.2857%;">
-<col style="width: 14.2857%;">
-<col style="width: 71.4286%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">short</th>
-<th class="tableblock halign-left valign-top">long</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">-e</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">--env</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Selects the appropriate TI environment. This switch overrides the <a href="#default_env">default_environment</a>. If the environment is not specified by either <code>-e</code> or <a href="#default_env">standard_environment</a>, then the default on the erpione-proxy is used.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">-s</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">--server</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The default corresponds to the internal hosting within gematik and generally does not need to be changed.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">--api-key</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Can be used to override the <a href="#api_key_env">environment variable</a> or set one if no <a href="#api_key_env">environment variable</a> is set.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">--api-key-file</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Can be used to overwrite the <a href="#api_key_env">environment variable</a> with an API key from a file, or set one if no <a href="#api_key_env">environment variable</a> is set.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_issue_prescriptions"><a class="anchor" href="#_issue_prescriptions"></a>Issue prescriptions</h3>
-<div class="paragraph">
-<p>The following command can be used to issue e-prescriptions directly from a KBV bundle template:</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">erpione</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione prescribe ~/examples/gkv_bundle_01.xml</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">curl</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">curl -H "apikey: $ERPIONE_API_KEY" \
-  -H "Content-Type: application/xml" \
-  https://erpps-test.dev.gematik.solutions/ru/doc/6a7f66bc2bb0f4cd76deaa260abbb484/xml/prescribe \
-  -d "@~/examples/gkv_bundle_01.xml" | jq</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>In some cases, it is necessary to issue many prescriptions at once. This would be very tedious to do with curl, or would have to be done with a script. The <em>ERPione</em> provides a built-in mechanism for this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione prescribe ~/examples/</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You just have to specify the directory instead of a specific file. The <em>ERPione</em> will iterate through the given directory and create a prescription for each template it finds.</p>
-</div>
-<div class="sect3">
-<h4 id="_data_matrix_codes"><a class="anchor" href="#_data_matrix_codes"></a>Data Matrix Codes</h4>
-<div class="paragraph">
-<p>If a Data Matrix Code (DMC) is required for the e-prescription output, the <code>--dmc</code> switch can be used. This means that the DMC is also downloaded for each e-prescription and stored as a PNG image file in the output directory with the naming scheme <code>dmc_&lt;PRESCRIPTION_ID&gt;.png</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione prescribe --dmc ~/examples/gkv_bundle_01.xml</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_accept_prescriptions"><a class="anchor" href="#_accept_prescriptions"></a>Accept prescriptions</h3>
-<div class="paragraph">
-<p>E-prescriptions issued via <em>ERPione</em> can be accepted as a pharmacy with the following command:</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">erpione</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione accept --taskid [TID]</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">curl</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">curl -X POST \
-  -H "apikey: $ERPIONE_API_KEY" \
-  https://erpps-test.dev.gematik.solutions/ru/pharm/[PHARMACY_ID]/accept?taskId=[TID]&ac=[AC] | jq</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>--accesscode</code> parameter is optional in this case because <em>ERPione</em> already knows it.
-The situation is different for e-prescriptions that were not issued via <em>ERPione</em> or for older e-prescriptions that are no longer in the internal memory of <em>ERPione</em>. In this case, the AccessCode must be specified explicitly, similar to the curl approach:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione accept -t [TID] --accesscode [AC]</code></pre>
-</div>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Accepted e-prescriptions are set to <code>in process</code> status in the FD and are <em>"reserved"</em> for that pharmacy. More precisely, <em>"reserved"</em> for all pharmacies that know the generated <strong>Secret</strong>.</p>
-</div>
-<div class="paragraph">
-<p><span class="red">Forgotten secrets can be a problem because such e-prescriptions cannot be processed further and are automatically removed from the FD after 90 days.</span></p>
-</div>
-<div class="paragraph">
-<p>To prevent this, the e-prescriptions should be further processed (e.g., dispensed or deleted) after acceptance if possible</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_dispense_prescriptions"><a class="anchor" href="#_dispense_prescriptions"></a>Dispense prescriptions</h3>
-<div class="paragraph">
-<p>To dispense an e-prescription, the <code>accept</code> command must first be executed so that the FD can set the e-prescription to the ìn-progress` status and generate a secret.
-The e-prescription can then be dispensed using the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione dispense -t [TID]</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-As with <code>accept</code>, the secret is only required for <em>externally</em> created or accepted e-prescriptions.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>It is also possible to specify one or more substitute medicines at the time of dispensing. The <code>--body-file</code> option can be used to submit a JSON file containing the replacement drug.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione dispense -t [TID] --body-file ~/examples/dispense_body.json</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The content of <code>dispense_body.json</code> could be something like the following, if more than one replacement drug is dispensed for this prescription</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="json">[
-  {
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PZN</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">00</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">standardSize</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">NB</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">supplyForm</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">AMP</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">amount</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">pzn</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">09385450</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Vitadol Gold Beutel 1000 mg</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">batch</span><span class="delimiter">&quot;</span></span>: {
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">lotNumber</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">123123</span><span class="delimiter">&quot;</span></span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">expiryDate</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">26/02/2024</span><span class="delimiter">&quot;</span></span>
-    }
-  },
-  {
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PZN</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">00</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">standardSize</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">NB</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">supplyForm</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">AMP</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">amount</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">pzn</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">17975846</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Cbd 10 Cannbio Gold Edition 10 ml</span><span class="delimiter">&quot;</span></span>,
-    <span class="key"><span class="delimiter">&quot;</span><span class="content">batch</span><span class="delimiter">&quot;</span></span>: {
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">lotNumber</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">123123</span><span class="delimiter">&quot;</span></span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">expiryDate</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">26/02/2024</span><span class="delimiter">&quot;</span></span>
-    }
-  }
-]</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_close_prescriptions"><a class="anchor" href="#_close_prescriptions"></a>Close prescriptions</h3>
-<div class="paragraph">
-<p>The <code>close</code> command is used to finally close an e-prescription. As with the <code>dispense</code> command, a previous <code>accept</code> is mandatory. Before <code>close</code> a <code>dispense</code> is possible but not mandatory.</p>
-</div>
-<div class="paragraph">
-<p>The <code>close</code> command has the same interface as the <code>dispense</code> command. The only difference here is that the e-prescription is not closed with the <code>dispense</code> and therefore remains in the <code>in-progress</code> state.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_abort_prescriptions"><a class="anchor" href="#_abort_prescriptions"></a>Abort prescriptions</h3>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">erpione</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione abort -t [TID]</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">curl</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">curl -X DELETE \
-  -H "apikey: $ERPIONE_API_KEY" \
-  https://erpps-test.dev.gematik.solutions/ru/pharm/[PHARMACY_ID]/abort?taskId=[TID]&ac=[AC]?secret=[SECRET] | jq</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The AccessCode <code>[AC]</code> and Secret <code>[SECRET]</code> are only required for <em>externally</em> generated e-prescriptions, as with <code>accept</code>.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_create_charge_items"><a class="anchor" href="#_create_charge_items"></a>Create charge items</h3>
-<div class="paragraph">
-<p>Das Erstellen bzw. das Ändern der PKV-Abrechnungsinformationen wird über das Sub-Kommando <code>chargeitem</code> abgewickelt.
-Der Inhalt der PKV-Abrechnungsinformationen wird dabei in einem JSON-File definiert und an das Sub-Kommando übergeben. Sowohl für <code>create</code> als auch <code>change</code> ist die Struktur des JSON-Files identisch und entspricht der Struktur die bereits im Szenario-Player verwendet wird:</p>
-</div>
-<div class="paragraph">
-<p>The <code>chargeitem</code> subcommand is used to create or modify the charge item information.
-The content of the charge item information is defined in a JSON file and passed to the subcommand. The structure of the JSON file is identical for both create and modify, and is the same as the structure already used in the Scenario Player:</p>
+<p>So for example, if a prescription creation fails due to an invalid role of the actor, the <code>ErrorType</code> would indicate that the error is produced by the Fachdienst, and the issues would explain the root cause. In the following case for example we tried to create a prescription with an actor that has the wrong ProfessionOID, which is rejected by the Fachdienst:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="json">{
-  <span class="key"><span class="delimiter">&quot;</span><span class="content">currency</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">EUR</span><span class="delimiter">&quot;</span></span>,
-  <span class="key"><span class="delimiter">&quot;</span><span class="content">vatRate</span><span class="delimiter">&quot;</span></span>: <span class="float">12.9</span>,
-  <span class="key"><span class="delimiter">&quot;</span><span class="content">priceComponents</span><span class="delimiter">&quot;</span></span>: [
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Actor Telesphorus expected a response of type 'ErxTask' but received 'OperationOutcome' instead</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">FACHDIENST</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">issues</span><span class="delimiter">&quot;</span></span>: [
+        {
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">severity</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Error</span><span class="delimiter">&quot;</span></span>,
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">details</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The QES-Certificate does not have expected ProfessionOID.</span><span class="delimiter">&quot;</span></span>
+        }
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or if try to claim a prescription which is unknown to the Fachdienst, the Fachdienst would reject the request with an <code>OperationOutcome</code> and Erpione would return the following error payload to the client system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Actor Hygieia expected a response of type 'ErxAcceptBundle' but received 'OperationOutcome' instead</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">FACHDIENST</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">issues</span><span class="delimiter">&quot;</span></span>: [
     {
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ZUZAHLUNG</span><span class="delimiter">&quot;</span></span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">informational</span><span class="delimiter">&quot;</span></span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">insurantCost</span><span class="delimiter">&quot;</span></span>: <span class="float">12.3</span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">totalCost</span><span class="delimiter">&quot;</span></span>: <span class="float">75.5</span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">pzn</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">12345678</span><span class="delimiter">&quot;</span></span>
-    },
-    {
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ZUZAHLUNG</span><span class="delimiter">&quot;</span></span>,
-      <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">informational</span><span class="delimiter">&quot;</span></span>
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">severity</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Error</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">details</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Task not found for prescription id</span><span class="delimiter">&quot;</span></span>
     }
   ]
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To create a ChargeItem, use the following command:</p>
+<p>While on the other hand, if Erpione itself fails to process a request or runs into an internal error, the <code>ErrorType</code> would indicate that the error is produced by Erpione, and the issues would explain the root cause. In the following case for example when we try to call a REST endpoint that is not implemented, Erpione would return the following error payload to the client system:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione chargeitem create --taskid [TASK_ID] [path/to/payload.json]
-
-erpione chargeitem create -t 200.000.002.175.581.70 ./resources/my_examples/chargeitem_payload.json</code></pre>
+<pre class="CodeRay highlight"><code data-lang="json">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">No static resource api/erp/claim/160.000.114.452.028.14.</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ERPIONE</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">issues</span><span class="delimiter">&quot;</span></span>: [
+    {
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">severity</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ERROR</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">details</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">No controller found for: POST api/erp/claim/160.000.114.452.028.14</span><span class="delimiter">&quot;</span></span>
+    }
+  ]
+}</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Or if we try to perform an action with an actor that is not present in the <a href="#section-concept-actors">stage of actors</a> or not allowed for this operation, Erpione would return the following error payload to the client system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">No such actor with id 'Erpione'</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ERPIONE</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">issues</span><span class="delimiter">&quot;</span></span>: [
+    {
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">severity</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ERROR</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">details</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ActorNotFoundError: No such actor with id 'Erpione'</span><span class="delimiter">&quot;</span></span>
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following diagram illustrates the two error categories. In the first case the Fachdienst rejects the request with an <code>OperationOutcome</code>; the actor raises an <code>ErpResponseExpectationError</code>, which the central <code>ErpioneErrorHandler</code> (<code>@ControllerAdvice</code>) translates into <code>ErrorData</code> of type <code>FACHDIENST</code>, preserving the Fachdienst status code and issues. In the second case Erpione itself fails before contacting the Fachdienst (here: unknown actor), and the error handler returns <code>ErrorData</code> of type <code>ERPIONE</code>.</p>
+</div>
+<div class="imageblock"><div class="content"><img class="plantuml" src="https://plantuml.gematik.solutions/plantuml/png/U9obLS5o6ZaGlSzNT7dt05LcOBEfBSfbl2O4rbHbZSjsJY47MTE0bXbf8lN49Yx_-xQaOO0avX9EGdhzkllra-RSqIR7YmJu9oGP2yzX3P0E3_u2l1DolRIcqjd8v7po6sB_pxzwRnOxXB4PseFJ-kmbsR9-T7YKjDzVYDT9usb3kaTTEPJ2OKFjYV_P9vvC9lrnlpxze3JM-wC_-fDUhwOwxzPwN3eIbgeYJqH5HbV50zh4hPKkXHK5EFnIePRuBpedbZZCrLA3H4sCIXX2IgfIQ8AJKQvu6-usZh2OwnQconG87O4dBWGfezid81p8W4mUp1ESZ6t9-mXtQBygYITRENjUbmF-MwOQ6KtMv3dQI4Gs_nvM4uQPDgICvJQN-3tuOzGo02fvZ8eR6fQ6LhX66xi89debP6ojiLT2PrmfHrxkwXvclgB8i8g017K6BCQXdEFEBNx3akPw8kGgOyKSXQX5bYI30UnsmU9_ACa1LyThdXVl3GP9b1aw5q4dE8ERsTqzT4MfkcZBxdEfifUkp8Kg_XPoaARfN3zrGbTdS5wkX2s4t5ma8PX9We3CiaIQSbP5bP_epDwlh7biXRXfrauYhBFBUeKYfvKK5lV26jPACcJaYxYnwAHLfJzE7nMjMbpWASlSdkkqHBimjXYwcAYTS1n7nujyjkswTI_Sklkxa9A5QoVnb66BhEa-89vzvpMixZrXJ6UFSSOPWsLd5KbJ84G_-t3GXc3XBroJOji8UIs0JS1cBOrsE7ugUJI1A7Z2tukmXHaCG_vtbJU1xvCgaV-GDtQwK_C8TwDfxIj6nzMH6AwcdMpn1w65A7ye9bNELVZfyroJWQbVlnSaeENmArf5crF8a8JA7I-KM6h3yvPkBu7l8xgIBRRdO3ODLNoVJOONyrXPO7wcJObdC1cEhjvFnzTtzwTGn8Ve548jxjFdbt0Tjk-8yY-JPY7Ha_poDQZqMfj77MtnwtUXyOUlzThGnBle-F32wzD0dxnbEFZrkJrKAi_sXhEmfW3Snh7_k5NdG8i2zyIKWZyhhmpgRUyjS04GAlZ9TCQtDzFPzVYdexdajus_BVy3b9s4C000" /></div></div>
 </div>
 <div class="sect2">
-<h3 id="_change_charge_items"><a class="anchor" href="#_change_charge_items"></a>Change charge items</h3>
+<h3 id="section-concept-ti-connectivity"><a class="anchor" href="#section-concept-ti-connectivity"></a>8.5. TI Connectivity</h3>
 <div class="paragraph">
-<p>Charge items that have been set initially can be changed later at the request of the insured person.
-To change an existing charge item, use the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione chargeitem change --taskid [TID] --accesscode [AC] [path/to/payload.json]
-
-erpione chargeitem change -t 200.000.002.175.581.70 \
-      -a 9ea09db15e04fe9b1613cd0a338b812c728b355d672d9af8e54b7596e9098fa8 \
-      ./resources/my_examples/chargeitem_payload.json</code></pre>
-</div>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>In this use case, the AccessCode has the same structure and the same name as the AccessCode of a prescription. However, the two values are different and should not be confused.</p>
+<p>Erpione is designed to communicate with the E-Rezept Fachdienst and therefore needs TI connectivity. The <code>api-erp</code> documentation provides one detailed way to set this up in <a href="https://github.com/gematik/api-erp/blob/master/docs/ti_configuration.adoc">TI-Konfiguration</a>, but other connectivity solutions may also be possible depending on the deployment environment.</p>
 </div>
 <div class="paragraph">
-<p>The AccessCode for the ChargeItem is regenerated by the FD when <code>create</code> and <code>change</code> and must be called up again by the FdV after each change.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_service_information"><a class="anchor" href="#_service_information"></a>Service information</h3>
-<div class="paragraph">
-<p>To get information about the service, you can use the following call:</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">erpione</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione info</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">curl</dt>
-<dd>
-<div class="listingblock primary">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">curl -H "apikey: $ERPIONE_API_KEY" https://erpps-test.dev.gematik.solutions/ru/info | jq</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>In addition, the active <strong>Actors</strong> can be accessed with the following call:</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">erpione</dt>
-<dd>
-<div class="listingblock secondary">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">erpione actors</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">curl</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">curl -H "apikey: $ERPIONE_API_KEY" https://erpps-test.dev.gematik.solutions/actors | jq</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
+<p>Independent of the chosen route, the Fachdienst identifies the calling system via the <code>User-Agent</code> header. Patient actors (simulating the FdV) additionally communicate via the Internet route and require an <code>X-api-key</code>. These credentials are not shipped with Erpione; operators have to provide their own values as described in <a href="#section-fachdienst-credentials">E-Rezept Fachdienst Credentials (<code>application-secrets.yaml</code>)</a>.</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
 <div class="sect1">
+<h2 id="section-build-release-operations"><a class="anchor" href="#section-build-release-operations"></a> 9. Build, Release &amp; Operations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section covers the build process, deployment procedures, and operational aspects necessary to set up and maintain Erpione in your own infrastructure.</p>
+</div>
+<div class="sect2">
+<h3 id="_overview"><a class="anchor" href="#_overview"></a>9.1. Overview</h3>
+<div class="paragraph">
+<p>Erpione is a distributed system composed of multiple modules written mainly in Java and Kotlin. The build and deployment process involves:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Building multiple Maven modules (Java/Kotlin backend components)</p>
+</li>
+<li>
+<p>Creating Docker container images for each service</p>
+</li>
+<li>
+<p>Orchestrating containers via Docker Compose</p>
+</li>
+<li>
+<p>Managing secrets and configuration</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-prerequisites"><a class="anchor" href="#section-prerequisites"></a>9.2. Prerequisites</h3>
+<div class="sect3">
+<h4 id="_system_requirements"><a class="anchor" href="#_system_requirements"></a>9.2.1. System Requirements</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Docker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Minimum version: 29.5.3 (tested and recommended). Older versions may work but without guarantees.
+Docker Engine with Docker Compose (v2.0+). See <a href="https://docs.docker.com/engine/install/">Docker Installation Guide</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Without authentication (no Keycloak/BFF):</strong> Minimum 1GB+</p>
+<p class="tableblock"><strong>With full stack (Keycloak + BFF):</strong> Minimum 2.5GB, Recommended 3GB+</p>
+<p class="tableblock">Total stack consumption is approximately 2.5GB with authentication enabled. Keycloak and BFF are the primary memory consumers. Allocate 3GB+ for comfortable operation and headroom.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Network</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Connectivity to TI (telematics infrastructure) environments
+Proxy/SZZP access for production deployments (see <a href="#section-deployment-view">Deployment View</a>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_build_tools"><a class="anchor" href="#_build_tools"></a>9.2.2. Build Tools</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 50.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Tool</th>
+<th class="tableblock halign-left valign-top">Version</th>
+<th class="tableblock halign-left valign-top">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java Development Kit (JDK)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Required for building and running all backend services (erpione-server, erpione-oauth2-bff)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maven</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.9.0+ (bundled via <code>./mvnw</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used to build Java/Kotlin modules. The repository includes the wrapper script <code>./mvnw</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Git</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Latest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For cloning the repository</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_supported_operating_systems"><a class="anchor" href="#_supported_operating_systems"></a>9.2.3. Supported Operating Systems</h4>
+<div class="paragraph">
+<p>The only hard requirement is <strong>Java 21 capable JVM</strong> and <strong>Docker</strong>. Erpione runs in containers, so the underlying OS is largely irrelevant.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Linux</strong>: Any distribution capable of running Java 21 and Docker (Ubuntu, Debian, RHEL, CentOS, Fedora, Rocky Linux, AlmaLinux, etc.)</p>
+</li>
+<li>
+<p><strong>macOS</strong>: Any version that supports Java 21 JVM (M1/M2 ARM64 and Intel architectures supported)</p>
+</li>
+<li>
+<p><strong>Windows</strong>: Windows 10/11 with WSL2 backend (to provide Linux kernel and Docker support). Requires Java 21 JVM in WSL2 environment</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-build-process"><a class="anchor" href="#section-build-process"></a>9.3. Build Process</h3>
+<div class="sect3">
+<h4 id="_repository_structure"><a class="anchor" href="#_repository_structure"></a>9.3.1. Repository Structure</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>erpione-application/
+├── erpione-server/              # Main REST API service (Spring Boot, Java/Kotlin)
+├── erpione-oauth2-bff/          # Backend for Frontend (Spring Boot, OAuth2 client)
+├── erpione-frontend/            # Web UI (static HTML + JavaScript, served by Nginx)
+├── erpione-rest-data-ts/        # TypeScript data models
+├── erpione-cli/                 # Command-line interface client (Java/Kotlin)
+├── erpione-rest-client/         # REST client library (Kotlin)
+├── erpione-keycloak/            # Keycloak authentication server (container)
+├── erpione-reverse-proxy/       # Nginx reverse proxy configuration
+├── erpione-integration-coverage/# Integration tests &amp; coverage reporting
+├── pom.xml                      # Parent Maven configuration
+├── dc-erpione-local.yml         # Docker Compose for local development
+└── dc-erpione.yml               # Docker Compose for production</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_building_javakotlin_modules"><a class="anchor" href="#_building_javakotlin_modules"></a>9.3.2. Building Java/Kotlin Modules</h4>
+<div class="sect4">
+<h5 id="section-rebuild-all-modules"><a class="anchor" href="#section-rebuild-all-modules"></a>Full Build (all modules)</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">cd $(git rev-parse --show-toplevel)
+
+# Clean and build all modules, skip tests
+./mvnw clean install -DskipTests
+
+# Package the main erpione-server JAR
+./mvnw package spring-boot:repackage -f erpione-server/pom.xml -DskipTests</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_build_individual_modules"><a class="anchor" href="#_build_individual_modules"></a>Build Individual Modules</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell"># Build only the server
+./mvnw clean package -f erpione-server/pom.xml -DskipTests
+
+# Build only the BFF
+./mvnw clean package -f erpione-oauth2-bff/pom.xml -DskipTests
+
+# Build only the CLI
+./mvnw clean package -f erpione-cli/pom.xml -DskipTests</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_build_artifacts"><a class="anchor" href="#_build_artifacts"></a>Build Artifacts</h5>
+<div class="paragraph">
+<p>After successful build, look for:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Artifact Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>erpione-server/target/erpione-server-*.jar</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-oauth2-bff</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>erpione-oauth2-bff/target/oauth2-bff-*.jar</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_building_frontend"><a class="anchor" href="#_building_frontend"></a>9.3.3. Building Frontend</h4>
+<div class="paragraph">
+<p>The frontend consists of static HTML and JavaScript files served directly by Nginx. No framework (Vue, React, etc.) or build compilation is required.</p>
+</div>
+<div class="sect4">
+<h5 id="_frontend_structure"><a class="anchor" href="#_frontend_structure"></a>Frontend Structure</h5>
+<div class="paragraph">
+<p>The <code>erpione-frontend/</code> directory contains:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Static HTML files</p>
+</li>
+<li>
+<p>JavaScript files</p>
+</li>
+<li>
+<p>CSS stylesheets</p>
+</li>
+<li>
+<p>Images and assets</p>
+</li>
+<li>
+<p>Nginx configuration (<code>default.conf</code>, <code>entrypoint.sh</code>)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_frontend_deployment"><a class="anchor" href="#_frontend_deployment"></a>Frontend Deployment</h5>
+<div class="paragraph">
+<p>The frontend files in <code>erpione-frontend/dist/</code> are copied directly into the Nginx container during image build:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="dockerfile">FROM nginx:alpine
+COPY dist/ /usr/share/nginx/html/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>No build step is required</strong> for the frontend. The static files are served as-is.</p>
+</div>
+<div class="paragraph">
+<p><strong>To update the frontend:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Modify HTML, CSS, or JavaScript files in <code>erpione-frontend/</code></p>
+</li>
+<li>
+<p>Rebuild the Nginx container: <code>docker compose -f dc-erpione-local.yml build ui</code></p>
+</li>
+<li>
+<p>Or copy updated files directly to running container: <code>docker cp ./erpione-frontend/dist/. erpione-ui-${ENVIRONMENT}:/usr/share/nginx/html/</code></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_building_docker_images"><a class="anchor" href="#_building_docker_images"></a>9.3.4. Building Docker Images</h4>
+<div class="sect4">
+<h5 id="_build_all_images"><a class="anchor" href="#_build_all_images"></a>Build All Images</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">cd $(git rev-parse --show-toplevel)
+
+export ENVIRONMENT=rudev
+export VERSION=$(git describe --tags --always)
+export COMMIT_HASH=$(git rev-parse HEAD)
+export BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+# Build backend JARs
+./mvnw clean package -DskipTests -f erpione-server/pom.xml
+./mvnw clean package -DskipTests -f erpione-oauth2-bff/pom.xml
+
+# Build images using docker compose
+docker compose -f dc-erpione.yml build</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_docker_image_specifications"><a class="anchor" href="#_docker_image_specifications"></a>Docker Image Specifications</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Service</th>
+<th class="tableblock halign-left valign-top">Base Image</th>
+<th class="tableblock halign-left valign-top">Size</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bellsoft/liberica-openjdk-alpine:21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">~1GB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main REST API backend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-oauth2-bff</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eclipse-temurin:21-jre-alpine</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">~500MB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth2 session management frontend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-frontend</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nginx:alpine</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">~100MB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web UI serving static assets</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-reverse-proxy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nginx:alpine</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">~100MB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Request routing and optionally TLS termination</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-keycloak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">quay.io/keycloak/keycloak:latest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">~800MB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication and authorization server</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_build_arguments"><a class="anchor" href="#_build_arguments"></a>Build Arguments</h5>
+<div class="paragraph">
+<p>Each Dockerfile accepts build arguments for metadata:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>--build-arg VERSION=1.0.0
+--build-arg COMMIT_HASH=abc123def456
+--build-arg BUILD_DATE=2026-08-19T09:00:00Z
+--build-arg UID=1000
+--build-arg GID=1000</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-configuration"><a class="anchor" href="#section-configuration"></a>9.4. Configuration &amp; Environment Variables</h3>
+<div class="sect3">
+<h4 id="_environment_files"><a class="anchor" href="#_environment_files"></a>9.4.1. Environment Files</h4>
+<div class="paragraph">
+<p>Create a <code>.env</code> file in the repository root for Docker Compose:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code># Core Configuration
+ENVIRONMENT=rudev
+ERP_FHIR_PROFILE=1.6.0
+ACTIVE_SPRING_PROFILES=rudev,noauth
+PUBLIC_PORT=8080
+
+# OAuth2 / Keycloak
+OAUTH2_ISSUER_URI=http://keycloak:8080/realms/erpione
+OAUTH2_CLIENT_ID=bff-client
+OAUTH2_CLIENT_SECRET=change-me   # TODO: Document secure secret generation
+KC_ADMIN_PASSWORD=admin          # TODO: Provide secure default
+KC_DB_USERNAME=erpione
+KC_DB_PASSWORD=erpione           # TODO: Provide secure default
+
+# Network / Proxy Configuration
+PROXY_HOST=localhost             # TODO: Document SZZP proxy configuration
+PROXY_PORT=3128
+NON_PROXY_HOST=localhost,127.*,keycloak,redis,resource-server
+
+# URLs
+ISSUER_HOSTNAME=localhost        # TODO: Document production hostname setup
+SPA_BASE_URI=http://localhost
+ALLOWED_ORIGINS=http://localhost
+
+# Redis
+REDIS_PASSWORD=redis-secret      # TODO: Document secure generation</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_environment_variables_by_service"><a class="anchor" href="#_environment_variables_by_service"></a>9.4.2. Environment Variables by Service</h4>
+<div class="sect4">
+<h5 id="_erpione_server_resource_server"><a class="anchor" href="#_erpione_server_resource_server"></a>erpione-server (Resource Server)</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ERP_FHIR_PROFILE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.6.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">E-Rezept FHIR specification version to simulate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ACTIVE_SPRING_PROFILES</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rudev,noauth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-separated Spring Boot profiles. See <a href="#section-spring-profiles">Spring Boot Profiles</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://keycloak:8080/realms/erpione" class="bare">keycloak:8080/realms/erpione</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keycloak realm issuer URI for JWT validation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROXY_HOST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">proxy.example.com</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP proxy host for outbound E-Rezept backend connections</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROXY_PORT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3128</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP proxy port</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NON_PROXY_HOST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">localhost,127.*,keycloak,redis,resource-server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hosts to exclude from proxy routing</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_erpione_oauth2_bff"><a class="anchor" href="#_erpione_oauth2_bff"></a>erpione-oauth2-bff</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SPRING_PROFILES_ACTIVE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">docker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring profile (docker, local, prod, etc.)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAUTH2_CLIENT_ID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bff-client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth2 client ID registered in Keycloak</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAUTH2_CLIENT_SECRET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">secret-xyz</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAuth2 client secret (must match Keycloak registration)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OAUTH2_ISSUER_URI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://keycloak:8080/realms/erpione" class="bare">keycloak:8080/realms/erpione</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keycloak realm issuer URI</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RESOURCE_SERVER_URI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://resource-server:8080" class="bare">resource-server:8080</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal URI for backend resource server</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SPA_BASE_URI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost" class="bare">localhost</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Public URI of the Single Page Application</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ALLOWED_ORIGINS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost,https://example.com" class="bare">localhost,https://example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CORS-allowed origins for API requests</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">REDIS_HOST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">redis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Redis hostname for session storage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">REDIS_PORT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6379</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Redis port</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_keycloak"><a class="anchor" href="#_keycloak"></a>Keycloak</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KEYCLOAK_ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Initial admin username</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KEYCLOAK_ADMIN_PASSWORD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin-password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Initial admin password (must be set)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KC_DB_USERNAME</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database username</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KC_DB_PASSWORD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-db-password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database password (must be set)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KC_HTTP_RELATIVE_PATH</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/kc</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Relative path for Keycloak in proxy</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KC_HOSTNAME</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keycloak.example.com</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Public hostname (for production)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="section-spring-profiles"><a class="anchor" href="#section-spring-profiles"></a>9.4.3. Spring Boot Profiles</h4>
+<div class="paragraph">
+<p>The <code>ACTIVE_SPRING_PROFILES</code> environment variable controls runtime behaviour:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Profile</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Environment Profiles</strong> (pick one)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rudev</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Running against the RU-DEV environment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ru</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Running against the RU(-REF) environment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rudev</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Running against the TU environment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Feature Profiles</strong> (additive)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>offline</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Run without connecting to the E-Rezept Fachdienst (offline mode)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>noauth</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disable OAuth2/JWT authentication</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example combinations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code># Local development without authentication and without connecting to E-Rezept backend
+rudev,noauth,offline</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-secrets-management"><a class="anchor" href="#section-secrets-management"></a>9.5. Secrets Management</h3>
+<div class="paragraph">
+<p>TODO: This section needs to be populated. Questions for review:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Secrets Generation</strong>: How should operators generate secure secrets (Keycloak passwords, Redis passwords, OAuth2 secrets)?</p>
+</li>
+<li>
+<p><strong>Secrets Storage</strong>: Where/how are secrets stored in production? (Kubernetes Secrets, Docker secrets, environment files, HashiCorp Vault?)</p>
+</li>
+<li>
+<p><strong>Secret Rotation</strong>: What is the procedure for rotating secrets without downtime?</p>
+</li>
+<li>
+<p><strong>Certificate Management</strong>: How are TLS certificates generated and managed?</p>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_development_secrets"><a class="anchor" href="#_development_secrets"></a>9.5.1. Development Secrets</h4>
+<div class="paragraph">
+<p>For development (docker-compose), create a <code>.env</code> file with default values.</p>
+</div>
+<div class="paragraph">
+<p><strong>WARNING</strong>: Never commit <code>.env</code> files with real secrets to version control. Use <code>.gitignore</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>.env
+.env.local
+*.secret</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="section-fachdienst-credentials"><a class="anchor" href="#section-fachdienst-credentials"></a>9.5.2. E-Rezept Fachdienst Credentials (<code>application-secrets.yaml</code>)</h4>
+<div class="paragraph">
+<p>Every request towards the E-Rezept Fachdienst must carry a <code>User-Agent</code> header that identifies the Primärsystem. Patient actors (simulating the FdV / E-Rezept app) use the Internet route and additionally require an <code>X-api-key</code> header. Both values are environment-specific credentials and are therefore <strong>not</strong> part of the public repository: the file <code>application-secrets.yaml</code> is excluded via <code>.githubignore</code>, and the public source tree does not contain it.</p>
+</div>
+<div class="paragraph">
+<p>The server nevertheless expects these values. <code>application.yaml</code> includes the Spring profile <code>secrets</code> (<code>spring.profiles.include</code>), which makes Spring Boot load <code>application-secrets.yaml</code> next to the other <code>application-*.yaml</code> files when present. Operators running their own Erpione instance must supply this file (or equivalent configuration) themselves.</p>
+</div>
+<div class="paragraph">
+<p>The credentials are per environment profile (see <a href="#section-spring-profiles">Spring Boot Profiles</a>) and live below <code>erpione.environment</code>:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 16.6666%;">
+<col style="width: 50.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>erpione.environment.ti.userAgent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>User-Agent</code> sent on the TI route (split-DNS endpoints via SZZP/Konnektor). Format defined by gematik, e.g. <code>&lt;ProductName&gt;/&lt;Version&gt; &lt;VendorID&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>erpione.environment.internet.userAgent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Patient actors only</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>User-Agent</code> sent on the Internet route, which is used by patient actors (simulating the FdV / E-Rezept app)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>erpione.environment.internet.xapiKey</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Patient actors only</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>X-api-key</code> for the Internet endpoints of the Fachdienst (<code>erp-*.app.ti-dienste.de</code>). Only required when patient actors (FdV simulation) are used; doctors and pharmacies communicate via the TI route exclusively.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Create <code>erpione-server/src/main/resources/application-secrets.yaml</code> from the following template and fill in your own values for every environment you intend to use. The <code>---</code> separated documents are activated per profile via <code>spring.config.activate.on-profile</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="head"><span class="head">---</span></span>
+<span class="key">spring</span>:
+  <span class="key">config</span>:
+    <span class="key">activate</span>:
+      <span class="key">on-profile</span>: <span class="string"><span class="content">tu</span></span>
+<span class="key">erpione</span>:
+  <span class="key">environment</span>:
+    <span class="key">ti</span>:
+      <span class="key">userAgent</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-user-agent&gt;</span><span class="delimiter">&quot;</span></span>
+    <span class="key">internet</span>:
+      <span class="key">xapiKey</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-tu-x-api-key&gt;</span><span class="delimiter">&quot;</span></span>
+      <span class="key">userAgent</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-user-agent&gt;</span><span class="delimiter">&quot;</span></span>
+
+<span class="head"><span class="head">---</span></span>
+<span class="key">spring</span>:
+  <span class="key">config</span>:
+    <span class="key">activate</span>:
+      <span class="key">on-profile</span>: <span class="string"><span class="content">ru</span></span>
+<span class="key">erpione</span>:
+  <span class="key">environment</span>:
+    <span class="key">ti</span>:
+      <span class="key">userAgent</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-user-agent&gt;</span><span class="delimiter">&quot;</span></span>
+    <span class="key">internet</span>:
+      <span class="key">xapiKey</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-ru-x-api-key&gt;</span><span class="delimiter">&quot;</span></span>
+      <span class="key">userAgent</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-user-agent&gt;</span><span class="delimiter">&quot;</span></span>
+
+<span class="head"><span class="head">---</span></span>
+<span class="key">spring</span>:
+  <span class="key">config</span>:
+    <span class="key">activate</span>:
+      <span class="key">on-profile</span>: <span class="string"><span class="content">rudev</span></span>
+<span class="key">erpione</span>:
+  <span class="key">environment</span>:
+    <span class="key">ti</span>:
+      <span class="key">userAgent</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-user-agent&gt;</span><span class="delimiter">&quot;</span></span>
+    <span class="key">internet</span>:
+      <span class="key">xapiKey</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-rudev-x-api-key&gt;</span><span class="delimiter">&quot;</span></span>
+      <span class="key">userAgent</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;your-user-agent&gt;</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, the values can be provided without touching the source tree, e.g. as environment variables for the <code>erpione-server</code> container (<code>ERPIONE_ENVIRONMENT_INTERNET_XAPIKEY</code>, <code>ERPIONE_ENVIRONMENT_TI_USERAGENT</code>, <code>ERPIONE_ENVIRONMENT_INTERNET_USERAGENT</code>) or through an external config location (<code>SPRING_CONFIG_ADDITIONAL_LOCATION</code>). Standard Spring Boot property precedence applies.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Obtaining credentials</dt>
+<dd>
+<p>The <code>X-api-key</code> and the agreed <code>User-Agent</code> for the gematik test environments (TU, RU, RU-DEV) are issued on request by gematik. Please contact <a href="https://fachportal.gematik.de/">gematik Fachportal</a> and state the environments you need access to.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>WARNING</strong>: Treat <code>application-secrets.yaml</code> like any other secret: never commit it to a public repository and keep it out of Docker images that are shared outside your organisation.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_production_secrets"><a class="anchor" href="#_production_secrets"></a>9.5.3. Production Secrets</h4>
+<div class="paragraph">
+<p>TODO: Document production secrets management strategy.</p>
+</div>
+<div class="paragraph">
+<p>Recommendations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use Kubernetes Secrets (if running on Kubernetes)</p>
+</li>
+<li>
+<p>Use Docker Secrets (if running on Docker Swarm)</p>
+</li>
+<li>
+<p>Use HashiCorp Vault for external secret management</p>
+</li>
+<li>
+<p>Use CI/CD platform secrets (GitHub Secrets, GitLab CI variables, etc.)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-deployment"><a class="anchor" href="#section-deployment"></a>9.6. Deployment Procedures</h3>
+<div class="sect3">
+<h4 id="_prerequisites_checklist"><a class="anchor" href="#_prerequisites_checklist"></a>9.6.1. Prerequisites Checklist</h4>
+<div class="paragraph">
+<p>Before deploying, ensure:</p>
+</div>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> Docker and Docker Compose installed and running</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> All required environment variables defined in <code>.env</code> file</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Secrets file created and secured (<code>.env</code> not committed to git)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> <code>application-secrets.yaml</code> created with your own <code>User-Agent</code> and <code>X-api-key</code> (see <a href="#section-fachdienst-credentials">E-Rezept Fachdienst Credentials (<code>application-secrets.yaml</code>)</a>)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Network connectivity the E-Rezept Fachdienst verified</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> TLS certificates prepared (for production)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Database volumes initialized</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Sufficient disk space available</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> All build artifacts up-to-date</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_local_development_workflow"><a class="anchor" href="#_local_development_workflow"></a>9.6.2. Local Development Workflow</h4>
+<div class="paragraph">
+<p>This workflow is intended for local development and testing only; it is not suitable for production environments.</p>
+</div>
+<div class="paragraph">
+<p>To reduce OAuth2 complexity during development, the local stack runs without Keycloak and without the OAuth2 BFF. Authentication is therefore disabled in this setup.</p>
+</div>
+<div class="paragraph">
+<p>Contrary to the two possible <a href="#section-deployment-view">Deployment Views</a> the local Development Workflow is mostly the full deployment stack without the authentication server and the BFF. The local development workflow is intended for developers to quickly test changes in the backend or frontend without having to deal with the complexity of OAuth2 and Keycloak.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>erpione-server</code> artifact must be built and repackaged before deployment; see <a href="#section-build-process">Building Java/Kotlin Modules</a> for the required <code>./mvnw package spring-boot:repackage -f erpione-server/pom.xml -DskipTests</code> step.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">#!/bin/bash
+set -e
+
+ensure_volume() {
+  local volume_name=&quot;$1&quot;
+  if ! docker volume inspect &quot;$volume_name&quot; &gt;/dev/null 2&gt;&amp;1; then
+    docker volume create &quot;$volume_name&quot; &gt;/dev/null
+    echo &quot;Created volume: $volume_name&quot;
+  else
+    echo &quot;Volume already exists: $volume_name&quot;
+  fi
+}
+
+cd $(git rev-parse --show-toplevel)
+
+# 1. Set environment
+export ENVIRONMENT=rudev
+export ERP_FHIR_PROFILE=1.6.0
+export ACTIVE_SPRING_PROFILES=${ENVIRONMENT},noauth
+export PUBLIC_PORT=8080
+
+# 2. Create required Docker volumes
+ensure_volume &quot;erpione-data-${ENVIRONMENT}&quot;
+
+# 3. Build and start containers
+docker compose -f dc-erpione-local.yml up -d --build
+
+# 4. Wait for services to be healthy
+echo &quot;Waiting for services to start...&quot;
+sleep 15
+
+# 5. Verify health
+docker compose -f dc-erpione-local.yml ps</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can access the local development stack at <code><a href="http://localhost:8080" class="bare">localhost:8080</a></code>. The REST API is available at <code><a href="http://localhost:8080/api/info" class="bare">localhost:8080/api/info</a></code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_production_deployment"><a class="anchor" href="#_production_deployment"></a>9.6.3. Production Deployment</h4>
+<div class="paragraph">
+<p>TODO: Document the following:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Pre-production checklist (security hardening, TLS setup, etc.)</p>
+</li>
+<li>
+<p>Health check procedures</p>
+</li>
+<li>
+<p>Load balancing setup (if applicable)</p>
+</li>
+<li>
+<p>Backup and recovery procedures</p>
+</li>
+<li>
+<p>Monitoring setup</p>
+</li>
+<li>
+<p>Logging aggregation</p>
+</li>
+<li>
+<p>Rollback procedures</p>
+</li>
+</ol>
+</div>
+<div class="sect4">
+<h5 id="_deployment_execution"><a class="anchor" href="#_deployment_execution"></a>Deployment Execution</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">#!/bin/bash
+set -e
+
+export ENVIRONMENT=rudev
+export ERP_FHIR_PROFILE=1.6.0
+export ACTIVE_SPRING_PROFILES=rudev,noauth
+
+# Create volumes
+for vol in erpione-data erpione-redis-data erpione-keycloak; do
+  docker volume create &quot;${vol}-${ENVIRONMENT}&quot; || true
+done
+
+# Load secrets from external source
+#TODO: Document secret injection mechanism
+
+# Deploy
+docker compose -f dc-erpione.yml up -d --build
+
+# Monitor
+docker compose -f dc-erpione.yml logs -f</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-health-checks"><a class="anchor" href="#section-health-checks"></a>9.7. Health Checks &amp; Validation</h3>
+<div class="paragraph">
+<p>After deployment, verify all services are operational:</p>
+</div>
+<div class="sect3">
+<h4 id="_service_health_endpoints"><a class="anchor" href="#_service_health_endpoints"></a>9.7.1. Service Health Endpoints</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 42.8572%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Service</th>
+<th class="tableblock halign-left valign-top">Endpoint</th>
+<th class="tableblock halign-left valign-top">Expected Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource Server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://localhost:8080/actuator/health" class="bare">localhost:8080/actuator/health</a></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"status":"UP"}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BFF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://localhost:8080/actuator/health" class="bare">localhost:8080/actuator/health</a></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"status":"UP"}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reverse Proxy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://localhost:8080" class="bare">localhost:8080</a></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nginx welcome page or proxied response</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keycloak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://localhost:8080/kc/health/ready" class="bare">localhost:8080/kc/health/ready</a></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP 200 OK</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Redis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>redis-cli ping</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PONG</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_manual_health_check_script"><a class="anchor" href="#_manual_health_check_script"></a>9.7.2. Manual Health Check Script</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">#!/bin/bash
+
+echo &quot;=== Erpione Health Check ===&quot;
+
+# Function to check HTTP endpoint
+check_http() {
+  local endpoint=$1
+  local name=$2
+  echo -n &quot;Checking $name ($endpoint)... &quot;
+  if curl -s -f &quot;$endpoint&quot; &gt; /dev/null; then
+    echo &quot;✓ OK&quot;
+  else
+    echo &quot;✗ FAILED&quot;
+    return 1
+  fi
+}
+
+# Function to check container
+check_container() {
+  local container=$1
+  echo -n &quot;Checking container $container... &quot;
+  if docker ps --filter &quot;name=$container&quot; --filter &quot;status=running&quot; | grep -q &quot;$container&quot;; then
+    echo &quot;✓ Running&quot;
+  else
+    echo &quot;✗ Not running&quot;
+    return 1
+  fi
+}
+
+check_http &quot;http://localhost:8080/actuator/health&quot; &quot;Resource Server&quot;
+check_http &quot;http://localhost:8080/kc/health/ready&quot; &quot;Keycloak&quot;
+
+check_container &quot;erpione-resource-server&quot;
+check_container &quot;erpione-bff&quot;
+check_container &quot;erpione-redis&quot;
+check_container &quot;erpione-keycloak&quot;
+check_container &quot;erpione-reverse-proxy&quot;
+
+echo &quot;=== Health Check Complete ===&quot;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_database_verification"><a class="anchor" href="#_database_verification"></a>9.7.3. Database Verification</h4>
+<div class="paragraph">
+<p>TODO: Document:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How to verify database initialization</p>
+</li>
+<li>
+<p>How to check data persistence</p>
+</li>
+<li>
+<p>How to backup/restore database</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell"># TODO: Add database health check commands
+# Check H2 database connectivity
+# Verify database schema initialization</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_api_verification"><a class="anchor" href="#_api_verification"></a>9.7.4. API Verification</h4>
+<div class="paragraph">
+<p>TODO: Document:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How to test basic API endpoints</p>
+</li>
+<li>
+<p>How to create test data</p>
+</li>
+<li>
+<p>How to verify E-Rezept connectivity</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell"># TODO: Add example API test commands
+# Example: curl http://localhost:8080/api/v1/health</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-logging-monitoring"><a class="anchor" href="#section-logging-monitoring"></a>9.8. Logging &amp; Monitoring</h3>
+<div class="sect3">
+<h4 id="_application_logs"><a class="anchor" href="#_application_logs"></a>9.8.1. Application Logs</h4>
+<div class="paragraph">
+<p>View container logs in real-time:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell"># All services
+docker compose -f dc-erpione-local.yml logs -f
+
+# Specific service
+docker compose -f dc-erpione-local.yml logs -f resource-server
+
+# With timestamps
+docker compose -f dc-erpione-local.yml logs -f --timestamps
+
+# Last N lines
+docker compose -f dc-erpione-local.yml logs --tail=100 resource-server</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_log_locations"><a class="anchor" href="#_log_locations"></a>9.8.2. Log Locations</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Log Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container stdout/stderr (docker logs)
+TODO: Document file-based logging location if applicable</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">erpione-bff</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container stdout/stderr (docker logs)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keycloak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container stdout/stderr (docker logs)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nginx (reverse proxy &amp; UI)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/var/log/nginx/access.log</code> (inside container)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_metrics_monitoring"><a class="anchor" href="#_metrics_monitoring"></a>9.8.3. Metrics &amp; Monitoring</h4>
+<div class="paragraph">
+<p>TODO: Document the following:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Which metrics are exposed by each service?</p>
+</li>
+<li>
+<p>How to scrape Prometheus metrics?</p>
+</li>
+<li>
+<p>How to set up monitoring dashboards (Grafana)?</p>
+</li>
+<li>
+<p>What alerts should be configured?</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code># TODO: Metrics endpoints
+
+# erpione-server: http://localhost:8080/actuator/metrics
+# erpione-bff: http://localhost:8080/actuator/metrics
+# keycloak: TODO
+
+# TODO: Example Prometheus scrape config
+# TODO: Example Grafana dashboard setup</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="section-troubleshooting"><a class="anchor" href="#section-troubleshooting"></a>9.9. Troubleshooting</h3>
+<div class="sect3">
+<h4 id="_common_issues"><a class="anchor" href="#_common_issues"></a>9.9.1. Common Issues</h4>
+<div class="sect4">
+<h5 id="_services_not_starting"><a class="anchor" href="#_services_not_starting"></a>Services Not Starting</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code># Check Docker daemon status
+docker version
+
+# Check service status
+docker compose -f dc-erpione-local.yml ps
+
+# View service logs
+docker compose -f dc-erpione-local.yml logs resource-server
+
+# Common causes:
+# - Port already in use: change PUBLIC_PORT in .env
+# - Volume permission issues: check docker volume permissions
+# - Out of memory: increase Docker memory allocation</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_database_connection_failed"><a class="anchor" href="#_database_connection_failed"></a>Database Connection Failed</h5>
+<div class="paragraph">
+<p>TODO: Document:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Database connectivity troubleshooting</p>
+</li>
+<li>
+<p>Schema initialization issues</p>
+</li>
+<li>
+<p>Data corruption recovery</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_authenticationkeycloak_issues"><a class="anchor" href="#_authenticationkeycloak_issues"></a>Authentication/Keycloak Issues</h5>
+<div class="paragraph">
+<p>TODO: Document:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OAuth2 client configuration errors</p>
+</li>
+<li>
+<p>JWT validation failures</p>
+</li>
+<li>
+<p>Session management problems</p>
+</li>
+<li>
+<p>Keycloak realm setup</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_proxynetwork_issues"><a class="anchor" href="#_proxynetwork_issues"></a>Proxy/Network Issues</h5>
+<div class="paragraph">
+<p>TODO: Document:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SZZP/proxy connectivity errors</p>
+</li>
+<li>
+<p>TLS certificate validation failures</p>
+</li>
+<li>
+<p>DNS resolution issues</p>
+</li>
+<li>
+<p>E-Rezept backend connectivity</p>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_release_notes"><a class="anchor" href="#_release_notes"></a>Appendix A: Release Notes</h2>
 <div class="sectionbody">
-<h3 id="_release_0_9_0" class="discrete">Release 0.9.0</h3>
+<h3 id="_release_1_0_0" class="discrete">Release 1.0.0</h3>
 <div class="paragraph">
 <p>Initial public release</p>
 </div>
@@ -1084,7 +2531,7 @@ erpione chargeitem change -t 200.000.002.175.581.70 \
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.9.2<br>
+Version 1.0.0<br>
 </div>
 </div>
 </body>
